@@ -8,7 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class BankServer {
-    private Bank bank = new Bank();
+    private Bank bank = new Bank(); //TODO: make bank static???
 
     public static void main(String[] args) throws IOException {
         if (args.length != 1) {
@@ -19,17 +19,20 @@ public class BankServer {
 
         //I'm setting this port 6000 in my config -gh
         int portNumber = Integer.parseInt(args[0]);//6000
+        ServerSocket serverSocket = new ServerSocket(portNumber);
         System.out.println("listening...");
 
-        try (
-                ServerSocket serverSocket = new ServerSocket(portNumber);
+        //While bank server is running
+        while(true){
+            //Listen for socket connections
+            try {
                 Socket clientSocket = serverSocket.accept();
-                PrintWriter out =
-                    new PrintWriter(clientSocket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(
-                    new InputStreamReader(clientSocket.getInputStream()));
-        ){
-            out.println("connected to bank!");
+                //create new thread for each new client
+                BankThread bt = new BankThread(clientSocket);
+                bt.start();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 }

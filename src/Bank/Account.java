@@ -2,6 +2,7 @@ package Bank;
 
 public class Account {
     private int balance;
+    private int portNumber;
 
     public int getBalance() {
         return balance;
