@@ -8,9 +8,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class BankServer {
-    private Bank bank = new Bank(); //TODO: make bank static???
+    public static Bank activeBank;
 
     public static void main(String[] args) throws IOException {
+        activeBank = new Bank(); //TODO: make bank static???
+
         if (args.length != 1) {
             System.err.println(
                     "Usage: java BankServer <port number>");
