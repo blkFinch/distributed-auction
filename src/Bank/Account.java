@@ -1,7 +1,7 @@
 package Bank;
 
 public class Account {
-    private int balance;
+    private int balance = 0;
     private int portNumber;
 
     public int getBalance() {
