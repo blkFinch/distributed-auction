@@ -3,6 +3,7 @@ package Test;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -19,9 +20,12 @@ public class auctionHouseTest {
                 //connect to bank IO stream
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(bankSocket.getInputStream()));
+                PrintWriter out =
+                        new PrintWriter(bankSocket.getOutputStream(), true);
             ){
                 System.out.println("running on port: " + portNumber);
                 String fromServer;
+
 
             while ((fromServer = in.readLine()) != null) {
                 System.out.println("Server: " + fromServer);

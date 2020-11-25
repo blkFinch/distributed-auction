@@ -31,6 +31,7 @@ public class BankThread extends Thread {
              in = new BufferedReader(
                     new InputStreamReader(socket.getInputStream()));
             out.println("connected to bank!");
+            out.println("enter client id");
         }catch (IOException e){
             System.out.println("errr");
             System.out.println(e);
@@ -42,6 +43,7 @@ public class BankThread extends Thread {
             try{
                 fromClient = in.readLine();
                 out.println(fromClient);
+
             }catch (IOException e){
                 e.printStackTrace();
             }return;
