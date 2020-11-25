@@ -24,11 +24,13 @@ public class Bank {
         System.out.println("added a new client at " + newClient.getHost() + " : " + newClient.getPort());
         System.out.println("balance of " + newClient.getBalance());
 
-        try(Connection conn = DriverManager.getConnection(DatabaseManager.DB_URL)){
+        try(Connection conn = DatabaseManager.getConn()){
             newClient.save(conn);
             System.out.println("client saved to database");
         }catch (SQLException throwables){
             throwables.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
