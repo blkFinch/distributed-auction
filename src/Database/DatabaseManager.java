@@ -17,22 +17,6 @@ public class DatabaseManager {
         return conn;
     }
 
-    /**
-     * Utility function for initializing the client table. This should
-     *
-     */
-    public static void createClientTable(){
-        String sql = "CREATE TABLE IF NOT EXISTS clients (\n"
-                + "     id integer PRIMARY KEY, \n"
-                + "     name string, \n"
-                + "     host string, \n"
-                + "     port integer, \n"
-                + "     isAuctionHouse boolean, \n"
-                + "     balance integer DEFAULT 0 \n"
-                + ");";
-        executeSQL(sql);
-        System.out.println("created table clients");
-    }
 
     /**
      * ONLY use this if you really want that table gone
