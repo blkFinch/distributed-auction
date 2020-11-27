@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class Bank {
     public static Bank active;
-    ArrayList<Client> clients;
+    ArrayList<Client> clients; //this will be list of auctionhouses
 
 
     public Bank(){
@@ -24,6 +24,7 @@ public class Bank {
         System.out.println("added a new client at " + newClient.getHost() + " : " + newClient.getPort());
         System.out.println("balance of " + newClient.getBalance());
 
+        //TODO: send this to task manager
         try(Connection conn = DatabaseManager.getConn()){
             newClient.save(conn);
             System.out.println("client saved to database");
@@ -35,5 +36,34 @@ public class Bank {
 
     }
 
+    public int getBalance(Client client){
+        int balance = 0;
+        //return balance of client by id.
+        return balance;
+    }
+
+    public Client getClient(int id){
+        Client thisClient = null;
+        //lookup client by id
+        return thisClient;
+    }
+
+    public void depositInto(Client client, int amount){
+        //lookup client and add funds
+    }
+
+    public void blockFunds(Client client, int amount){
+        //move funds into blockedFunds column
+    }
+
+    public void releaseFunds(Client client){
+        //releases blocked funds from client
+    }
+
+    public int withdrawBlockedFunds(Client client){
+        int withdrawl = 0;
+        //returns blocked funds
+        return withdrawl;
+    }
 
 }
