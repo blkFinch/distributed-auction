@@ -17,7 +17,10 @@ public class DatabaseManager {
         return conn;
     }
 
-
+    /**
+     * Utility function for initializing the client table. This should
+     *
+     */
     public static void createClientTable(){
         String sql = "CREATE TABLE IF NOT EXISTS clients (\n"
                 + "     id integer PRIMARY KEY, \n"
