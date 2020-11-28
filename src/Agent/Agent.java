@@ -3,14 +3,19 @@ package Agent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Agent{
     private static AgentProxy bankProxy;
-    private static AgentProxy auctionProxy;
+    private static List<AgentProxy> auctionProxies;
 
-    public void sendMessage(int dest, String message){
-        if(dest == 0){ bankProxy.sendMessage(message); }
-        else{ auctionProxy.sendMessage(message); }
+    public void sendBankMessage(String message){
+        bankProxy.sendMessage(message);
+    }
+
+    public void sendAuctionMessage(int ind, String message){
+        auctionProxies.get(ind).sendMessage(message);
     }
 
     public static void main(String[] args){
@@ -20,6 +25,7 @@ public class Agent{
         String host;
         int port;
         boolean connected = false;
+        auctionProxies = new ArrayList<>();
 
         while(!connected){
             System.out.println("What type of server are you connecting to?");
@@ -41,7 +47,7 @@ public class Agent{
                 if(type.equals("bank")){
                     bankProxy = new AgentProxy(type, host, port);
                 }
-                else{ auctionProxy = new AgentProxy(type, host, port); }
+                else{ auctionProxies.add(new AgentProxy(type, host, port)); }
                 connected = true;
             } catch(Exception e){
                 System.out.println("Connection failed. Try again.");
