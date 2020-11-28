@@ -8,6 +8,11 @@ public class Agent{
     private static AgentProxy bankProxy;
     private static AgentProxy auctionProxy;
 
+    public void sendMessage(int dest, String message){
+        if(dest == 0){ bankProxy.sendMessage(message); }
+        else{ auctionProxy.sendMessage(message); }
+    }
+
     public static void main(String[] args){
         BufferedReader in=new BufferedReader(new InputStreamReader(System.in));
         String input;
@@ -33,7 +38,10 @@ public class Agent{
             try{
                 input = in.readLine();
                 port = Integer.parseInt(input);
-                bankProxy = new AgentProxy(type, host, port);
+                if(type.equals("bank")){
+                    bankProxy = new AgentProxy(type, host, port);
+                }
+                else{ auctionProxy = new AgentProxy(type, host, port); }
                 connected = true;
             } catch(Exception e){
                 System.out.println("Connection failed. Try again.");
