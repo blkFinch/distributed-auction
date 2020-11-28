@@ -4,7 +4,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class TaskRunner  extends Thread{
-    public static BlockingQueue<Task> jobQueue;
+    public static BlockingQueue<Task> jobQueue= new LinkedBlockingDeque<>();
 
     public TaskRunner(){
         jobQueue = new LinkedBlockingDeque<>();

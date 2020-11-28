@@ -13,9 +13,9 @@ public class BankServer {
     public static Bank activeBank;
 
     public static void main(String[] args) throws IOException {
-        activeBank = new Bank(); //TODO: make bank static???
         TaskRunner runner = new TaskRunner();
         runner.start();
+        activeBank = new Bank();
 
         if (args.length != 1) {
             System.err.println(

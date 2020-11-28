@@ -1,6 +1,8 @@
 package Bank;
 
 import Database.DatabaseManager;
+import Database.TaskRunner;
+import Database.Tasks.CreateClient;
 
 import java.net.InetAddress;
 import java.sql.Connection;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 public class Bank {
     //may be deprecated shift a sepreate table in db
     public static Bank active;
+
     ArrayList<Client> clients; //this will be list of auctionhouses
     public Bank(){
         clients = new ArrayList<Client>();
@@ -20,18 +23,13 @@ public class Bank {
     public static void addNewClient(InetAddress host, int portnumber, String name){
         Client newClient = new Client(host, portnumber);
         newClient.setName(name);
+        CreateClient create = new CreateClient(newClient);
+        TaskRunner.jobQueue.add(create);
+
         System.out.println("added a new client at " + newClient.getHost() + " : " + newClient.getPort());
         System.out.println("balance of " + newClient.getBalance());
 
-        //TODO: send this to task manager
-        try(Connection conn = DatabaseManager.getConn()){
-            newClient.save(conn);
-            System.out.println("client saved to database");
-        }catch (SQLException throwables){
-            throwables.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
 
     }
 
