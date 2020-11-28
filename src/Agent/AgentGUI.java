@@ -25,7 +25,13 @@ public class AgentGUI extends Application{
         chooseAuction = new BorderPane();
         chooseAuction.setBackground(new Background(imageSet));
 
-        Scene scene = new Scene(chooseAuction, 612, 403);
+        Image frame = new Image("file:Resources\\GoldPictureFrame.jpg");
+        BackgroundFill pictureFrame=new BackgroundFill(new ImagePattern(frame),
+                CornerRadii.EMPTY, Insets.EMPTY);
+        placeBid = new BorderPane();
+        placeBid.setBackground(new Background(pictureFrame));
+
+        Scene scene = new Scene(placeBid, 612, 403);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
