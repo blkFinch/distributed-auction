@@ -1,9 +1,10 @@
 package Bank;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import Database.PrintToConsole;
+import Database.Task;
+import Database.TaskRunner;
+
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -11,42 +12,39 @@ import static Bank.BankServer.activeBank; //TODO: remove after bank DB is set up
 
 public class BankThread extends Thread {
     protected Socket socket;
+    private TaskRunner runner;
+    private PrintWriter out = null;
+    private BufferedReader in = null;
 
-    public BankThread(Socket clientSocket){
+    public BankThread(Socket clientSocket, TaskRunner runner) throws IOException {
         this.socket = clientSocket;
-
-        //initialize as new client
-        int clientPort = socket.getPort();
-        InetAddress clientHost = socket.getInetAddress();
-        activeBank.addNewClient(clientHost, clientPort);
+        this.runner = runner;
+        out = new PrintWriter(socket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
-    public void run(){
-        PrintWriter out = null;
-        BufferedReader in = null;
+    public void run() {
+        String inputLine = null;
+        String outputLine = "hello";
+        LoginProtocol login = new LoginProtocol(socket);
+        //DEBUG testing runner
+        Task print = new PrintToConsole("runner test");
+        runner.jobQueue.offer(print);
 
-        try{
-             out =
-                    new PrintWriter(socket.getOutputStream(), true);
-             in = new BufferedReader(
-                    new InputStreamReader(socket.getInputStream()));
-            out.println("connected to bank!");
-            out.println("enter client id");
-        }catch (IOException e){
-            System.out.println("errr");
-            System.out.println(e);
-            return;
-        }
-        String fromClient;
-        //while connected to bank read in and print to console
-        while(true){
-            try{
-                fromClient = in.readLine();
-                out.println(fromClient);
+        do {
+            outputLine = login.processInput(inputLine);
+            System.out.println("printing out : " + outputLine);
+            out.println(outputLine);
 
-            }catch (IOException e){
-                e.printStackTrace();
-            }return;
-        }
+            if (outputLine.equals("Bye.")) {
+                break;
+            }
+
+            try {
+                inputLine = in.readLine();
+            } catch (IOException e) {
+                inputLine = null;
+            }
+        } while (inputLine != null);
     }
 }

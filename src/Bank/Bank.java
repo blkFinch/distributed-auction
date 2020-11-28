@@ -10,17 +10,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class Bank {
+    //may be deprecated shift a sepreate table in db
     public static Bank active;
     ArrayList<Client> clients; //this will be list of auctionhouses
-
-
     public Bank(){
         clients = new ArrayList<Client>();
     }
 
-    public void addNewClient(InetAddress host, int portnumber){
+    public static void addNewClient(InetAddress host, int portnumber, String name){
         Client newClient = new Client(host, portnumber);
-        clients.add(newClient);
+        newClient.setName(name);
         System.out.println("added a new client at " + newClient.getHost() + " : " + newClient.getPort());
         System.out.println("balance of " + newClient.getBalance());
 
@@ -42,7 +41,7 @@ public class Bank {
         return balance;
     }
 
-    public Client getClient(int id){
+    public static Client getClient(int id){
         Client thisClient = null;
         //lookup client by id
         return thisClient;
