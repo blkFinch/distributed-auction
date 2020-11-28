@@ -1,5 +1,7 @@
 package Bank;
 
+import Database.TaskRunner;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,7 +13,9 @@ public class BankServer {
     public static Bank activeBank;
 
     public static void main(String[] args) throws IOException {
-        activeBank = new Bank(); //TODO: make bank static???
+        TaskRunner runner = new TaskRunner();
+        runner.start();
+        activeBank = new Bank();
 
         if (args.length != 1) {
             System.err.println(
@@ -30,7 +34,7 @@ public class BankServer {
             try {
                 Socket clientSocket = serverSocket.accept();
                 //create new thread for each new client
-                BankThread bt = new BankThread(clientSocket);
+                BankThread bt = new BankThread(clientSocket, runner);
                 bt.start();
             }catch (Exception e){
                 e.printStackTrace();
