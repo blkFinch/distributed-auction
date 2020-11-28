@@ -13,7 +13,6 @@ public class auctionHouseTest {
         int portNumber = Integer.parseInt(args[0]);
 
         try(
-                ServerSocket serverSocket = new ServerSocket(portNumber);
                 //Hardcoded to my settings for now
                 //TODO: create interface to select bank connection...
                 Socket bankSocket = new Socket("localhost",6000);
@@ -23,19 +22,28 @@ public class auctionHouseTest {
                 PrintWriter out =
                         new PrintWriter(bankSocket.getOutputStream(), true);
             ){
-                System.out.println("running on port: " + portNumber);
-                String fromServer;
 
+            System.out.println("running on port: " + portNumber);
+            BufferedReader stdIn =
+                    new BufferedReader(new InputStreamReader(System.in));
+            String fromServer;
+            String fromUser;
 
-            while ((fromServer = in.readLine()) != null) {
+            fromServer = in.readLine();
+            while (fromServer != null) {
                 System.out.println("Server: " + fromServer);
+
+                if (fromServer.equals("Bye.")) {break;}
+
+                fromUser = stdIn.readLine();
+                if (fromUser != null) {
+                    System.out.println("Client: " + fromUser);
+                    out.println(fromUser);
+                }
+                fromServer = in.readLine();
             }
-                //eventually clients will connect here
-                Socket clientSocket = serverSocket.accept();
 
-                //TODO: create server communication handler
-
-
+            System.out.println("from server null");
         }
     }
 }
