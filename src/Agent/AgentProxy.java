@@ -28,7 +28,7 @@ public class AgentProxy implements Runnable{
         running = true;
     }
 
-    private void bankClient(String host, int port) throws IOException{
+    private void clientHandler(String host, int port) throws IOException{
         socket = new Socket(host, port);
         BufferedReader in = new BufferedReader(new
                 InputStreamReader(socket.getInputStream()));
@@ -36,6 +36,7 @@ public class AgentProxy implements Runnable{
                 InputStreamReader(System.in));
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
         String fromServer;
+        String fromUser;
 
         while(running){
             if(in.ready()){
@@ -47,20 +48,37 @@ public class AgentProxy implements Runnable{
                 }
                 else{ inMessages.add(fromServer); }
             }
+
+            if(keyboard.ready()){
+                if((fromUser=keyboard.readLine()) != null){
+                    System.out.println("Client: " + fromUser);
+                    out.println(fromUser);
+                }
+                else if(outMessages.size() > 0){
+                    for(String mes : outMessages){ out.println(mes); }
+                    outMessages.clear();
+                }
+            }
         }
     }
 
-    private void auctionClient(String host, int port) throws IOException{
-        socket = new Socket(host, port);
+    public synchronized void sendMessage(String message){
+        outMessages.add(message);
     }
 
-    public void sendMessage(String message){ outMessages.add(message); }
+    public synchronized String readMessages(){
+        String messages = "";
+        for(String mes : inMessages){ messages += (mes+"\n"); }
+        inMessages.clear();
+        return messages;
+    }
 
     @Override
     public void run(){
         try{
-            if(proxyType == 0){ bankClient(hostIP, portNum); }
-            else if(proxyType == 1){ auctionClient((hostIP, portNum)); }
+            if(proxyType == 0 || proxyType == 1){
+                clientHandler(hostIP, portNum);
+            }
             else{ System.out.println("Connection failed."); }
         } catch(IOException e){
             System.out.println("Connection failed");
