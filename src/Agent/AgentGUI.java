@@ -12,6 +12,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.stage.Stage;
 
 public class AgentGUI extends Application{
+    private Agent agent;
     private BorderPane chooseAuction;
     private BorderPane placeBid;
 
@@ -31,7 +32,7 @@ public class AgentGUI extends Application{
         placeBid = new BorderPane();
         placeBid.setBackground(new Background(pictureFrame));
 
-        Scene scene = new Scene(placeBid, 612, 403);
+        Scene scene = new Scene(chooseAuction, 612, 403);
         primaryStage.setScene(scene);
         primaryStage.show();
     }

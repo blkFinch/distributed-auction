@@ -54,6 +54,19 @@ public class Agent{
             }
         }
         System.out.println("You are now connected.");
+        String messages;
+        while(true){
+            messages = bankProxy.readMessages();
+            if(!messages.equals("")){
+                System.out.println("Bank: "+messages);
+            }
+            for(AgentProxy a : auctionProxies){
+                messages = a.readMessages();
+                if(!messages.equals("")){
+                    System.out.println("Auction: "+messages);
+                }
+            }
+        }
     }
 }
 
