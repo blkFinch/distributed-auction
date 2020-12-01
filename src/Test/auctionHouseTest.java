@@ -16,6 +16,7 @@ public class auctionHouseTest {
                 //Hardcoded to my settings for now
                 //TODO: create interface to select bank connection...
                 Socket bankSocket = new Socket("localhost",6000);
+
                 //connect to bank IO stream
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(bankSocket.getInputStream()));

@@ -20,18 +20,6 @@ public class Bank {
         clients = new ArrayList<Client>();
     }
 
-    public static void addNewClient(InetAddress host, int portnumber, String name){
-        Client newClient = new Client(host, portnumber);
-        newClient.setName(name);
-        CreateClient create = new CreateClient(newClient);
-        TaskRunner.jobQueue.add(create);
-
-        System.out.println("added a new client at " + newClient.getHost() + " : " + newClient.getPort());
-        System.out.println("balance of " + newClient.getBalance());
-
-
-
-    }
 
     public int getBalance(Client client){
         int balance = 0;

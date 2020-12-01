@@ -27,9 +27,6 @@ public class BankThread extends Thread {
         String inputLine = null;
         String outputLine = "hello";
         LoginProtocol login = new LoginProtocol(socket);
-        //DEBUG testing runner
-        Task print = new PrintToConsole("runner test");
-        runner.jobQueue.offer(print);
 
         do {
             outputLine = login.processInput(inputLine);
