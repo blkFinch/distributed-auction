@@ -1,7 +1,10 @@
 package Bank;
 
+import Database.Tasks.CreateClient;
+
 import java.net.InetAddress;
 import java.net.Socket;
+import java.sql.SQLOutput;
 
 import static Bank.BankServer.activeBank;
 
@@ -24,7 +27,9 @@ public class LoginProtocol {
         switch (state){
             case 0:
                 if(Integer.parseInt(input) == 0){
-                    output="Please enter name";
+                    output="Please create client: " +
+                            "'name:isAuction(y or n):starting balance:open port(0 for null)'";
+                    //ex: fred:n:600:0
                     state = 1;
                     //initialize as new client
 
@@ -35,10 +40,15 @@ public class LoginProtocol {
                 }
                 break;
             case 1:
-                int clientPort = clientSocket.getPort();
-                InetAddress clientHost = clientSocket.getInetAddress();
-                Bank.addNewClient(clientHost, clientPort, input);
-                output = "Hello " + input;
+                String[] clientString = input.split(":");
+
+                Client newClient = createClinetFromString(clientString);
+                if(newClient.save() != null){
+                    output = "save success";
+                }else{
+                    output = "save failed";
+                    state = 3;
+                }
                 break;
             case 3:
                 output = "Please enter ID or enter 0 to create new";
@@ -47,5 +57,17 @@ public class LoginProtocol {
         }
 
         return output;
+    }
+
+    private Client createClinetFromString(String[] clientString) {
+        String clientName = clientString[0];
+        int clientPort = Integer.parseInt(clientString[3]);
+        boolean auction = clientString[1].equals("y");
+        InetAddress clientHost = clientSocket.getInetAddress();
+        Client newClient = new Client(clientHost, clientPort);
+        newClient.setName(clientName);
+        newClient.setAuctionHouse(auction);
+        newClient.setBalance(Integer.parseInt(clientString[2]));
+        return newClient;
     }
 }

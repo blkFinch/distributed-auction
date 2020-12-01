@@ -1,5 +1,8 @@
 package Bank;
 
+import Database.TaskRunner;
+import Database.Tasks.CreateClient;
+
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,6 +30,9 @@ public class Client {
     public int getBalance(){
         return this.balance;
     }
+    public void setBalance(int balance) {
+        this.balance = balance;
+    }
 
     public String getName() {
         return name;
@@ -52,24 +58,9 @@ public class Client {
         this.balance = 0;
     }
 
-    public Client save(Connection conn){
-        String sql = "INSERT INTO clients " +
-                "   (host, port, balance, isAuctionHouse, name) \n" +
-                "   VALUES (?,?,?,?,?);";
-
-        try(PreparedStatement pstmt = conn.prepareStatement(sql)){
-            pstmt.setString(1, String.valueOf(this.host));
-            pstmt.setInt(2, this.portNumber);
-            pstmt.setInt(3, this.balance);
-            //DEBUG: dummy values for now
-            pstmt.setBoolean(4, true);
-            pstmt.setString(5, "my auction house");
-
-            pstmt.execute();
-        }catch (SQLException throwables){
-            throwables.printStackTrace();
-        }
-
+    public Client save(){
+        CreateClient createClient = new CreateClient(this);
+        TaskRunner.jobQueue.offer(createClient);
         return this;
     }
 
