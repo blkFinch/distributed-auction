@@ -10,9 +10,12 @@ public class Agent{
     private static AgentProxy bankProxy;
     private static List<AgentProxy> auctionProxies;
 
-    public void sendBankMessage(String message){
-        bankProxy.sendMessage(message);
-    }
+    /*public Agent(String host, String port, String login){
+        bankProxy = new AgentProxy("bank", host, port);
+        bankProxy.run();
+    }*/
+
+    public void sendBankMessage(String message){ bankProxy.sendMessage(message); }
 
     public void sendAuctionMessage(int ind, String message){
         auctionProxies.get(ind).sendMessage(message);
@@ -45,9 +48,12 @@ public class Agent{
                 input = in.readLine();
                 port = Integer.parseInt(input);
                 if(type.equals("bank")){
-                    bankProxy = new AgentProxy(type, host, port);
+                    bankProxy = new AgentProxy(type, host, ""+port);
+                    bankProxy.run();
                 }
-                else{ auctionProxies.add(new AgentProxy(type, host, port)); }
+                else{
+                    auctionProxies.add(new AgentProxy(type, host, ""+port));
+                }
                 connected = true;
             } catch(Exception e){
                 System.out.println("Connection failed. Try again.");
