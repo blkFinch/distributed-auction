@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.ImagePattern;
 import javafx.stage.Modality;
@@ -65,6 +66,19 @@ public class AgentGUI extends Application{
         loginStage.initOwner(primaryStage);
         loginStage.setAlwaysOnTop(true);
         loginStage.setTitle("Log In");
+        loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            String host = loginIPField.getText();
+            String port = loginPortField.getText();
+            String login = loginNameField.getText() + ":n:"
+                    + loginBalField.getText() + ":0";
+            try{
+                agent = new Agent(host, port, login);
+                loginStage.close();
+            } catch(Exception e){
+                System.out.println("Connection failed. Try again.");
+            }
+        });
+
         loginScene = new Scene(loginVBox, 250, 180);
         loginStage.setScene(loginScene);
         loginStage.show();

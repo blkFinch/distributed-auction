@@ -10,10 +10,11 @@ public class Agent{
     private static AgentProxy bankProxy;
     private static List<AgentProxy> auctionProxies;
 
-    /*public Agent(String host, String port, String login){
+    public Agent(String host, String port, String login) throws Exception{
         bankProxy = new AgentProxy("bank", host, port);
+        bankProxy.setLogin(login);
         bankProxy.run();
-    }*/
+    }
 
     public void sendBankMessage(String message){ bankProxy.sendMessage(message); }
 

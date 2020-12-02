@@ -12,6 +12,7 @@ public class AgentProxy implements Runnable{
     private int proxyType;
     private String hostIP;
     private int portNum;
+    private String login;
     private Socket socket;
     private List<String> inMessages;
     private List<String> outMessages;
@@ -50,6 +51,14 @@ public class AgentProxy implements Runnable{
                     running = false;
                     break;
                 }
+                else if(fromServer.contains("Please enter ID")){
+                    System.out.println("Client: 0");
+                    out.println("0");
+                }
+                else if(fromServer.contains("Please create client")){
+                    System.out.println("Client: " + login);
+                    out.println(login);
+                }
                 else{ inMessages.add(fromServer); }
             }
 
@@ -65,6 +74,8 @@ public class AgentProxy implements Runnable{
             }
         }
     }
+
+    public void setLogin(String log){ login = log; }
 
     public synchronized void sendMessage(String message){
         outMessages.add(message);
