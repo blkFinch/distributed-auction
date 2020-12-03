@@ -1,11 +1,6 @@
 package Bank;
 
-import Database.TaskRunner;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -13,9 +8,6 @@ public class BankServer {
     public static Bank activeBank;
 
     public static void main(String[] args) throws IOException {
-        TaskRunner runner = new TaskRunner();
-        runner.start();
-        activeBank = new Bank();
 
         if (args.length != 1) {
             System.err.println(
@@ -34,7 +26,7 @@ public class BankServer {
             try {
                 Socket clientSocket = serverSocket.accept();
                 //create new thread for each new client
-                BankThread bt = new BankThread(clientSocket, runner);
+                BankThread bt = new BankThread(clientSocket);
                 bt.start();
             }catch (Exception e){
                 e.printStackTrace();
