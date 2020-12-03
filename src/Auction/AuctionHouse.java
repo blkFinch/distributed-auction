@@ -14,7 +14,7 @@ public class AuctionHouse {
     private ObjectInputStream ioIn;
     private ObjectOutputStream ioOut;
     private static ArrayList<Item> auctionList = new ArrayList<>();
-    private final List<Agent> agentsList = new LinkedList<>();
+    private final List<String> agentsList = new LinkedList<>();
     private boolean running = true;
     private double balance = 0.0;
 
@@ -108,18 +108,6 @@ public class AuctionHouse {
         private void processMessage(String message) {
             //need parse indicator
             switch(message){
-                case HOLD:
-                    hold(message);
-                    break;
-                case RELEASEHOLD:
-                    released(message);
-                    break;
-                case REGISTER:
-                    registered(message);
-                    break;
-                case GETAVAILABLE:
-                    bankBalance(message);
-                    break;
             }
         }
 
@@ -133,7 +121,7 @@ public class AuctionHouse {
          * @param message double
          */
         private void bankBalance(String message) {
-            balance = message.getBalance();
+            //balance = message.getBalance();
         }
 
         private void released(String message) {
@@ -181,13 +169,13 @@ public class AuctionHouse {
         @Override
         public void run() {
             do{
-                try{
+                /*try{
                     //get input from agents
                     process(message);
-                }catch (IOException|ClassNotFoundException e){
+                } catch (IOException|ClassNotFoundException e) {
                     agentShutdown(false);
                     message = null;
-                }
+                }*/
             }while(message != null && running);
         }
 
@@ -205,7 +193,7 @@ public class AuctionHouse {
          */
         private void process(String message) {
             //some parsing
-            switch(message){
+            /*switch(message){
                 case BID:
                     bid(message);
                     break;
@@ -218,7 +206,7 @@ public class AuctionHouse {
                 case DEREGISTER:
                     agentShutdown(false);
                     break;
-            }
+            }*/
         }
 
         /**
@@ -286,7 +274,7 @@ public class AuctionHouse {
         /**
          * agentOut writes/sends message to agentSocket.
          */
-        private void agentOut(String message)
+        private void agentOut(String message) {
 
         }
     }
@@ -294,7 +282,7 @@ public class AuctionHouse {
     private class AuctionServer implements Runnable {
         @Override
         public void run() {
-            try{
+            /*try{
                 while(running){
                     Socket clientSocket = server.accept();
                     Agent newAgent = new Agent(clientSocket);
@@ -302,7 +290,7 @@ public class AuctionHouse {
                 }
             }catch (IOException e){
                 running = false;
-            }
+            }*/
         }
     }
 
@@ -310,15 +298,14 @@ public class AuctionHouse {
      * getBalance returns ballance
      * @return balance double
      */
-    public double getBalance(){
-        return balance;
+    public void getBalance() {
+        //return balance;
     }
 
     /**
      * getAuctionId returns auctionId
-     * @return auctionId double
      */
-    String getAuctionId(){
-        return auctionId;
+    void getAuctionId() {
+        //return auctionId;
     }
 }
