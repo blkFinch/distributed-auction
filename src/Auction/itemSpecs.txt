@@ -1,0 +1,30 @@
+Porsche 911:A two-door, 2+2 high performance rear-engined sports car.:3000
+Ford Mustang:The namesake of the "pony car" automobile segment.:3500
+Chevy Corvette:A two-door, two-passenger sports car manufactured by Chevrolet.:4000
+Chevy Camaro:A mid-size American automobile from Chevrolet, classified as a pony car.:3500
+Mazda MX-5 Miata:A lightweight two-passenger roadster manufactured by Mazda.:2000
+Dodge Challenger:A pony car built by Dodge available in hardtop and convertible body styles.:2500
+BMW Z4:A roadster manufactured by BMW. Z is for zukunft, German for future.:4000
+Nissan GT-R:A high-performance sports car and grand tourer produced by Nissan.:3700
+Toyota Supra:A famous tuner sports car and grand tourer manufactured by Toyota.:4200
+Jaguar F-TYPE:A two-door, two-seater grand tourer manufactured by Jaguar Land Rover.:5000
+Acura NSX:A two-seat, mid-engine coupe sports car manufactured by Honda.:5200
+Audi TT:A 2-door production sports car made by Audi.:3000
+Toyota 86:A 2+2 sports car jointly developed by Toyota and Subaru, manufactured in Gunma:5000
+Audi R8:A mid-engine, 2-seater sports car with Audi's trademark all-wheel drive system.:5200
+Porsche 718:A 2-door, 2-seater, mid-engined roadster from Porsche.:4500
+Lamborghini Aventador:A mid-engine car produced by Lamborghini.:6000
+Subaru WRX:A compact car manufactured by Subaru since 1992. with the new EJ engine.:3600
+McLaren 720S:A sports car manufactured by McLaren Automotive. The second in the McLaren Super Series:5200
+VW Golf GTI:A compact car produced by the German automotive manufacturer Volkswagen.:3600
+Mercedes-Benz GT:A grand tourer produced by German automobile manufacturer Mercedes-AMG.:3300
+BMW M2:A high-performance version BMW 2 Series developed by BMW's motorsport division.:4200
+BMW M4:A high-performance version BMW 4 Series developed by BMW's motorsport division.:5200
+Honda Civic Type R:The high-performance version of the Civic compact car made by Honda.:3800
+Lexus LC:A sleek grand tourer manufactured by Lexus, Toyota's luxury division.:2600
+Alfa Romeo 4C Spider:A mid-engined, lightweight, rear-wheel drive sports car.:3300
+FIAT 124 Spider:A front-engine, rear-drive, two-passenger roadster manufactured by Mazda for FCA.:4300
+Lamborghini Huracan:A V10 sports car from Italian automotive manufacturer Lamborghini.:5900
+BMW M5:A high-performance version BMW 5 Series developed by BMW's motorsport division.:6000
+Maserati GranTurismo:a 2-door V8 grand tourer produced by Maserati from 2007 to 2019.:5800
+BMW i8:A plug-in hybrid sports car developed by BMW, part of BMW's i sub-brand.:2300
