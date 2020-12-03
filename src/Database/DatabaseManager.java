@@ -9,7 +9,8 @@ public class DatabaseManager {
     //Where the database is saved locally
     public static final String DB_URL = "jdbc:sqlite:src/Database/bankDB.db";
     private static Connection conn = null;
-    public static Connection getConn() throws Exception {
+
+    public static synchronized Connection getConn() throws Exception {
         if(conn == null){
             Class.forName("org.sqlite.JDBC");
             conn = DriverManager.getConnection(DB_URL);

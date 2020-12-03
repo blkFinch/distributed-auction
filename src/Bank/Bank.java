@@ -28,15 +28,8 @@ public class Bank {
     }
 
     public synchronized Client getClient(int id){
-        Client thisClient = null;
-        //TODO: extract
-        try {
-            Statement statement = DatabaseManager.getConn().createStatement();
-            ResultSet rs = statement.executeQuery("SELECT * FROM clients WHERE id=" + id);
-            System.out.println(rs.getString("name"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Client thisClient = Client.read(id);
+
 
         return thisClient;
     }

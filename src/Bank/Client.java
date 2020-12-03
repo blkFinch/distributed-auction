@@ -1,11 +1,16 @@
 package Bank;
 
+import Database.DatabaseManager;
+
 import java.net.InetAddress;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 /** Model class for the Client table in the database
  * -g. hutchison
  */
 public class Client {
+    private final int ID;
     private int portNumber;
     private InetAddress host;
     private int balance;
@@ -46,10 +51,49 @@ public class Client {
 
     //</editor-fold>
 
-    public Client(InetAddress host, int port){
-        this.portNumber = port;
+    public Client(int id){
+        this.ID = id;
+    }
+
+    public Client(int id, int portNumber, InetAddress host,
+                  int balance, String name, boolean isAuctionHouse){
+        this.ID = id;
+        this.portNumber = portNumber;
         this.host = host;
-        this.balance = 0;
+        this.balance = balance;
+        this.name = name;
+        this.isAuctionHouse = isAuctionHouse;
+    }
+
+    public static Client create(){
+        return null;
+    }
+
+    public static Client read(int id){
+        //TODO: extract
+        try {
+            Statement statement = DatabaseManager.getConn().createStatement();
+            ResultSet rs = statement.executeQuery("SELECT * FROM clients WHERE id=" + id);
+            Client client = new ClientBuilder()
+                    .setId(id)
+                    .setName(rs.getString("name"))
+                    .setBalance(rs.getInt("balance"))
+                    .setAuctionHouse(rs.getBoolean("isAuctionHouse"))
+                    .build();
+            return client;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static Client save(){
+        return null;
+    }
+
+    public static Client destroy(){
+        return null;
     }
 
 }
