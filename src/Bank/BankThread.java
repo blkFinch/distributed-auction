@@ -1,24 +1,15 @@
 package Bank;
 
-import Database.PrintToConsole;
-import Database.Task;
-import Database.TaskRunner;
-
 import java.io.*;
-import java.net.InetAddress;
 import java.net.Socket;
-
-import static Bank.BankServer.activeBank; //TODO: remove after bank DB is set up
 
 public class BankThread extends Thread {
     protected Socket socket;
-    private TaskRunner runner;
     private PrintWriter out = null;
     private BufferedReader in = null;
 
-    public BankThread(Socket clientSocket, TaskRunner runner) throws IOException {
+    public BankThread(Socket clientSocket) throws IOException {
         this.socket = clientSocket;
-        this.runner = runner;
         out = new PrintWriter(socket.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }

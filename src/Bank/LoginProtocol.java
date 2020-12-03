@@ -35,7 +35,7 @@ public class LoginProtocol {
 
                 }
                 else{
-                    Client client = Bank.getClient(Integer.parseInt(input));
+                    Client client = Bank.getActive().getClient(Integer.parseInt(input));
                     output = "hello "+ client.getName();
                 }
                 break;
@@ -43,7 +43,7 @@ public class LoginProtocol {
                 String[] clientString = input.split(":");
 
                 Client newClient = createClinetFromString(clientString);
-                if(newClient.save() != null){
+                if(Bank.getActive().createClient(newClient) != null){
                     output = "save success";
                 }else{
                     output = "save failed";
