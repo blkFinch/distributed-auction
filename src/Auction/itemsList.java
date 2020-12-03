@@ -20,22 +20,22 @@ public class itemsList {
      * from a file.
      */
     public static void createItemSpecsList() {
-        try{
+        try {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             InputStream is = loader.getResourceAsStream("itemSpecs.txt");
             assert is != null;
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             String specsString;
-            while((specsString = br.readLine()) != null){
+            while((specsString = br.readLine()) != null) {
                 ItemSpecs specs = new ItemSpecs();
                 String[] companies = specsString.split(":");
                 specs.name = companies[0];
                 specs.description = companies[1];
-                specs.minimumBid = companies[2];
+                specs.minimumBid = Double.parseDouble(companies[2]);
                 //maybe add ID?
                 itemsList.add(specs);
             }
-        }catch(Exception e){
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }
