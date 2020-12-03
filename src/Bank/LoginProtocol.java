@@ -35,15 +35,16 @@ public class LoginProtocol {
 
                 }
                 else{
-                    Client client = Bank.getClient(Integer.parseInt(input));
+                    Client client = Bank.getActive().getClient(Integer.parseInt(input));
                     output = "hello "+ client.getName();
                 }
                 break;
             case 1:
                 String[] clientString = input.split(":");
 
-                Client newClient = createClinetFromString(clientString);
-                if(newClient.save() != null){
+                Client newClient = createClientFromString(clientString);
+
+                if(Bank.getActive().createClient(newClient) != null){
                     output = "save success";
                 }else{
                     output = "save failed";
@@ -59,7 +60,7 @@ public class LoginProtocol {
         return output;
     }
 
-    private Client createClinetFromString(String[] clientString) {
+    private Client createClientFromString(String[] clientString) {
         String clientName = clientString[0];
         int clientPort = Integer.parseInt(clientString[3]);
         boolean auction = clientString[1].equals("y");
