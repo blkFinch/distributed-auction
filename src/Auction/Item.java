@@ -2,25 +2,26 @@ package Auction;
 
 
 public class Item {
-    private String auctionID;
-    private String name;
-    private String description;
-    private double minimumBid;
-    private double currentBid;
-    private String bidderId;
-    private long remainingTime;
-    private long bidTime;
-    private String itemID;
+    private static String auctionID;
+    private static String name;
+    private static String description;
+    private static double minimumBid;
+    private static double currentBid;
+    private static String bidderId;
+    private static long remainingTime;
+    private static long bidTime;
+    private static String itemID;
 
-    public void Item(String name, double value, String auctionID) {
-        this.name = name;
-        this.minimumBid = value;
-        this.auctionID = auctionID;
-        this.currentBid = this.minimumBid;
-        bidderId = null;
-        remainingTime = 30; //30 until bid is final
-        itemID = String.valueOf(Math.random()*1000);
-        bidTime = System.currentTimeMillis();
+    public Item(String nameSet, String descriptionSet, double value, String auctionId) {
+        description = descriptionSet;
+        name        = nameSet;
+        minimumBid  = value;
+        auctionID   = auctionId;
+        currentBid  = minimumBid;
+        bidderId         = null;
+        remainingTime    = 30; //30 seconds until bid is final
+        itemID           = String.valueOf(Math.random()*1000) + String.valueOf(System.currentTimeMillis());
+        bidTime          = System.currentTimeMillis();
     }
 
     /**

@@ -9,8 +9,8 @@ import java.util.Random;
 class ItemSpecs {
     String name;
     String description;
-    String minimumBid;
-};
+    double minimumBid;
+}
 
 public class itemsList {
     protected static ArrayList<ItemSpecs> itemsList;
@@ -19,7 +19,7 @@ public class itemsList {
      * createItemSpecsList reads a list of names, descriptions and minimum bids
      * from a file.
      */
-    public void createItemSpecsList() {
+    public static void createItemSpecsList() {
         try{
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             InputStream is = loader.getResourceAsStream("itemSpecs.txt");
@@ -32,6 +32,7 @@ public class itemsList {
                 specs.name = companies[0];
                 specs.description = companies[1];
                 specs.minimumBid = companies[2];
+                //maybe add ID?
                 itemsList.add(specs);
             }
         }catch(Exception e){
@@ -43,7 +44,7 @@ public class itemsList {
      * getRandomElement
      * @return "" ItemSpecs
      */
-    public ItemSpecs getRandomElement() {
+    public static ItemSpecs getRandomElement() {
         Random random = new Random();
         int size = itemsList.size();
         ItemSpecs itemSpec = itemsList.get(random.nextInt(size));
