@@ -6,6 +6,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -23,6 +24,7 @@ public class AgentGUI extends Application{
     private Agent agent;
     private BorderPane chooseAuction;
     private BorderPane placeBid;
+    private ScrollPane messageLog;
     private Button checkBalance;
     private VBox placeBidButtons;
     private boolean connected;
@@ -50,14 +52,18 @@ public class AgentGUI extends Application{
         chooseAuction.setTop(pickAuctionLabel);
         BorderPane.setAlignment(pickAuctionLabel, Pos.CENTER);
 
+        messageLog = new ScrollPane();
+        messageLog.setPrefViewportWidth(180);
+        chooseAuction.setRight(messageLog);
+
         checkBalance = new Button("Check Balance");
         checkBalance.setFont(new Font(15));
         chooseAuction.setLeft(checkBalance);
 
         TextField depositFunds = new TextField();
-        depositFunds.setFont(new Font(20));
+        depositFunds.setFont(new Font(18));
         Button deposit = new Button("Deposit");
-        deposit.setFont(new Font(20));
+        deposit.setFont(new Font(18));
         HBox chooseAuctionBox = new HBox(10, depositFunds, deposit);
         chooseAuctionBox.setAlignment(Pos.CENTER);
         chooseAuction.setBottom(chooseAuctionBox);
@@ -136,7 +142,7 @@ public class AgentGUI extends Application{
         loginStage.setScene(loginScene);
         loginStage.show();
 
-        scene = new Scene(chooseAuction, 612, 403);
+        scene = new Scene(chooseAuction, 762, 553);
         primaryStage.setScene(scene);
         primaryStage.show();
     }
