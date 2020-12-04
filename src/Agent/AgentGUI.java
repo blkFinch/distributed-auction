@@ -117,7 +117,7 @@ public class AgentGUI extends Application{
         TextField loginPortField = new TextField();
         loginPortBox.getChildren().addAll(loginPortLabel, loginPortField);
         loginPortBox.setAlignment(Pos.CENTER);
-        Button loginButton = new Button("Log In");
+        Button loginButton = new Button("Create Account");
         loginVBox.getChildren().addAll(loginNameBox, loginBalBox, loginIPBox,
                 loginPortBox, loginButton);
         loginVBox.setAlignment(Pos.CENTER);
@@ -126,13 +126,15 @@ public class AgentGUI extends Application{
         loginStage.setAlwaysOnTop(true);
         loginStage.setTitle("Log In");
         loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            String user = loginNameField.getText();
             String host = loginIPField.getText();
             String port = loginPortField.getText();
-            String login = loginNameField.getText() + ":n:"
+            String login = user + ":n:"
                     + loginBalField.getText() + ":0";
             try{
-                agent = new Agent(host, port, login);
+                agent = new Agent(user, host, port, login);
                 loginStage.close();
+                agent.runBank();
             } catch(Exception e){
                 System.out.println("Connection failed. Try again.");
             }

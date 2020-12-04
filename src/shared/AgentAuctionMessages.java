@@ -72,7 +72,7 @@ public class AgentAuctionMessages {
          * @return builder
          */
         public Builder itemId(int itemID) {
-            this.itemId = itemId;
+            this.itemId = itemID;
             return this;
         }
 

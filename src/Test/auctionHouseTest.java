@@ -11,8 +11,9 @@ public class auctionHouseTest {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         int portNumber = Integer.parseInt(args[0]);
         Socket bankSocket = new Socket("localhost",6000);
-//        ObjectInputStream in = new ObjectInputStream(bankSocket.getInputStream());
         ObjectOutputStream out = new ObjectOutputStream(bankSocket.getOutputStream());
+        out.flush();
+        ObjectInputStream in = new ObjectInputStream(bankSocket.getInputStream());
 
         System.out.println("running on port: " + portNumber);
 
@@ -34,13 +35,13 @@ public class auctionHouseTest {
         //Send request to Bank
         out.writeObject(newUserRequest);
 
-//        while(true){
-//            Message messageIn = (Message) in.readObject();
-//
-//            if(messageIn.getResponse() == Message.Response.SUCCESS){
-//                System.out.println("SUCCESS!");
-//            }
-//        }
+        while(true){
+            Message messageIn = (Message) in.readObject();
+
+            if(messageIn.getResponse() == Message.Response.SUCCESS){
+                System.out.println("SUCCESS!");
+            }
+        }
 
     }
 }

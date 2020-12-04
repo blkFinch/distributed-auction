@@ -1,5 +1,7 @@
 package Agent;
 
+import shared.Message;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,26 +9,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Agent{
+    private String username;
     private static AgentProxy bankProxy;
     private static List<AgentProxy> auctionProxies;
     private List<String> auctionNames;
 
-    public Agent(String host, String port, String login) throws Exception{
+    public Agent(String user, String host, String port, String login) throws Exception{
+        username = user;
         auctionNames = new ArrayList<>();
-        bankProxy = new AgentProxy("bank", host, port);
+        bankProxy = new AgentProxy(user,"bank", host, port);
         bankProxy.setLogin(login);
-        bankProxy.run();
+        //bankProxy.run();
     }
 
-    public void sendBankMessage(String message){ bankProxy.sendMessage(message); }
+    public void runBank(){ bankProxy.run(); }
 
-    public void sendAuctionMessage(int ind, String message){
+    public void sendBankMessage(Message message){ bankProxy.sendMessage(message); }
+
+    public void sendAuctionMessage(int ind, Message message){
         auctionProxies.get(ind).sendMessage(message);
     }
 
     public List<String> getAuctionNames(){ return auctionNames; }
 
-    public static void main(String[] args){
+    /*public static void main(String[] args){
         BufferedReader in=new BufferedReader(new InputStreamReader(System.in));
         String input;
         String type;
@@ -53,11 +59,11 @@ public class Agent{
                 input = in.readLine();
                 port = Integer.parseInt(input);
                 if(type.equals("bank")){
-                    bankProxy = new AgentProxy(type, host, ""+port);
+                    bankProxy = new AgentProxy(username, type, host, ""+port);
                     bankProxy.run();
                 }
                 else{
-                    auctionProxies.add(new AgentProxy(type, host, ""+port));
+                    auctionProxies.add(new AgentProxy(username, type, host, ""+port));
                 }
                 connected = true;
             } catch(Exception e){
@@ -78,6 +84,6 @@ public class Agent{
                 }
             }
         }
-    }
+    } */
 }
 

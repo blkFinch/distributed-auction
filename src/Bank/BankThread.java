@@ -13,40 +13,42 @@ public class BankThread extends Thread {
 
     public BankThread(Socket clientSocket) throws IOException {
         this.socket = clientSocket;
-        objIn = new ObjectInputStream(socket.getInputStream());
         objOut = new ObjectOutputStream(socket.getOutputStream());
+        objOut.flush();
+        objIn = new ObjectInputStream(socket.getInputStream());
     }
 
     public void run() {
         System.out.println("running new bank thread");
         try {
             Message message = readMessage();
-            if(message == null){
+            if (message == null) {
                 System.out.println("null message");
             }
             Message.Command command = message.getCommand();
-            switch (command){
+            switch (command) {
                 case LOGIN:
                     Client user = Bank.getActive().getClient(message.getSenderId());
-                   if( user != null){
-                       System.out.println("lookupsuccess");
-                       Bank.getActive().clients.add(user);
-                   }
-                   break;
+                    if (user != null) {
+                        System.out.println("lookupsuccess");
+                        Bank.getActive().clients.add(user);
+                    }
+                    break;
 
                 case OPENACCOUNT:
                     Client newClient = new ClientBuilder()
-                                            .setName(message.getAccountName())
-                                            .setHost(socket.getInetAddress())
-                                            .setBalance(0) //TODO: table needs to be double
-                                            .setAuctionHouse(false)
-                                            .build();
+                            .setName(message.getAccountName())
+                            .setHost(socket.getInetAddress())
+                            .setBalance(0) //TODO: table needs to be double
+                            .setAuctionHouse(false)
+                            .build();
                     Bank.getActive().clients.add(newClient);
                     Bank.getActive().createClient(newClient);
                     break;
 
                 case GETHOUSES:
                     Message res = new Message.Builder().houses(Bank.getActive().getHouses()).nullId();
+                    System.out.println("sending auction houses");
                     objOut.writeObject(res);
                     break;
 
@@ -58,7 +60,6 @@ public class BankThread extends Thread {
                             .setAuctionHouse(false)
                             .build();
             }
-
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {

@@ -1,24 +1,25 @@
 package Agent;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import shared.Message;
+
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AgentProxy implements Runnable{
+    private String username;
     private int proxyType;
     private String hostIP;
     private int portNum;
     private String login;
     private Socket socket;
-    private List<String> inMessages;
-    private List<String> outMessages;
+    private List<Message> inMessages;
+    private ObjectOutputStream out;
     private boolean running;
 
-    public AgentProxy(String type, String host, String port) throws IOException{
+    public AgentProxy(String user, String type, String host, String port) throws IOException{
+        username = user;
         if(type.equals("bank")){ proxyType = 0; }
         else if(type.equals("auction")){ proxyType = 1; }
         else{ proxyType = -1; }
@@ -29,61 +30,46 @@ public class AgentProxy implements Runnable{
             proxyType = -1;
         }
         inMessages = new ArrayList<>();
-        outMessages = new ArrayList<>();
         running = true;
     }
 
-    private void clientHandler(String host, int port) throws IOException{
+    private void clientHandler(String host, int port) throws Exception{
         socket = new Socket(host, port);
-        BufferedReader in = new BufferedReader(new
-                InputStreamReader(socket.getInputStream()));
-        BufferedReader keyboard = new BufferedReader(new
-                InputStreamReader(System.in));
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        String fromServer;
-        String fromUser;
+        out = new ObjectOutputStream(socket.getOutputStream());
+        out.flush();
+        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+        Message fromServer;
+        Message newUserRequest = new Message.Builder()
+                .command(Message.Command.OPENACCOUNT)
+                .accountName(username)
+                .nullId();
+        Message getHouses = new Message.Builder()
+                .command(Message.Command.GETHOUSES)
+                .nullId();
 
-        while(running){
-            if(in.ready()){
-                fromServer = in.readLine();
-                System.out.println("Bank: " + fromServer);
-                if(fromServer.equals("Bye.")){
-                    running = false;
-                    break;
-                }
-                else if(fromServer.contains("Please enter ID")){
-                    System.out.println("Client: 0");
-                    out.println("0");
-                }
-                else if(fromServer.contains("Please create client")){
-                    System.out.println("Client: " + login);
-                    out.println(login);
-                }
-                else{ inMessages.add(fromServer); }
-            }
+        out.writeObject(newUserRequest);
+        out.writeObject(getHouses);
 
-            if(keyboard.ready()){
-                if((fromUser=keyboard.readLine()) != null){
-                    System.out.println("Client: " + fromUser);
-                    out.println(fromUser);
-                }
-                else if(outMessages.size() > 0){
-                    for(String mes : outMessages){ out.println(mes); }
-                    outMessages.clear();
-                }
-            }
-        }
+        //while(running){
+            fromServer = (Message)in.readObject();
+            System.out.println("Bank: " + fromServer.toString());
+            inMessages.add(fromServer);
+        //}
     }
 
     public void setLogin(String log){ login = log; }
 
-    public synchronized void sendMessage(String message){
-        outMessages.add(message);
+    public synchronized void sendMessage(Message message){
+        try {
+            out.writeObject(message);
+        } catch(IOException e){
+            System.out.println("Message failed to send");
+        }
     }
 
     public synchronized String readMessages(){
         String messages = "";
-        for(String mes : inMessages){ messages += (mes+"\n"); }
+        for(Message mes : inMessages){ messages += (mes+"\n"); }
         inMessages.clear();
         return messages;
     }
@@ -95,7 +81,7 @@ public class AgentProxy implements Runnable{
                 clientHandler(hostIP, portNum);
             }
             else{ System.out.println("Connection failed."); }
-        } catch(IOException e){
+        } catch(Exception e){
             System.out.println("Connection failed");
         } finally{
             try{ socket.close(); }
