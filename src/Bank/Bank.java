@@ -27,12 +27,12 @@ public class Bank {
         return balance;
     }
 
-    public Client getClient(int id){
+
+    //TODO: error handling
+    public synchronized Client getClient(int id){
         Client thisClient = null;
-        //TODO: refactor
         try {
-            Statement statement = DatabaseManager.getConn().createStatement();
-            ResultSet rs = statement.executeQuery("SELECT * FROM clients WHERE id=" + id);
+            thisClient = Client.read(id);
         } catch (Exception e) {
             e.printStackTrace();
         }

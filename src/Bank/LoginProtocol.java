@@ -62,13 +62,17 @@ public class LoginProtocol {
 
     private Client createClientFromString(String[] clientString) {
         String clientName = clientString[0];
+        int balance = Integer.parseInt(clientString[2]);
         int clientPort = Integer.parseInt(clientString[3]);
         boolean auction = clientString[1].equals("y");
         InetAddress clientHost = clientSocket.getInetAddress();
-        Client newClient = new Client(clientHost, clientPort);
-        newClient.setName(clientName);
-        newClient.setAuctionHouse(auction);
-        newClient.setBalance(Integer.parseInt(clientString[2]));
+
+        Client newClient = new ClientBuilder()
+                                .setName(clientName)
+                                .setAuctionHouse(auction)
+                                .setBalance(balance)
+                                .setPortNumber(clientPort)
+                                .setHost(clientHost).build();
         return newClient;
     }
 }
