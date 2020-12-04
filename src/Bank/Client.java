@@ -5,6 +5,7 @@ import Database.DatabaseManager;
 import java.net.InetAddress;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 /** Model class for the Client table in the database
@@ -66,10 +67,6 @@ public class Client {
         this.isAuctionHouse = isAuctionHouse;
     }
 
-    public static Client create(){
-        return null;
-    }
-
     public static Client read(int id) throws Exception {
         Statement statement = DatabaseManager.getConn().createStatement();
         ResultSet rs = statement.executeQuery("SELECT * FROM clients WHERE id=" + id);
@@ -82,7 +79,27 @@ public class Client {
         return client;
     }
 
-   //TODO add create
+   public synchronized Client create(){
+       int ah = this.isAuctionHouse ? 1 : 0;
+       String sql = "INSERT INTO clients " +
+               "   ( port, balance, isAuctionHouse, name) \n" +
+               "   VALUES (" +
+               this.portNumber + ", " +
+               this.balance + ", " +
+                ah + ", " +
+               "'"+ this.name + "'" +
+               ");";
+
+       try {
+           Statement statement = DatabaseManager.getConn().createStatement();
+           statement.execute(sql);
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+
+
+       return this;
+   }
 
     public Client save() throws Exception {
         String sql = "UPDATE clients SET " +

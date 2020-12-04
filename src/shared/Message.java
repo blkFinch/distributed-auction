@@ -1,5 +1,7 @@
 package shared;
 
+import Bank.Client;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -16,6 +18,7 @@ public class Message implements Serializable {
     private final String               accountName;
     private final String []            arguments;
     private final List<ConnectionReqs> connectionReqs;
+    private final List<Client>          houses;
     private final Response             response;
 
     /**
@@ -29,6 +32,7 @@ public class Message implements Serializable {
         private String               accountName     = null;
         private String []            arguments       = null;
         private List<ConnectionReqs> connectionReqs = null;
+        private List<Client>        houses = null;
         private Response             response       = null;
 
         /**
@@ -96,6 +100,11 @@ public class Message implements Serializable {
             return this;
         }
 
+        public Builder houses(List<Client> houses){
+            this.houses = houses;
+            return this;
+        }
+
         /**
          * senderId sets the message's senderId and return a Message object.
          *
@@ -123,6 +132,7 @@ public class Message implements Serializable {
         this.senderId       = builder.senderId;
         this.accountName    = builder.accountName;
         this.arguments      = builder.arguments;
+        this.houses         = builder.houses;
         this.command        = builder.command;
         this.connectionReqs = builder.connectionReqs;
         this.response       = builder.response;
@@ -228,6 +238,7 @@ public class Message implements Serializable {
     public enum Command {
         LOGIN,
         OPENACCOUNT,
+        GETHOUSES,
         BLOCK,
         DEPOSIT,
         DEREGISTER,

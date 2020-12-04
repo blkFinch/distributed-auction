@@ -23,7 +23,7 @@ public class auctionHouseTest {
 
         Message newUserRequest = new Message.Builder()
                                             .command(Message.Command.OPENACCOUNT)
-                                            .accountName("Jeff")
+                                            .accountName("Gregg")
                                             .nullId();
 
         Message newAhRequest = new Message.Builder()

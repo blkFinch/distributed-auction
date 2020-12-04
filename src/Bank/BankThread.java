@@ -27,8 +27,10 @@ public class BankThread extends Thread {
             Message.Command command = message.getCommand();
             switch (command){
                 case LOGIN:
-                   if( Bank.getActive().getClient(message.getSenderId()) != null){
+                    Client user = Bank.getActive().getClient(message.getSenderId());
+                   if( user != null){
                        System.out.println("lookupsuccess");
+                       Bank.getActive().clients.add(user);
                    }
                    break;
                 case OPENACCOUNT:
@@ -39,7 +41,10 @@ public class BankThread extends Thread {
                                             .setBalance(0) //TODO: table needs to be double
                                             .setAuctionHouse(isAuction)
                                             .build();
-                    //CREATE client
+                    Bank.getActive().clients.add(newClient);
+                case GETHOUSES:
+                    Message res = new Message.Builder().houses(Bank.getActive().clients).nullId();
+                    objOut.writeObject(res);
             }
 
         } catch (IOException e) {
