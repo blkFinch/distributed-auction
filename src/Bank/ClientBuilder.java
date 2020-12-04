@@ -21,7 +21,7 @@ public class ClientBuilder {
     }
 
     public ClientBuilder() {
-
+    //stub
     }
 
     public ClientBuilder setId(int id){

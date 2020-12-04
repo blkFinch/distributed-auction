@@ -27,9 +27,14 @@ public class Bank {
         return balance;
     }
 
+    //TODO: error handling
     public synchronized Client getClient(int id){
-        Client thisClient = Client.read(id);
-
+        Client thisClient = null;
+        try {
+            thisClient = Client.read(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return thisClient;
     }

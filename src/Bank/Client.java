@@ -3,6 +3,7 @@ package Bank;
 import Database.DatabaseManager;
 
 import java.net.InetAddress;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -69,27 +70,30 @@ public class Client {
         return null;
     }
 
-    public static Client read(int id){
-        //TODO: extract
-        try {
-            Statement statement = DatabaseManager.getConn().createStatement();
-            ResultSet rs = statement.executeQuery("SELECT * FROM clients WHERE id=" + id);
-            Client client = new ClientBuilder()
-                    .setId(id)
-                    .setName(rs.getString("name"))
-                    .setBalance(rs.getInt("balance"))
-                    .setAuctionHouse(rs.getBoolean("isAuctionHouse"))
-                    .build();
-            return client;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
+    public static Client read(int id) throws Exception {
+        Statement statement = DatabaseManager.getConn().createStatement();
+        ResultSet rs = statement.executeQuery("SELECT * FROM clients WHERE id=" + id);
+        Client client = new ClientBuilder()
+                .setId(id)
+                .setName(rs.getString("name"))
+                .setBalance(rs.getInt("balance"))
+                .setAuctionHouse(rs.getBoolean("isAuctionHouse"))
+                .build();
+        return client;
     }
 
-    public static Client save(){
-        return null;
+    public Client save() throws Exception {
+        String sql = "UPDATE clients SET " +
+                " name = " + this.name +
+                " balance = ? " + this.balance +
+                " host = ? " + this.host +
+                " port = ? " + this.portNumber +
+                " WHERE id = " + this.ID;
+
+        Statement statement = DatabaseManager.getConn().createStatement();
+        statement.execute(sql);
+
+        return this;
     }
 
     public static Client destroy(){
