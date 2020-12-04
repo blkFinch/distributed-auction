@@ -69,8 +69,15 @@ public class CommandProtocol {
                         .setAuctionHouse(true)
                         .build();
 
-                Bank.getActive().createClient(house);
-                Bank.getActive().registerAuctionHouse(house);
+                int newAHId = Bank.getActive().createClient(house);
+                if( newAHId != 999){
+                    Bank.getActive().registerAuctionHouse(house);
+                    response = new Message.Builder()
+                            .response(Message.Response.SUCCESS)
+                            .accountId(newAHId)
+                            .senderId(000);
+                }
+
 
         }
 

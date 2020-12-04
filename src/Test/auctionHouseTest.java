@@ -1,10 +1,13 @@
 package Test;
 
+import shared.ConnectionReqs;
 import shared.Message;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class auctionHouseTest {
 
@@ -27,12 +30,17 @@ public class auctionHouseTest {
                                             .accountName("Jimmy")
                                             .nullId();
 
+        ConnectionReqs req = new ConnectionReqs("localhost", 9999);
+        List<ConnectionReqs> reqs = new ArrayList<>();
+        reqs.add(req);
+
         Message newAhRequest = new Message.Builder()
                 .command(Message.Command.REGISTERHOUSE)
-                .accountName("AH-300")
+                .accountName("AH-320")
+                .connectionReqs(reqs)
                 .nullId();
         //Send request to Bank
-        out.writeObject(newUserRequest);
+        out.writeObject(newAhRequest);
 
         while(true){
             Message messageIn = (Message) in.readObject();

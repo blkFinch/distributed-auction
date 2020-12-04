@@ -26,10 +26,6 @@ public class BankThread extends Thread {
             Message res = cp.proccessCommand();
             objOut.writeObject(res);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
