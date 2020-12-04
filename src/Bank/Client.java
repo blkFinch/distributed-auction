@@ -16,7 +16,7 @@ public class Client {
     private InetAddress host;
     private int balance;
     private String name;
-    private boolean isAuctionHouse;
+    private boolean isAuctionHouse = false;
 
     //<editor-fold desc="GETTERS SETTERS">
     public int getPort(){
@@ -82,14 +82,16 @@ public class Client {
         return client;
     }
 
+   //TODO add create
+
     public Client save() throws Exception {
         String sql = "UPDATE clients SET " +
                 " name = " + this.name +
-                " balance = ? " + this.balance +
-                " host = ? " + this.host +
-                " port = ? " + this.portNumber +
+                ", balance =  " + this.balance +
+//                ", host =  " + this.host.toString() +  TODO: broken??
+                ", port =  " + this.portNumber +
                 " WHERE id = " + this.ID;
-
+        System.out.println(sql);
         Statement statement = DatabaseManager.getConn().createStatement();
         statement.execute(sql);
 

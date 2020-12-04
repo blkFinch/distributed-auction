@@ -13,6 +13,8 @@ public class Message implements Serializable {
     private final Double               balance;
     private final int                  senderId;
     private final int                  accountId;
+    private final String               accountName;
+    private final String []            arguments;
     private final List<ConnectionReqs> connectionReqs;
     private final Response             response;
 
@@ -24,6 +26,8 @@ public class Message implements Serializable {
         private Double               cost           = null;
         private int                  senderId       = -1;
         private int                  accountId      = -1;
+        private String               accountName     = null;
+        private String []            arguments       = null;
         private List<ConnectionReqs> connectionReqs = null;
         private Response             response       = null;
 
@@ -82,6 +86,16 @@ public class Message implements Serializable {
             return this;
         }
 
+        public Builder accountName(String name) {
+            this.accountName = name;
+            return this;
+        }
+
+        public Builder arguments(String [] args){
+            this.arguments = args;
+            return this;
+        }
+
         /**
          * senderId sets the message's senderId and return a Message object.
          *
@@ -90,6 +104,10 @@ public class Message implements Serializable {
          */
         public Message senderId(int senderId) {
             this.senderId = senderId;
+            return new Message(this);
+        }
+
+        public Message nullId(){
             return new Message(this);
         }
     }
@@ -103,6 +121,8 @@ public class Message implements Serializable {
         this.accountId      = builder.accountId;
         this.balance        = builder.cost;
         this.senderId       = builder.senderId;
+        this.accountName    = builder.accountName;
+        this.arguments      = builder.arguments;
         this.command        = builder.command;
         this.connectionReqs = builder.connectionReqs;
         this.response       = builder.response;
@@ -144,7 +164,11 @@ public class Message implements Serializable {
         return senderId;
     }
 
+    public String[] getArguments() {
+        return arguments;
+    }
 
+    public String getAccountName(){ return accountName; }
 
     /**
      * getCommand returns command
@@ -203,6 +227,7 @@ public class Message implements Serializable {
      */
     public enum Command {
         LOGIN,
+        OPENACCOUNT,
         BLOCK,
         DEPOSIT,
         DEREGISTER,
