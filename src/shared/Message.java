@@ -3,6 +3,10 @@ package shared;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * Message for communicating across sockets. Adapted from
+ * https://github.com/ApolloRez/DistributedAuction/tree/master/src
+ */
 public class Message implements Serializable {
     private static final long          serialVersionUID = -1195974328835714539L;
     private final Command              command;
