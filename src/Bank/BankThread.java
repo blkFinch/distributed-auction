@@ -30,11 +30,23 @@ public class BankThread extends Thread {
                    if( Bank.getActive().getClient(message.getSenderId()) != null){
                        System.out.println("lookupsuccess");
                    }
+                   break;
+                case OPENACCOUNT:
+                    Boolean isAuction = (message.getArguments() != null); //checks for auction arg
+                    Client newClient = new ClientBuilder()
+                                            .setName(message.getAccountName())
+                                            .setHost(socket.getInetAddress())
+                                            .setBalance(0) //TODO: table needs to be double
+                                            .setAuctionHouse(isAuction)
+                                            .build();
+                    //CREATE client
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

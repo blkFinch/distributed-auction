@@ -10,26 +10,35 @@ Ryan Cooper
 This is the main server for the program. It houses the Database and accepts concurrent connections
 
 ### Usage
+Once connected, the bank accepts Messages which can be constructed using the shared Message class
+Messages can be sent using the ObjectOutputStream:
+~~~
+ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+out.writeObject(message);
+~~~
+#### Commands
 <b> Creating a New User </b>
-When you connect to the bank you will be prompted to enter a user id or enter 0
-to create a new user you will then be prompted to enter a string:
+  
+command: OPENACCOUNT   
+arguments: Name (the user name), <i>optional: "auction" "port number"</i>  
+Example:  
+open a new user account
+~~~
+Message openAccountRequest = new Message.Builder()
+                                        .command(Message.Command.OPENACCOUNT)
+                                        .accountName("Daisy")
+                                        .nullId();
+~~~
+
+open a new AuctionHouse account
 
 ~~~
-name:isAuction(y or n):starting balance:open port(0 for null)
+Message newAhRequest = new Message.Builder()
+                .command(Message.Command.OPENACCOUNT)
+                .accountName("AH-100")
+                .arguments(new String[]{"auction","8000"})
+                .nullId();
 ~~~
-
-For example:
-
-~~~
-fred:n:600:0
-~~~
-Will open a new account with Name: Fred and Balance:600
-while:
-
-~~~
-DelewareBank:y:0:8004
-~~~
-Will open an auction house account with the available port 8004
 
 ### Setting up the Database
 add sqlite-jdbc-3.21.0.21.jar to classpath available from intellj package manager 

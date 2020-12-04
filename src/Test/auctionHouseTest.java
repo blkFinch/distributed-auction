@@ -17,11 +17,22 @@ public class auctionHouseTest {
         System.out.println("running on port: " + portNumber);
 
 //            //Build simple request
-        Message loginRequest = new Message.Builder()
-                .command(Message.Command.LOGIN)
-                .senderId(1);
+//        Message loginRequest = new Message.Builder()
+//                .command(Message.Command.LOGIN)
+//                .senderId(1);
+
+        Message newUserRequest = new Message.Builder()
+                                            .command(Message.Command.OPENACCOUNT)
+                                            .accountName("Jeff")
+                                            .nullId();
+
+        Message newAhRequest = new Message.Builder()
+                .command(Message.Command.OPENACCOUNT)
+                .accountName("AH-100")
+                .arguments(new String[]{"auction"})
+                .nullId();
         //Send request to Bank
-        out.writeObject(loginRequest);
+        out.writeObject(newUserRequest);
 
 //        while(true){
 //            Message messageIn = (Message) in.readObject();
