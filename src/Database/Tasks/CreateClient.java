@@ -21,7 +21,7 @@ public class CreateClient extends Task {
         try(PreparedStatement pstmt = DatabaseManager.getConn().prepareStatement(sql)){
             pstmt.setString(1, String.valueOf(client.getHost()));
             pstmt.setInt(2, client.getPort());
-            pstmt.setInt(3, client.getBalance());
+            pstmt.setInt(3, (int)client.getBalance());
             //DEBUG: dummy values for now
             pstmt.setBoolean(4, true);
             pstmt.setString(5, client.getName());
