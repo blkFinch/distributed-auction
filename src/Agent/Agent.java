@@ -9,8 +9,10 @@ import java.util.List;
 public class Agent{
     private static AgentProxy bankProxy;
     private static List<AgentProxy> auctionProxies;
+    private List<String> auctionNames;
 
     public Agent(String host, String port, String login) throws Exception{
+        auctionNames = new ArrayList<>();
         bankProxy = new AgentProxy("bank", host, port);
         bankProxy.setLogin(login);
         bankProxy.run();
@@ -21,6 +23,8 @@ public class Agent{
     public void sendAuctionMessage(int ind, String message){
         auctionProxies.get(ind).sendMessage(message);
     }
+
+    public List<String> getAuctionNames(){ return auctionNames; }
 
     public static void main(String[] args){
         BufferedReader in=new BufferedReader(new InputStreamReader(System.in));

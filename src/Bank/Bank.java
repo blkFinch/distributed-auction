@@ -27,6 +27,7 @@ public class Bank {
         return balance;
     }
 
+
     //TODO: error handling
     public synchronized Client getClient(int id){
         Client thisClient = null;

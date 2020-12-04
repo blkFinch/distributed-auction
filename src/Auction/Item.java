@@ -2,7 +2,7 @@ package Auction;
 
 
 public class Item {
-    private static String auctionID;
+    private static String auctionId;
     private static String name;
     private static String description;
     private static double minimumBid;
@@ -10,17 +10,17 @@ public class Item {
     private static String bidderId;
     private static long remainingTime;
     private static long bidTime;
-    private static String itemID;
+    private static String itemId;
 
     public Item(String nameSet, String descriptionSet, double value, String auctionId) {
         description = descriptionSet;
         name        = nameSet;
         minimumBid  = value;
-        auctionID   = auctionId;
+        Item.auctionId = auctionId;
         currentBid  = minimumBid;
         bidderId         = null;
         remainingTime    = 30; //30 seconds until bid is final
-        itemID           = String.valueOf(Math.random()*1000) + String.valueOf(System.currentTimeMillis());
+        itemId = String.valueOf(Math.random()*1000) + String.valueOf(System.currentTimeMillis());
         bidTime          = System.currentTimeMillis();
     }
 
@@ -87,7 +87,7 @@ public class Item {
      * @return itemID String
      */
     public String getItemID(){
-        return itemID;
+        return itemId;
     }
 
     /**
