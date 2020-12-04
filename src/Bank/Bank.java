@@ -43,11 +43,10 @@ public class Bank {
     }
 
     //Creates new record in Database
-    public synchronized Client createClient(Client client){
+    public synchronized int createClient(Client client){
         CreateClient cc = new CreateClient(client);
         System.out.println("creating client");
-        cc.Execute();
-        return client;
+        return cc.Execute();
     }
 
     //Looks up Client by ID

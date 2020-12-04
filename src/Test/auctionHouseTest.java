@@ -24,13 +24,12 @@ public class auctionHouseTest {
 
         Message newUserRequest = new Message.Builder()
                                             .command(Message.Command.OPENACCOUNT)
-                                            .accountName("Gregg")
+                                            .accountName("Jimmy")
                                             .nullId();
 
         Message newAhRequest = new Message.Builder()
-                .command(Message.Command.OPENACCOUNT)
-                .accountName("AH-100")
-                .arguments(new String[]{"auction"})
+                .command(Message.Command.REGISTERHOUSE)
+                .accountName("AH-300")
                 .nullId();
         //Send request to Bank
         out.writeObject(newUserRequest);
@@ -40,6 +39,7 @@ public class auctionHouseTest {
 
             if(messageIn.getResponse() == Message.Response.SUCCESS){
                 System.out.println("SUCCESS!");
+                System.out.println("user id: " + messageIn.getAccountId());
             }
         }
 

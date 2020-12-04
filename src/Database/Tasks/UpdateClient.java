@@ -14,7 +14,7 @@ public class UpdateClient extends Task {
     }
 
     @Override
-    public void Execute() {
+    public int Execute() {
         String sql = "UPDATE clients SET" +
                 " host = ?, port = ?, balance = ?, isAuctionHouse = ?, name = ? " +
                 " WHERE id = ?;";
@@ -33,5 +33,7 @@ public class UpdateClient extends Task {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        return 1;
     }
 }
