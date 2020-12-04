@@ -22,48 +22,10 @@ public class BankThread extends Thread {
         System.out.println("running new bank thread");
         try {
             Message message = readMessage();
-            if (message == null) {
-                System.out.println("null message");
-            }
-            Message.Command command = message.getCommand();
-            switch (command) {
-                case LOGIN:
-                    Client user = Bank.getActive().getClient(message.getSenderId());
-                    if (user != null) {
-                        System.out.println("lookupsuccess");
-                        Bank.getActive().clients.add(user);
-                    }
-                    break;
+            CommandProtocol cp = new CommandProtocol(socket, message); //TODO:refactor remove need for passing socket
+            Message res = cp.proccessCommand();
+            objOut.writeObject(res);
 
-                case OPENACCOUNT:
-                    Client newClient = new ClientBuilder()
-                            .setName(message.getAccountName())
-                            .setHost(socket.getInetAddress())
-                            .setBalance(0) //TODO: table needs to be double
-                            .setAuctionHouse(false)
-                            .build();
-                    Bank.getActive().clients.add(newClient);
-                    Bank.getActive().createClient(newClient);
-                    break;
-
-                case GETHOUSES:
-                    Message res = new Message.Builder().houses(Bank.getActive().getHouses()).nullId();
-                    System.out.println("sending auction houses");
-                    objOut.writeObject(res);
-                    break;
-
-                case REGISTERHOUSE:
-                    Client house = new ClientBuilder()
-                            .setName(message.getAccountName())
-                            .setHost(socket.getInetAddress())
-                            .setBalance(0) //TODO: table needs to be double
-                            .setAuctionHouse(false)
-                            .build();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }

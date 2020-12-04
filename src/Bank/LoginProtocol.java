@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.sql.SQLOutput;
 
 import static Bank.BankServer.activeBank;
-
+//DEPRECATED
 public class LoginProtocol {
     //STATE
     private static final int LOGIN = 0;
@@ -44,7 +44,7 @@ public class LoginProtocol {
 
                 Client newClient = createClientFromString(clientString);
 
-                if(Bank.getActive().createClient(newClient) != null){
+                if(Bank.getActive().createClient(newClient) != 999){
                     output = "save success";
                 }else{
                     output = "save failed";
