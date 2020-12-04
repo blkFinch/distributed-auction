@@ -4,6 +4,7 @@ import java.sql.*;
 
 import Database.DatabaseManager;
 import Database.Tasks.CreateClient;
+import Database.Tasks.UpdateClient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,14 +25,6 @@ public class Bank {
         return active;
     }
 
-
-    public int getBalance(Client client){
-        int balance = 0;
-        //return balance of client by id.
-        return balance;
-    }
-
-
     //TODO: error handling
     public synchronized Client getClient(int id){
         Client thisClient = null;
@@ -49,11 +42,23 @@ public class Bank {
         return houses;
     }
 
-    //TODO: remove Create client task
+    //Creates new record in Database
     public synchronized Client createClient(Client client){
         CreateClient cc = new CreateClient(client);
-        System.out.println("created task");
+        System.out.println("creating client");
         cc.Execute();
+        return client;
+    }
+
+    //Looks up Client by ID
+    public synchronized  Client lookUpClient(int id) throws Exception {
+        return Client.read(id);
+    }
+
+    public synchronized Client updateClient(Client client){
+        UpdateClient uc = new UpdateClient(client);
+        uc.Execute();
+        System.out.println("Updated client id: " + client.getID());
         return client;
     }
 
@@ -62,22 +67,26 @@ public class Bank {
         return house.getID();
     }
 
-    public void depositInto(Client client, int amount){
-        //lookup client and add funds
+    public synchronized void depositInto(Client client, int amount){
+        client.deposit(amount);
+        updateClient(client);
     }
 
-    public void blockFunds(Client client, int amount){
-        //move funds into blockedFunds column
+    public synchronized void blockFunds(Client client, int amount){
+        client.holdFunds(amount);
     }
 
-    public void releaseFunds(Client client){
-        //releases blocked funds from client
+    public synchronized void releaseFunds(Client client, int amount){
+        client.releaseFunds(amount);
     }
 
-    public int withdrawBlockedFunds(Client client){
-        int withdrawl = 0;
-        //returns blocked funds
-        return withdrawl;
+    public synchronized int withdrawFunds(Client client, int amount){
+        if(client.releaseFunds(amount)){
+            client.withdraw(amount);
+            return amount;
+        }else{
+            return 0;
+        }
     }
 
 }
