@@ -2,6 +2,7 @@ package Bank;
 
 import Database.DatabaseManager;
 
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +12,7 @@ import java.sql.Statement;
 /** Model class for the Client table in the database
  * -g. hutchison
  */
-public class Client {
+public class Client implements Serializable {
     private final int ID;
     private int portNumber;
     private InetAddress host;
