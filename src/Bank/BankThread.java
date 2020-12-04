@@ -33,18 +33,29 @@ public class BankThread extends Thread {
                        Bank.getActive().clients.add(user);
                    }
                    break;
+
                 case OPENACCOUNT:
-                    Boolean isAuction = (message.getArguments() != null); //checks for auction arg
                     Client newClient = new ClientBuilder()
                                             .setName(message.getAccountName())
                                             .setHost(socket.getInetAddress())
                                             .setBalance(0) //TODO: table needs to be double
-                                            .setAuctionHouse(isAuction)
+                                            .setAuctionHouse(false)
                                             .build();
                     Bank.getActive().clients.add(newClient);
+                    break;
+
                 case GETHOUSES:
-                    Message res = new Message.Builder().houses(Bank.getActive().clients).nullId();
+                    Message res = new Message.Builder().houses(Bank.getActive().getHouses()).nullId();
                     objOut.writeObject(res);
+                    break;
+
+                case REGISTERHOUSE:
+                    Client house = new ClientBuilder()
+                            .setName(message.getAccountName())
+                            .setHost(socket.getInetAddress())
+                            .setBalance(0) //TODO: table needs to be double
+                            .setAuctionHouse(false)
+                            .build();
             }
 
         } catch (IOException e) {

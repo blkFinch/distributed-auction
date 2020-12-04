@@ -238,6 +238,7 @@ public class Message implements Serializable {
     public enum Command {
         LOGIN,
         OPENACCOUNT,
+        REGISTERHOUSE,
         GETHOUSES,
         BLOCK,
         DEPOSIT,
