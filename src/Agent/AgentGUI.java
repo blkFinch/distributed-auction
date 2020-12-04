@@ -10,18 +10,28 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class AgentGUI extends Application{
+    private Scene scene;
     private Agent agent;
     private BorderPane chooseAuction;
     private BorderPane placeBid;
+    private Button checkBalance;
+    private VBox placeBidButtons;
+    private boolean connected;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Agent");
+
+        connected = false;
 
         Image mainStreet = new Image("file:Resources\\CartoonMainStreet.jpg");
         BackgroundFill imageSet = new BackgroundFill(new
@@ -34,6 +44,49 @@ public class AgentGUI extends Application{
                 CornerRadii.EMPTY, Insets.EMPTY);
         placeBid = new BorderPane();
         placeBid.setBackground(new Background(pictureFrame));
+
+        Label pickAuctionLabel = new Label("Pick an Auction House");
+        pickAuctionLabel.setFont(new Font(30));
+        chooseAuction.setTop(pickAuctionLabel);
+        BorderPane.setAlignment(pickAuctionLabel, Pos.CENTER);
+
+        checkBalance = new Button("Check Balance");
+        checkBalance.setFont(new Font(15));
+        chooseAuction.setLeft(checkBalance);
+
+        TextField depositFunds = new TextField();
+        depositFunds.setFont(new Font(20));
+        Button deposit = new Button("Deposit");
+        deposit.setFont(new Font(20));
+        HBox chooseAuctionBox = new HBox(10, depositFunds, deposit);
+        chooseAuctionBox.setAlignment(Pos.CENTER);
+        chooseAuction.setBottom(chooseAuctionBox);
+        BorderPane.setAlignment(chooseAuctionBox, Pos.CENTER);
+
+        Label placeBidLabel = new Label("Bid on An Item");
+        placeBidLabel.setFont(new Font(30));
+        placeBidLabel.setTextFill(Color.WHITE);
+        placeBid.setTop(placeBidLabel);
+        BorderPane.setAlignment(placeBidLabel, Pos.CENTER);
+
+        Button backButton = new Button("Back");
+        backButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            scene.setRoot(chooseAuction);
+            chooseAuction.setLeft(checkBalance);
+        });
+        backButton.setFont(new Font(15));
+        placeBidButtons = new VBox(10, backButton);
+        placeBid.setLeft(placeBidButtons);
+        BorderPane.setAlignment(placeBidButtons, Pos.TOP_LEFT);
+
+        TextField enterBid = new TextField();
+        enterBid.setFont(new Font(18));
+        Button bid = new Button("Place Bid");
+        bid.setFont(new Font(18));
+        HBox placeBidBox = new HBox(10, enterBid, bid);
+        placeBidBox.setAlignment(Pos.CENTER);
+        BorderPane.setAlignment(placeBidBox, Pos.CENTER);
+        placeBid.setBottom(placeBidBox);
 
         Stage loginStage = new Stage();
         Scene loginScene;
@@ -83,8 +136,20 @@ public class AgentGUI extends Application{
         loginStage.setScene(loginScene);
         loginStage.show();
 
-        Scene scene = new Scene(chooseAuction, 612, 403);
+        scene = new Scene(chooseAuction, 612, 403);
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    private FlowPane updateAvailableAuctions(){
+        FlowPane flow = new FlowPane(20, 10);
+        Button auction;
+        List<String> auctions = agent.getAuctionNames();
+        for(String a : auctions){
+            auction = new Button(a);
+            flow.getChildren().add(auction);
+        }
+        flow.setAlignment(Pos.CENTER);
+        return flow;
     }
 }
