@@ -1,40 +1,46 @@
 package Bank;
 
+import shared.Message;
+
 import java.io.*;
 import java.net.Socket;
 
 
 public class BankThread extends Thread {
     protected Socket socket;
-    private PrintWriter out = null;
-    private BufferedReader in = null;
+    private final ObjectInputStream objIn;
+    private final ObjectOutputStream objOut;
 
     public BankThread(Socket clientSocket) throws IOException {
         this.socket = clientSocket;
-        out = new PrintWriter(socket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        objIn = new ObjectInputStream(socket.getInputStream());
+        objOut = new ObjectOutputStream(socket.getOutputStream());
     }
 
     public void run() {
-        String inputLine = null;
-        String outputLine = "hello";
-        LoginProtocol login = new LoginProtocol(socket);
-
-        do {
-            outputLine = login.processInput(inputLine);
-            System.out.println("printing out : " + outputLine);
-            out.println(outputLine);
-
-            if (outputLine.equals("Bye.")) {
-                break;
+        System.out.println("running new bank thread");
+        try {
+            Message message = readMessage();
+            if(message == null){
+                System.out.println("null message");
+            }
+            Message.Command command = message.getCommand();
+            switch (command){
+                case LOGIN:
+                   if( Bank.getActive().getClient(message.getSenderId()) != null){
+                       System.out.println("lookupsuccess");
+                   }
             }
 
-            try {
-                inputLine = in.readLine();
-            } catch (IOException e) {
-                inputLine = null;
-            }
-        } while (inputLine != null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
+    private Message readMessage() throws IOException, ClassNotFoundException {
+        Message message = (Message) objIn.readObject();
+        return message;
+    }
 }

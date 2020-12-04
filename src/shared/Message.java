@@ -202,6 +202,7 @@ public class Message implements Serializable {
      *      UNBLOCK         => Release an amount from an accountId.
      */
     public enum Command {
+        LOGIN,
         BLOCK,
         DEPOSIT,
         DEREGISTER,
