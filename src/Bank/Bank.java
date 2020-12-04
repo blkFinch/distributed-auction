@@ -52,6 +52,7 @@ public class Bank {
     //TODO: remove Create client task
     public synchronized Client createClient(Client client){
         CreateClient cc = new CreateClient(client);
+        System.out.println("created task");
         cc.Execute();
         return client;
     }

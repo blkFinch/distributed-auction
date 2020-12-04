@@ -42,6 +42,7 @@ public class BankThread extends Thread {
                                             .setAuctionHouse(false)
                                             .build();
                     Bank.getActive().clients.add(newClient);
+                    Bank.getActive().createClient(newClient);
                     break;
 
                 case GETHOUSES:
