@@ -17,9 +17,9 @@ public class auctionHouseTest {
         System.out.println("running on port: " + portNumber);
 
 //            //Build simple request
-//        Message loginRequest = new Message.Builder()
-//                .command(Message.Command.LOGIN)
-//                .senderId(1);
+        Message loginRequest = new Message.Builder()
+                .command(Message.Command.LOGIN)
+                .senderId(1);
 
         Message newUserRequest = new Message.Builder()
                                             .command(Message.Command.OPENACCOUNT)
