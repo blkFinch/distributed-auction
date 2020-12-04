@@ -6,13 +6,17 @@ import Database.DatabaseManager;
 import Database.Tasks.CreateClient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Bank {
     public static Bank active;
-
+    private final Map<Integer, Client> houses;
     ArrayList<Client> clients; //this will be list of auctionhouses
     private Bank(){
         clients = new ArrayList<Client>();
+        houses = new HashMap<Integer, Client>();
     }
 
     public static Bank getActive(){
@@ -40,11 +44,21 @@ public class Bank {
         return thisClient;
     }
 
+    public synchronized List<Client> getHouses(){
+        List<Client> houses = new ArrayList<Client>(this.houses.values());
+        return houses;
+    }
+
     //TODO: remove Create client task
     public synchronized Client createClient(Client client){
         CreateClient cc = new CreateClient(client);
         cc.Execute();
         return client;
+    }
+
+    public synchronized int registerAuctionHouse(Client house) {
+        houses.put(house.getID(), house);
+        return house.getID();
     }
 
     public void depositInto(Client client, int amount){
