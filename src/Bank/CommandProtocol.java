@@ -77,6 +77,11 @@ public class CommandProtocol {
                             .accountId(newAHId)
                             .senderId(000);
                 }
+                break;
+
+            case BLOCK:
+                int blockID = message.getAccountId();
+                Client blockClient = message.
         }
 
         return response;

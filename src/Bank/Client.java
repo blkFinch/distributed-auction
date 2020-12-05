@@ -124,18 +124,4 @@ public class Client implements Serializable {
             return true;
         }
     }
-    //CRUD
-    //TODO: extract
-    public static Client read(int id) throws Exception {
-        Statement statement = DatabaseManager.getConn().createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * FROM clients WHERE id=" + id);
-        Client client = new ClientBuilder()
-                .setId(id)
-                .setName(rs.getString("name"))
-                .setBalance(rs.getInt("balance"))
-                .setAuctionHouse(rs.getBoolean("isAuctionHouse"))
-                .build();
-        return client;
-    }
-
 }

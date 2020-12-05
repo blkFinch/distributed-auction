@@ -3,12 +3,10 @@ package Database.Tasks;
 import Bank.Client;
 import Bank.ClientBuilder;
 import Database.DatabaseManager;
-import Database.Task;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.concurrent.Callable;
 
 public class ReadClient implements SQLInjector {
     private final int id;

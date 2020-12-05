@@ -40,23 +40,14 @@ public class Bank {
         return active;
     }
 
-    //TODO: refactor to DB comms
-    public synchronized Client getClient(int id){
 
-        Client thisClient = null;
-        DBMessage req = new DBMessage.Builder()
-                .command(DBMessage.Command.GET)
-                .table(DBMessage.Table.CLIENT)
-                .accountId(id)
-                .build();
+    //SESSION METHODS
+    //
 
-        DBMessage response = sendToDB(req);
-        if(response.getResponse() == Message.Response.SUCCESS){
-            thisClient = (Client) response.getPayload();
-        }
-        return thisClient;
-    }
-
+    /**
+     * Gets a list of active AuctionHouses and their Connection Info
+     * @return List of ConnectionReqs
+     */
     public synchronized List<ConnectionReqs> getHouses(){
         List<ConnectionReqs> reqs = new ArrayList<ConnectionReqs>();
         for(Client house : houses.values()){
@@ -67,37 +58,14 @@ public class Bank {
         return reqs;
     }
 
-    //Creates new record in Database
-    public synchronized int createClient(Client client) {
-        DBMessage req = new DBMessage.Builder()
-                                    .command(DBMessage.Command.PUT)
-                                    .table(DBMessage.Table.CLIENT)
-                                    .payload(client)
-                                    .senderId(0)
-                                    .build();
-       DBMessage res = sendToDB(req);
-
-       if(res.getResponse() == Message.Response.SUCCESS){
-           return res.getAccountId();
-       }
-       return -999;
-    }
-
-    public synchronized Client updateClient(Client client){
-        UpdateClient uc = new UpdateClient(client);
-        try {
-            uc.inject();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println("Updated client id: " + client.getID());
-        return client;
-    }
-
     public synchronized int registerAuctionHouse(Client house) {
         houses.put(house.getID(), house);
         return house.getID();
     }
+
+
+    //MONEY HANDLING
+    //
 
     public synchronized void depositInto(Client client, int amount){
         client.deposit(amount);
@@ -122,6 +90,60 @@ public class Bank {
     }
 
     //DATABASE CALLS
+    //
+    /**
+     * Makes a POST request to DB with Client to be created
+     * @param client
+     * @return
+     */
+    public synchronized int createClient(Client client) {
+        DBMessage req = new DBMessage.Builder()
+                .command(DBMessage.Command.PUT)
+                .table(DBMessage.Table.CLIENT)
+                .payload(client)
+                .senderId(0)
+                .build();
+        DBMessage res = sendToDB(req);
+
+        if(res.getResponse() == Message.Response.SUCCESS){
+            return res.getAccountId();
+        }
+        return -999;
+    }
+
+    //TODO: make db call
+    public synchronized Client updateClient(Client client){
+        UpdateClient uc = new UpdateClient(client);
+        try {
+            uc.inject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println("Updated client id: " + client.getID());
+        return client;
+    }
+
+    /**
+     * Makes a request to DB to look up client by ID
+     * @param id the unique ID of the client
+     * @return the Client, null if error
+     */
+    public synchronized Client getClient(int id){
+
+        Client thisClient = null;
+        DBMessage req = new DBMessage.Builder()
+                .command(DBMessage.Command.GET)
+                .table(DBMessage.Table.CLIENT)
+                .accountId(id)
+                .build();
+
+        DBMessage response = sendToDB(req);
+        if(response.getResponse() == Message.Response.SUCCESS){
+            thisClient = (Client) response.getPayload();
+        }
+        return thisClient;
+    }
+
 
     private DBMessage sendToDB(DBMessage req){
         try {
