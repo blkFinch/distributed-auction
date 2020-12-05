@@ -54,7 +54,7 @@ public class CommandProtocol {
                 break;
 
             case GETHOUSES:
-                Message res = new Message.Builder().connectionReqs(Bank.getActive().getHouses()).nullId();
+                response = new Message.Builder().connectionReqs(Bank.getActive().getHouses()).nullId();
                 System.out.println("sending auction houses");
                 break;
 
