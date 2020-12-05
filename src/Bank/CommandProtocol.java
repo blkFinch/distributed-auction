@@ -81,7 +81,7 @@ public class CommandProtocol {
 
             case BLOCK:
                 int blockID = message.getAccountId();
-                Client blockClient = message.
+                break;
         }
 
         return response;
