@@ -3,10 +3,7 @@ package Bank;
 import Database.DatabaseManager;
 
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 /** Model class for the Client table in the database
@@ -15,7 +12,7 @@ import java.sql.Statement;
 public class Client implements Serializable {
     private final int ID;
     private int portNumber;
-    private InetAddress host;
+    private String host;
     private double balance;
     private double heldFunds;
     private String name;
@@ -26,7 +23,7 @@ public class Client implements Serializable {
         return portNumber;
     }
 
-    public InetAddress getHost(){
+    public String getHost(){
         return host;
     }
 
@@ -58,11 +55,7 @@ public class Client implements Serializable {
 
     //</editor-fold>
 
-    public Client(int id){
-        this.ID = id;
-    }
-
-    public Client(int id, int portNumber, InetAddress host,
+    public Client(int id, int portNumber, String host,
                   int balance, String name, boolean isAuctionHouse){
         this.ID = id;
         this.portNumber = portNumber;
@@ -132,7 +125,7 @@ public class Client implements Serializable {
         }
     }
     //CRUD
-    //
+    //TODO: extract
     public static Client read(int id) throws Exception {
         Statement statement = DatabaseManager.getConn().createStatement();
         ResultSet rs = statement.executeQuery("SELECT * FROM clients WHERE id=" + id);
@@ -143,46 +136,6 @@ public class Client implements Serializable {
                 .setAuctionHouse(rs.getBoolean("isAuctionHouse"))
                 .build();
         return client;
-    }
-
-   public synchronized Client create(){
-       int ah = this.isAuctionHouse ? 1 : 0;
-       String sql = "INSERT INTO clients " +
-               "   ( port, balance, isAuctionHouse, name) \n" +
-               "   VALUES (" +
-               this.portNumber + ", " +
-               this.balance + ", " +
-                ah + ", " +
-               "'"+ this.name + "'" +
-               ");";
-
-       try {
-           Statement statement = DatabaseManager.getConn().createStatement();
-           statement.execute(sql);
-       } catch (Exception e) {
-           e.printStackTrace();
-       }
-
-
-       return this;
-   }
-
-    public Client save() throws Exception {
-        String sql = "UPDATE clients SET " +
-                " name = " + this.name +
-                ", balance =  " + this.balance +
-//                ", host =  " + this.host.toString() +  TODO: broken??
-                ", port =  " + this.portNumber +
-                " WHERE id = " + this.ID;
-        System.out.println(sql);
-        Statement statement = DatabaseManager.getConn().createStatement();
-        statement.execute(sql);
-
-        return this;
-    }
-
-    public static Client destroy(){
-        return null;
     }
 
 }

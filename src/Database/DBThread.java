@@ -1,17 +1,20 @@
-package Bank;
+package Database;
 
+import Bank.CommandProtocol;
+import shared.DBMessage;
 import shared.Message;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-
-public class BankThread extends Thread {
+public class DBThread extends Thread{
     protected Socket socket;
     private final ObjectInputStream objIn;
     private final ObjectOutputStream objOut;
 
-    public BankThread(Socket clientSocket) throws IOException {
+    public DBThread(Socket clientSocket) throws IOException {
         this.socket = clientSocket;
         objOut = new ObjectOutputStream(socket.getOutputStream());
         objOut.flush();
@@ -19,11 +22,11 @@ public class BankThread extends Thread {
     }
 
     public void run() {
-        System.out.println("running new bank thread");
+        System.out.println("recieved req");
         try {
-            Message message = readMessage();
-            CommandProtocol cp = new CommandProtocol(message);
-            Message res = cp.processCommand();
+            DBMessage message = (DBMessage) objIn.readObject();
+            DBCommandProtocol DBcp = new DBCommandProtocol(message);
+            DBMessage res = DBcp.processCommand();
             objOut.writeObject(res);
 
         } catch (Exception e) {
@@ -31,8 +34,4 @@ public class BankThread extends Thread {
         }
     }
 
-    private Message readMessage() throws IOException, ClassNotFoundException {
-        Message message = (Message) objIn.readObject();
-        return message;
-    }
 }
