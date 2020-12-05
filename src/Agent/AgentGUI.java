@@ -1,5 +1,6 @@
 package Agent;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -17,7 +18,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.util.List;
+import java.util.Set;
 
 public class AgentGUI extends Application{
     private Scene scene;
@@ -190,12 +191,22 @@ public class AgentGUI extends Application{
         scene = new Scene(chooseAuction, 762, 553);
         primaryStage.setScene(scene);
         primaryStage.show();
+
+        AnimationTimer a = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                if(connected && (now%10000) == 0){
+                    chooseAuction.setCenter(updateAvailableAuctions());
+                }
+            }
+        };
+        a.start();
     }
 
     private FlowPane updateAvailableAuctions(){
         FlowPane flow = new FlowPane(20, 10);
         Button auction;
-        List<String> auctions = agent.getAuctionNames();
+        Set<String> auctions = agent.getAuctionNames();
         for(String a : auctions){
             auction = new Button(a);
             flow.getChildren().add(auction);

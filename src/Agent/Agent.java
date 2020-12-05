@@ -4,15 +4,12 @@ import shared.ConnectionReqs;
 import shared.Message;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Agent{
-    private String username;
+    private final String username;
     private static AgentProxy bankProxy;
-    private static Map<ConnectionReqs, AgentProxy> auctionProxies;
+    private static Map<String, AgentProxy> auctionProxies;
 
     public Agent(String user, String host, String port, boolean newAcc) throws Exception{
         username = user;
@@ -25,18 +22,20 @@ public class Agent{
 
     public void sendBankMessage(Message message){ bankProxy.sendMessage(message); }
 
-    public void sendAuctionMessage(int ind, Message message){
-        auctionProxies.get(ind).sendMessage(message);
+    public void sendAuctionMessage(String key, Message message){
+        auctionProxies.get(key).sendMessage(message);
     }
 
+    public Set<String> getAuctionNames(){ return auctionProxies.keySet(); }
+
     public void updateAuctionProxies(){
-        List<ConnectionReqs> newConns = bankProxy.getNewConnections();
+        List<ConnectionReqs> newConnections = bankProxy.getNewConnections();
         AgentProxy auctionProxy;
-        for(ConnectionReqs conn : newConns){
+        for(ConnectionReqs conn : newConnections){
             try{
                 auctionProxy = new AgentProxy(username,"auction",
                         conn.getIp(), ""+conn.getPort(), false);
-                //auctionProxies.put(conn, )
+                auctionProxies.put(conn.getName(), auctionProxy);
             } catch(IOException e){
                 System.out.println("Connection to auction house failed");
             }
