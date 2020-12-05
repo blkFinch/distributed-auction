@@ -38,7 +38,7 @@ public class CommandProtocol {
             case OPENACCOUNT:
                 Client newClient = new ClientBuilder()
                         .setName(message.getAccountName())
-                        .setBalance(0) //TODO: table needs to be double
+                        .setBalance(message.getBalance())
                         .setAuctionHouse(false)
                         .build();
 
