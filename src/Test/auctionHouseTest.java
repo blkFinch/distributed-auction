@@ -27,7 +27,7 @@ public class auctionHouseTest {
 
         Message newUserRequest = new Message.Builder()
                                             .command(Message.Command.OPENACCOUNT)
-                                            .accountName("syn cron")
+                                            .accountName("james deen")
                                             .nullId();
 
         ConnectionReqs req = new ConnectionReqs("localhost", 9999);
@@ -39,6 +39,7 @@ public class auctionHouseTest {
                 .accountName("AH-320")
                 .connectionReqs(reqs)
                 .nullId();
+
         //Send request to Bank
         out.writeObject(newUserRequest);
 

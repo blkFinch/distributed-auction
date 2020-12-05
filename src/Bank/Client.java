@@ -125,7 +125,7 @@ public class Client implements Serializable {
         }
     }
     //CRUD
-    //
+    //TODO: extract
     public static Client read(int id) throws Exception {
         Statement statement = DatabaseManager.getConn().createStatement();
         ResultSet rs = statement.executeQuery("SELECT * FROM clients WHERE id=" + id);

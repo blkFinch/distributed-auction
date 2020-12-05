@@ -4,22 +4,24 @@ import Bank.Client;
 import Database.DatabaseManager;
 import Database.Task;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class UpdateClient extends Task {
+public class UpdateClient implements SQLInjector {
     private Client client;
     public UpdateClient(Client client){
         this.client = client;
     }
 
     @Override
-    public int Execute() {
+    public synchronized Integer inject() throws Exception {
+        Connection DBconn = DatabaseManager.getConn();
         String sql = "UPDATE clients SET" +
                 " host = ?, port = ?, balance = ?, isAuctionHouse = ?, name = ? " +
                 " WHERE id = ?;";
 
-        try(PreparedStatement pstmt = DatabaseManager.getConn().prepareStatement(sql)){
+        try(PreparedStatement pstmt = DBconn.prepareStatement(sql)){
             pstmt.setString(1, String.valueOf(client.getHost()));
             pstmt.setInt(2, client.getPort());
             pstmt.setInt(3, (int)client.getBalance());
@@ -33,7 +35,7 @@ public class UpdateClient extends Task {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        DBconn.close();
         return 1;
     }
 }

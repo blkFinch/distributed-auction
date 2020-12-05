@@ -20,6 +20,7 @@ public class CommandProtocol {
                 Client user = Bank.getActive().getClient(message.getSenderId());
                 if (user != null) {
                     response = new Message.Builder()
+                            .accountId(user.getID())
                             .response(Message.Response.SUCCESS)
                             .senderId(000);
 

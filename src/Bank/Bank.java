@@ -3,7 +3,13 @@ package Bank;
 import Database.Tasks.CreateClient;
 import Database.Tasks.UpdateClient;
 import shared.ConnectionReqs;
+import shared.DBMessage;
+import shared.Message;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,15 +40,20 @@ public class Bank {
         return active;
     }
 
-
+    //TODO: refactor to DB comms
     public synchronized Client getClient(int id){
-        Client thisClient = null;
-        try {
-            thisClient = Client.read(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
+        Client thisClient = null;
+        DBMessage req = new DBMessage.Builder()
+                .command(DBMessage.Command.GET)
+                .table(DBMessage.Table.CLIENT)
+                .accountId(id)
+                .build();
+
+        DBMessage response = sendToDB(req);
+        if(response.getResponse() == Message.Response.SUCCESS){
+            thisClient = (Client) response.getPayload();
+        }
         return thisClient;
     }
 
@@ -58,25 +69,27 @@ public class Bank {
 
     //Creates new record in Database
     public synchronized int createClient(Client client) {
-        CreateClient cc = new CreateClient(client);
-        System.out.println("creating client");
-        try {
-            return cc.inject();
-        } catch (Exception e) {
-            System.out.println("Error connected to DB");
-            e.printStackTrace();
-        }
-        return -999;
-    }
+        DBMessage req = new DBMessage.Builder()
+                                    .command(DBMessage.Command.PUT)
+                                    .table(DBMessage.Table.CLIENT)
+                                    .payload(client)
+                                    .senderId(0)
+                                    .build();
+       DBMessage res = sendToDB(req);
 
-    //Looks up Client by ID
-    public synchronized  Client lookUpClient(int id) throws Exception {
-        return Client.read(id);
+       if(res.getResponse() == Message.Response.SUCCESS){
+           return res.getAccountId();
+       }
+       return -999;
     }
 
     public synchronized Client updateClient(Client client){
         UpdateClient uc = new UpdateClient(client);
-        uc.Execute();
+        try {
+            uc.inject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println("Updated client id: " + client.getID());
         return client;
     }
@@ -106,6 +119,27 @@ public class Bank {
         }else{
             return 0;
         }
+    }
+
+    //DATABASE CALLS
+
+    private DBMessage sendToDB(DBMessage req){
+        try {
+            Socket dbSocket = new Socket("localhost", 6002);
+
+            ObjectOutputStream out = new ObjectOutputStream(dbSocket.getOutputStream());
+            out.flush();
+            ObjectInputStream in = new ObjectInputStream(dbSocket.getInputStream());
+
+            out.writeObject(req);
+
+            DBMessage res = (DBMessage) in.readObject();
+            return res;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
