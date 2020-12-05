@@ -27,7 +27,7 @@ public class auctionHouseTest {
 
         Message newUserRequest = new Message.Builder()
                                             .command(Message.Command.OPENACCOUNT)
-                                            .accountName("Jimmy")
+                                            .accountName("james deen")
                                             .nullId();
 
         ConnectionReqs req = new ConnectionReqs("localhost", 9999);
@@ -39,8 +39,9 @@ public class auctionHouseTest {
                 .accountName("AH-320")
                 .connectionReqs(reqs)
                 .nullId();
+
         //Send request to Bank
-        out.writeObject(newAhRequest);
+        out.writeObject(newUserRequest);
 
         while(true){
             Message messageIn = (Message) in.readObject();
