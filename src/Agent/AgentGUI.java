@@ -154,9 +154,10 @@ public class AgentGUI extends Application{
         createButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             String user = createNameField.getText();
             try{
-                agent = new Agent(user, host, port);
+                agent = new Agent(user, host, port, true);
                 openStage.close();
                 agent.runBank();
+                connected = true;
             } catch(Exception e){
                 System.out.println("Connection failed. Try again.");
             }
@@ -176,9 +177,10 @@ public class AgentGUI extends Application{
         loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             String user = createNameField.getText();
             try{
-                agent = new Agent(user, host, port);
+                agent = new Agent(user, host, port, false);
                 openStage.close();
                 agent.runBank();
+                connected = true;
             } catch(Exception e){
                 System.out.println("Connection failed. Try again.");
             }

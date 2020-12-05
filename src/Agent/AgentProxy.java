@@ -12,12 +12,13 @@ public class AgentProxy implements Runnable{
     private int proxyType;
     private String hostIP;
     private int portNum;
+    private boolean newAccount;
     private Socket socket;
     private List<Message> inMessages;
     private ObjectOutputStream out;
     private boolean running;
 
-    public AgentProxy(String user, String type, String host, String port) throws IOException{
+    public AgentProxy(String user, String type, String host, String port, boolean newAcc) throws IOException{
         username = user;
         if(type.equals("bank")){ proxyType = 0; }
         else if(type.equals("auction")){ proxyType = 1; }
@@ -28,6 +29,7 @@ public class AgentProxy implements Runnable{
         } catch(Exception e){
             proxyType = -1;
         }
+        newAccount = newAcc;
         inMessages = new ArrayList<>();
         running = true;
     }
@@ -38,15 +40,25 @@ public class AgentProxy implements Runnable{
         out.flush();
         ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
         Message fromServer;
-        Message newUserRequest = new Message.Builder()
-                .command(Message.Command.OPENACCOUNT)
-                .accountName(username)
-                .nullId();
+        Message loginRequest;
         Message getHouses = new Message.Builder()
                 .command(Message.Command.GETHOUSES)
                 .nullId();
 
-        out.writeObject(newUserRequest);
+        if(newAccount){
+            loginRequest = new Message.Builder()
+                    .command(Message.Command.OPENACCOUNT)
+                    .accountName(username)
+                    .nullId();
+        }
+        else{
+            loginRequest = new Message.Builder()
+                    .command(Message.Command.LOGIN)
+                    .accountName(username)
+                    .nullId();
+        }
+
+        out.writeObject(loginRequest);
         out.writeObject(getHouses);
 
         while(running){
