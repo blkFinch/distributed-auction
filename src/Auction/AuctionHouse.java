@@ -1,85 +1,76 @@
 package Auction;
 
+import shared.A_AH_Messages;
+import shared.ConnectionReqs;
+import shared.Message;
+
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.*;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 public class AuctionHouse {
-    private static String auctionId;
-    private ServerSocket server; //for agent
-    private Socket auctionBank; //for bank
-    private ObjectInputStream ioIn;
-    private ObjectOutputStream ioOut;
-    private static ArrayList<Item> auctionList = new ArrayList<>();
-    private final List<String> agentsList = new LinkedList<>();
-    private boolean running = true;
-    private double balance = 0.0;
+    private final  ArrayList<Item>        auctionList     = new ArrayList<>();
+    private final  BlockingQueue<Boolean> check = new LinkedBlockingDeque<>();
+    private static boolean                running         = true;
+    private        double                 balance         = 0.0;
+    private        int                    auctionId;
+    private        int                    port;  //Auction server port number
+    private final  List<Agent>            agentsList      = new LinkedList<>();
+    private        ObjectInputStream      ioIn;
+    private        ObjectOutputStream     ioOut;
+    private        ServerSocket           auctionSocket   = null; //the socket connected to agents
+    private        Socket                 bankSocket; //for bank
+    private        String                 ip; //Auction server ip address
+
+    /**
+     * creates catalogue for items to sell
+     */
+    private void createAuctionList(int size) {
+        itemSpecsList.createItemSpecsList();
+        for (int i = 0; i < size; i++) {
+            addSpecs(itemSpecsList.getRandomElement(), auctionId);
+        }
+    }
 
     /**
      * addItems completes items for the auction house
+     *
      * @param itemSpecs ItemSpecs
      * @param auctionId String
      */
-    private static void addSpecs(ItemSpecs itemSpecs, String auctionId) {
-        Item item = new Item(itemSpecs.name, itemSpecs.description, itemSpecs.minimumBid, auctionId);
+    private void addSpecs(ItemSpecs itemSpecs, int auctionId) {
+        Item item = new Item(itemSpecs.name, itemSpecs.description,
+                itemSpecs.minimumBid, auctionId);
         auctionList.add(item);
     }
 
-    public void main(String[] args) {
-        int address = Integer.parseInt(args[0]);
-    }
-
-    public void AuctionHouse(String address, int clientPort, int ServerPort) throws IOException {
-        //create item list
-        auctionId = String.valueOf(Math.random()*100) + String.valueOf(System.currentTimeMillis());
-        Auction.itemsList.createItemSpecsList();
-        for(int i = 0; i < 3; i++) {
-            addSpecs(Auction.itemsList.getRandomElement(), auctionId);
+    public AuctionHouse(String address, int bankPort, int auctionPort) throws IOException {
+        createAuctionList(3);
+        try (final DatagramSocket socket = new DatagramSocket()) {
+            socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+            ip = socket.getLocalAddress().getHostAddress();
         }
+        port = auctionSocket.getLocalPort();
 
-        int portNumber = Integer.parseInt(address);
+        bankSocket = new Socket();
+        bankSocket.connect(new InetSocketAddress(address, bankPort),
+                3000);
+        ioOut = new ObjectOutputStream(bankSocket.getOutputStream());
+        ConnectionReqs bankReqs = new ConnectionReqs(ip, port);
+        List<ConnectionReqs> ahInfo = new LinkedList<>();
+        ahInfo.add(bankReqs);
+        Message register = new Message.Builder().command(
+                Message.Command.REGISTERHOUSE)
+                .connectionReqs(ahInfo).senderId(-1);
+        sendToBank(register);
+        Thread inThread = new Thread(new AuctionIn());
+        inThread.start();
 
-        //bank connection
-        try(
-                //Hardcoded to my settings for now
-                //TODO: create interface to select bank connection...
-                Socket bankSocket = new Socket("localhost",6000);
-                //connect to bank IO stream
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(bankSocket.getInputStream()));
-                PrintWriter out =
-                        new PrintWriter(bankSocket.getOutputStream(), true);
-        ){
-
-            System.out.println("running on port: " + portNumber);
-            BufferedReader stdIn =
-                    new BufferedReader(new InputStreamReader(System.in));
-            String fromServer;
-            String fromUser;
-
-            fromServer = in.readLine();
-            while (fromServer != null) {
-                System.out.println("Server: " + fromServer);
-
-                if (fromServer.equals("Bye.")) {break;}
-
-                fromUser = stdIn.readLine();
-                if (fromUser != null) {
-                    System.out.println("Client: " + fromUser);
-                    out.println(fromUser);
-                }
-                fromServer = in.readLine();
-            }
-
-            System.out.println("from server null");
-        }
-    }
-
-    public void shutdown(){
-        ;
+        auctionSocket = new ServerSocket(auctionPort);
+        Thread auctionThread = new Thread(new AHServer());
+        auctionThread.start();
     }
 
     private class AuctionIn implements Runnable {
@@ -89,10 +80,21 @@ public class AuctionHouse {
         @Override
         public void run() {
             try {
-                ioIn = new ObjectInputStream(auctionBank.getInputStream());
+                ioIn = new ObjectInputStream(bankSocket.getInputStream());
                 while(running){
-                    String message = (String) ioIn.readObject();
-                    processMessage(message);
+                    Message message = (Message) ioIn.readObject();
+                    Message.Command topic = message.getCommand();
+                    switch(topic){
+                        case LOGIN:
+                            login(message);
+                            break;
+                        case REGISTERHOUSE:
+                            registerHouse(message);
+                            break;
+                        case GETHOUSES:
+                            getHouses(message);
+                            break;
+                    }
                 }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
@@ -105,23 +107,27 @@ public class AuctionHouse {
             }
         }
 
-        private void processMessage(String message) {
-            //need parse indicator
-            switch(message){
-            }
+        private void getHouses(Message message) {
         }
 
-        private void hold(String message) {
+        private void registerHouse(Message message) {
+
+        }
+
+        private void login(Message message) {
+        }
+
+        private void openAccount(String message) {
 
         }
 
         /**
-         * updates the balance variable to the bank balance given by the bank,
+         * updates the balance variable to the bank's balance
          *
-         * @param message double
+         * @param message Message
          */
-        private void bankBalance(String message) {
-            //balance = message.getBalance();
+        private void bankBalance(Message message) {
+            balance = message.getBalance();
         }
 
         private void released(String message) {
@@ -133,31 +139,79 @@ public class AuctionHouse {
         }
     }
 
-    private class AgentProxy implements Runnable {
-        private final Socket agentSocket; //the socket connected to an agent
-        private ObjectInputStream agentIn; //Input stream for agentSocket
-        private ObjectOutputStream agentOut;//output stream for agentSocket
-        private String agentId; //The UUID of the agent when it registers
-        private String message = null; //The message read from agentIn
+    private class AHServer implements Runnable {
+        @Override
+        public void run() {
+            try {
+                while(running) {
+                    Socket clientSocket  = auctionSocket.accept();
+                    Agent  newAgent      = new Agent(clientSocket);
+                    agentsList.add(newAgent);
+                }
+            } catch (IOException e) {
+                running = false;
+            }
+        }
+    }
+
+    /**
+     * auctionListMaintenance maintains list size and starts the process of
+     * either removing or transferring ownership if bought.
+     */
+    private class auctionListMaintenance implements Runnable{
+        @Override
+        public void run() {
+            while(running) {
+                try {
+                    int emptySlots =  3 - auctionList.size();
+                    if(emptySlots > 0){
+                        createAuctionList(emptySlots);
+                    }
+                    for(int i = 0;i < auctionList.size(); i++) {
+                        Item item = auctionList.get(i);
+                        item.remainingTime(System.currentTimeMillis());
+                        if(item.getRemainingTime() <= 0){
+                            timeExpired(item);
+                        }
+                    }
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    /**
+     * This class is dedicated to communicating/processing messages from/with
+     * agents.
+     * Each instance of this class represents communication with one agent.
+     */
+    private class Agent implements Runnable {
+        private final Socket            agentsSocket; //the socket connected to an agent
+        private       ObjectInputStream agentIn; //Input stream for agentSocket
+        private       ObjectOutputStream agentOut;//output stream for agentSocket
+        private       int                    agentId; //The int of the agent when it registers
+        private A_AH_Messages message = null; //The message read from agentIn
         private final BlockingQueue<Boolean> bankSignOff;
         //Blocking queue for waiting on a HOLD response from the bank
 
         /**
-         * Constructor for an AgentProxy object. The constructor takes in
-         * an accepted socket from the server variable, opens streams from it,
-         * and begins communication.
+         * Constructor for an AgentReqs. Takes socket from AuctionHouseServer,
+         * opens in and out streams for it and begins communication.
+         *
          * @param socket the accepted socket from the server variable
          */
-        public AgentProxy(Socket socket){
-            this.agentSocket = socket;
+        public Agent(Socket socket) {
+            this.agentsSocket = socket;
             bankSignOff = new LinkedBlockingDeque<>();
-            try{
-                agentIn = new ObjectInputStream(agentSocket.getInputStream());
+            try {
+                agentIn = new ObjectInputStream(agentsSocket.getInputStream());
                 agentOut = new ObjectOutputStream(
-                        agentSocket.getOutputStream());
+                        agentsSocket.getOutputStream());
                 Thread client = new Thread(this);
                 client.start();
-            }catch(IOException e){
+            } catch(IOException e) {
                 agentsList.remove(this);
             }
         }
@@ -168,22 +222,67 @@ public class AuctionHouse {
          */
         @Override
         public void run() {
-            do{
-                /*try{
-                    //get input from agents
-                    process(message);
+            do {
+                try{
+                    message = (A_AH_Messages) agentIn.readObject();
+                    A_AH_Messages.A_AH_MTopic topic = message.getTopic();
+                    if(topic != A_AH_Messages.A_AH_MTopic.UPDATE) {
+                        System.err.println("From a client: " + message);
+                    }
+                    switch(topic) {
+                        case BID:
+                            bid(message);
+                            break;
+                        case REGISTER:
+                            register(message);
+                            break;
+                        case UPDATE:
+                            update();
+                            break;
+                        case DEREGISTER:
+                            agentShutdown(false);
+                            break;
+                    }
                 } catch (IOException|ClassNotFoundException e) {
                     agentShutdown(false);
                     message = null;
-                }*/
-            }while(message != null && running);
+                }
+            } while(message != null && running);
         }
 
         /**
-         * deregister with agents and shutdown
+         *This method either gracefully or forcefully closes the AgentProxy's
+         * socket, streams, and threads.A graceful shutdown means messaging
+         * agents to let them know the auction house is shutting down. A
+         * forceful shutdown means either to shutdown from a DEREGISTER message
+         * or shutdown due to Exceptions
+         * @param reason True if a graceful shutdown, false if for
+         *               error handling/DEREGISTER message
          */
-        private void agentShutdown(Boolean reason){
-            ;
+        private void agentShutdown(Boolean reason) {
+            message = null;
+            agentsList.remove(this);
+            try{
+                if(reason){
+                    A_AH_Messages shutdown = A_AH_Messages.Builder.newBuilder()
+                            .topic(A_AH_Messages.A_AH_MTopic.DEREGISTER)
+                            .build();
+                    sendOut(shutdown);
+                    if(!agentsSocket.isClosed()){
+                        agentOut.close();
+                        agentIn.close();
+                        agentsSocket.close();
+                    }
+                }else{
+                    if(!agentsSocket.isClosed()){
+                        agentOut.close();
+                        agentIn.close();
+                        agentsSocket.close();
+                    }
+                }
+            }catch (IOException e){
+                e.printStackTrace();
+            }
         }
 
         /**
@@ -191,9 +290,9 @@ public class AuctionHouse {
          * to the appropriate method for processing.
          * @param message The message sent from an agent
          */
-        private void process(String message) {
-            //some parsing
-            /*switch(message){
+        private void process(A_AH_Messages message){
+            A_AH_Messages.A_AH_MTopic type = message.getTopic();
+            switch(type){
                 case BID:
                     bid(message);
                     break;
@@ -206,35 +305,70 @@ public class AuctionHouse {
                 case DEREGISTER:
                     agentShutdown(false);
                     break;
-            }*/
+            }
         }
 
         /**
-         * update updates auctionList
+         * This method creates the message with the updated catalogue
+         * and passes it to sendOut to send to the agent
          */
         private void update(){
-
+            A_AH_Messages update = A_AH_Messages.Builder.newBuilder()
+                    .topic(A_AH_Messages.A_AH_MTopic.UPDATE)
+                    .accountId(auctionId)
+                    .auctionList(auctionList)
+                    .build();
+            sendOut(update);
         }
 
         /**
-         * register initial discourse agent
+         * This method is letting the connected agent know they successfully
+         * registered and sends the catalogue of items for sale. The method
+         * also stores the agent's int for future reference
+         * @param message The register message the agent sent
          */
-        private void register(String message){
-
+        private void register(A_AH_Messages message) {
+            agentId = message.getAccountId();
+            A_AH_Messages reply = A_AH_Messages.Builder.newBuilder()
+                    .topic(A_AH_Messages.A_AH_MTopic.REGISTER)
+                    .accountId(auctionId).auctionList(auctionList).build();
+            sendOut(reply);
         }
 
         /**
-         * new bid entry process
+         * This replaces the new bidder/amount with the old bidder/amount and
+         * lets the old bidder know they were outbided
+         * @param oldBidder int of the last bidder
+         * @param item The item that has a new bidder
          */
-        private void outBid(String oldBidder,Item item){
-
+        private void outBid(int oldBidder, Item item){
+            Agent agent = agentSearch(oldBidder);
+            A_AH_Messages outbid = A_AH_Messages.Builder.newBuilder()
+                    .topic(A_AH_Messages.A_AH_MTopic.OUTBID)
+                    .itemId(item.getItemID())
+                    .name(item.getName())
+                    .accountId(agentId)
+                    .build();
+            assert agent != null;
+            agent.sendOut(outbid);
         }
 
         /**
-         * announces winner of item
+         * The item's auction has ended and there's a bidder. This method
+         * lets the bidder know they won.
+         *
+         * .
+         * @param item The item the bidder won
          */
         private void winner(Item item){
-
+            A_AH_Messages winner = A_AH_Messages.Builder.newBuilder()
+                    .topic(A_AH_Messages.A_AH_MTopic.WINNER)
+                    .accountId(agentId)
+                    .itemId(item.getItemID())
+                    .name(item.getName())
+                    .bid(item.getCurrentBid())
+                    .build();
+            sendOut(winner);
         }
 
         /**
@@ -246,66 +380,207 @@ public class AuctionHouse {
          * accept the bid.
          * @param message The message with AMType BID
          */
-        private void bid(String message){
-            ;
+        private void bid(A_AH_Messages message){
+            int    itemId   = message.getItem();
+            int    bidderId = message.getAccountId();
+            String name     = message.getItemName();
+            double amount   = message.getBid();
+            Item   bidItem  = itemSearch(itemId);
+            if(bidItem == null){
+                reject(itemId,name);
+                return;
+            }
+            double value = bidItem.getCurrentBid();
+            if( value < bidItem.getMinimumBid()){
+                value = bidItem.getMinimumBid();
+            }
+            if(amount > value){
+                Message requestHold = new Message.Builder()
+                        .command(Message.Command.BLOCK)
+                        .accountId(bidderId).cost(amount).senderId(this.agentId);
+                try{
+                    //requests the hold.
+                    sendToBank(requestHold);
+                    //waits for the response from bank.
+                    Boolean success = bankSignOff.take();
+                    if(success){
+                        //accepts bid and lets the last bidder know
+                        //they were outbidded
+                        int oldBidder = bidItem.getBidderId();
+                        if(oldBidder != -1) {
+                            release(oldBidder, value);
+                            outBid(oldBidder, bidItem);
+                        }
+                        bidItem.setBid(bidderId, amount);
+                        accept(bidItem.getItemID(), bidItem.getName());
+                    }else{
+                        reject(itemId,name);
+                    }
+                }catch(InterruptedException e){
+                    e.printStackTrace();
+                }
+            }else{
+                reject(itemId,name);
+            }
         }
 
         /**
-         * release requests the bank release hold on account
+         * requests the bank to release the hold of (amount) amount on account
+         * id
+         * @param id the account(bidder) having their funds released
+         * @param amount the amount requested to release
          */
-        private synchronized void release(String id, Double amount) {
+        private synchronized void release(int id, Double amount){
+            Message release = new Message.Builder()
+                    .command(Message.Command.UNBLOCK)
+                    .accountId(id).cost(amount).senderId(auctionId);
+            sendToBank(release);
         }
 
         /**
-         * reject tells bidder bid was rejected
+         * Lets the bidder know its bid was rejected due to various reasons
+         * (not enough funds, bid not high enough, etc.)
+         * @param itemId The int of the item bid on
+         * @param name the name of the item
          */
-        private void reject(String itemID, String name){
-
+        private void reject(int itemId, String name) {
+            A_AH_Messages reject = A_AH_Messages.Builder.newBuilder()
+                    .topic(A_AH_Messages.A_AH_MTopic.OVERDRAFT)
+                    .name(name)
+                    .itemId(itemId)
+                    .build();
+            sendOut(reject);
         }
 
         /**
-         * accept lets the agent know bid was accepted.
-         * update auctionList
+         * Once a bid by an Agent is accepted, this method lets the agent
+         * know their bid was accepted. The message also contains the updated
+         * catalogue
+         * @param itemId int of the item bid on
+         * @param itemName String/name of the item bid on
          */
-        private void accept(UUID item, String name){
-
+        private void accept(int itemId, String itemName) {
+            A_AH_Messages accept = A_AH_Messages.Builder.newBuilder()
+                    .topic(A_AH_Messages.A_AH_MTopic.SUCCESS)
+                    .itemId(itemId)
+                    .name(itemName)
+                    .auctionList(auctionList)
+                    .build();
+            sendOut(accept);
         }
 
         /**
-         * agentOut writes/sends message to agentSocket.
+         * This method is given an AuctionMessage and writes/sends it to
+         * agentSocket. The method add the sent message to the log.
+         * @param message the message being sent
          */
-        private void agentOut(String message) {
-
+        private void sendOut(A_AH_Messages message){
+            try{
+                if(message.getTopic() != A_AH_Messages.A_AH_MTopic.UPDATE){
+                    System.err.println("To Agent: " + message);
+                }
+                agentOut.reset();
+                agentOut.writeObject(message);
+            }catch(IOException e){
+                agentShutdown(false);
+            }
         }
     }
 
-    private class AuctionServer implements Runnable {
-        @Override
-        public void run() {
-            /*try{
-                while(running){
-                    Socket clientSocket = server.accept();
-                    Agent newAgent = new Agent(clientSocket);
-                    agentsList.add(newAgent);
-                }
-            }catch (IOException e){
-                running = false;
-            }*/
+    /**
+     * searches for agent in active agent list
+     * @param id id of agent we want
+     * @return returns the agentProxy we want, null otherwise
+     */
+    private Agent agentSearch(int id) {
+        for(Agent agent: agentsList) {
+            if(agent.agentId == id) {
+                return agent;
+            }
         }
+        return null;
+    }
+
+    /**
+     * After the time expires on an Item for sale. This method checks if
+     * there was any bidders and sends the WINNER message to that bidder.
+     * Also releases the hold on the bidders amount.
+     * @param item the item being checked
+     */
+    private void timeExpired(Item item){
+        int bidder = item.getBidderId();
+        Agent agent = agentSearch(bidder);
+        if (agent != null) {
+            agent.winner(item);
+            Message release = new Message.Builder()
+                    .command(Message.Command.UNBLOCK)
+                    .cost(item.getCurrentBid())
+                    .accountId(bidder).senderId(auctionId);
+            sendToBank(release);
+        }
+        auctionList.remove(item);
+    }
+
+    /**
+     * itemSearch searches the auctionList for an item of matching id
+     *
+     * @param itemId the int of the item being searched
+     * @return returns the item searched, or null if item isn't found
+     */
+    private Item itemSearch(int itemId) {
+        for(Item item: auctionList) {
+            if(item.getItemID() == itemId) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Sends the given message to the bank and adds it to the log for display.
+     * Looped messages (GET_AVAILABLE) are ignored when adding to log.
+     * @param message message being sent to the bank.
+     */
+    private synchronized void sendToBank(Message message) {
+        try {
+            Message.Command temp = message.getCommand();
+            if(temp != Message.Command.GETBALANCE){
+                System.err.println("Bank: " + message);
+            }
+            ioOut.reset();
+            ioOut.writeObject(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getBankBalance(){
+        Message getAvailable = new Message
+                .Builder()
+                .command(Message.Command.GETBALANCE)
+                .senderId(auctionId);
+        sendToBank(getAvailable);
+    }
+
+    /**
+     * @return returns the catalogue
+     */
+    public ArrayList<Item> getAuctionList() {
+        return auctionList;
     }
 
     /**
      * getBalance returns ballance
      * @return balance double
      */
-    public void getBalance() {
-        //return balance;
+    public double getBalance() {
+        return balance;
     }
 
     /**
      * getAuctionId returns auctionId
      */
-    void getAuctionId() {
-        //return auctionId;
+    int getAuctionId() {
+        return auctionId;
     }
 }
