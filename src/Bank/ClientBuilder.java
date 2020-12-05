@@ -5,13 +5,13 @@ import java.net.InetAddress;
 public class ClientBuilder {
     private int ID;
     private int portNumber;
-    private InetAddress host;
+    private String host;
     private int balance;
     private String name;
     private boolean isAuctionHouse;
 
 
-    public ClientBuilder(int portNumber, InetAddress host, int balance,
+    public ClientBuilder(int portNumber, String host, int balance,
                          String name, boolean isAuctionHouse) {
         this.portNumber = portNumber;
         this.host = host;
@@ -34,7 +34,7 @@ public class ClientBuilder {
         return this;
     }
 
-    public ClientBuilder setHost(InetAddress host) {
+    public ClientBuilder setHost(String host) {
         this.host = host;
         return this;
     }

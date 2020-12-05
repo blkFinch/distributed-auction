@@ -22,8 +22,8 @@ public class BankThread extends Thread {
         System.out.println("running new bank thread");
         try {
             Message message = readMessage();
-            CommandProtocol cp = new CommandProtocol(socket, message); //TODO:refactor remove need for passing socket
-            Message res = cp.proccessCommand();
+            CommandProtocol cp = new CommandProtocol(message);
+            Message res = cp.processCommand();
             objOut.writeObject(res);
 
         } catch (Exception e) {

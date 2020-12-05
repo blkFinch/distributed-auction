@@ -1,31 +1,40 @@
 package Bank;
 
-import java.sql.*;
-
-import Database.DatabaseManager;
 import Database.Tasks.CreateClient;
 import Database.Tasks.UpdateClient;
+import shared.ConnectionReqs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * Bank class handles logic for managing blocking and moving funds between
+ * accounts. Bank is a singleton and holds the only methods that access the
+ * database. This is to prevent concurrency errors.
+ */
 public class Bank {
     public static Bank active;
     private final Map<Integer, Client> houses;
-    ArrayList<Client> clients; //this will be list of auctionhouses
+    ArrayList<Client> clients;
+
     private Bank(){
         clients = new ArrayList<Client>();
         houses = new HashMap<Integer, Client>();
     }
 
+    /**
+     * Singleton Bank instance
+     * @return Bank Singleton
+     */
     public static Bank getActive(){
         if(active == null){active = new Bank();}
         return active;
     }
 
-    //TODO: error handling
+
     public synchronized Client getClient(int id){
         Client thisClient = null;
         try {
@@ -37,16 +46,27 @@ public class Bank {
         return thisClient;
     }
 
-    public synchronized List<Client> getHouses(){
-        List<Client> houses = new ArrayList<Client>(this.houses.values());
-        return houses;
+    public synchronized List<ConnectionReqs> getHouses(){
+        List<ConnectionReqs> reqs = new ArrayList<ConnectionReqs>();
+        for(Client house : houses.values()){
+            ConnectionReqs req = new ConnectionReqs(house.getHost(), house.getPort());
+            req.setName(house.getName());
+            reqs.add(req);
+        }
+        return reqs;
     }
 
     //Creates new record in Database
-    public synchronized int createClient(Client client){
+    public synchronized int createClient(Client client) {
         CreateClient cc = new CreateClient(client);
         System.out.println("creating client");
-        return cc.Execute();
+        try {
+            return cc.inject();
+        } catch (Exception e) {
+            System.out.println("Error connected to DB");
+            e.printStackTrace();
+        }
+        return -999;
     }
 
     //Looks up Client by ID

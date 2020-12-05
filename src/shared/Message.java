@@ -10,7 +10,6 @@ import java.util.List;
  * https://github.com/ApolloRez/DistributedAuction/tree/master/src
  */
 public class Message implements Serializable {
-    private static final long          serialVersionUID = -1195974328835714539L;
     private final Command              command;
     private final Double               balance;
     private final int                  senderId;
@@ -18,7 +17,6 @@ public class Message implements Serializable {
     private final String               accountName;
     private final String []            arguments;
     private final List<ConnectionReqs> connectionReqs;
-    private final List<Client>          houses;
     private final Response             response;
 
     /**
@@ -32,7 +30,6 @@ public class Message implements Serializable {
         private String               accountName     = null;
         private String []            arguments       = null;
         private List<ConnectionReqs> connectionReqs = null;
-        private List<Client>        houses = null;
         private Response             response       = null;
 
         /**
@@ -95,13 +92,13 @@ public class Message implements Serializable {
             return this;
         }
 
+        /**
+         * General Payload of strings
+         * @param args
+         * @return
+         */
         public Builder arguments(String [] args){
             this.arguments = args;
-            return this;
-        }
-
-        public Builder houses(List<Client> houses){
-            this.houses = houses;
             return this;
         }
 
@@ -132,7 +129,6 @@ public class Message implements Serializable {
         this.senderId       = builder.senderId;
         this.accountName    = builder.accountName;
         this.arguments      = builder.arguments;
-        this.houses         = builder.houses;
         this.command        = builder.command;
         this.connectionReqs = builder.connectionReqs;
         this.response       = builder.response;
@@ -218,6 +214,7 @@ public class Message implements Serializable {
     /**
      * Response is an Enum representing responses from the bank.
      *      SUCCESS   => transaction successful
+     *      FAILURE   => General Failuer
      *      OVERDRAFT => insufficient funds
      */
     public enum Response {

@@ -7,14 +7,12 @@ import java.net.Socket;
 
 public class CommandProtocol {
     private final Message message;
-    private final Socket hostSocket;
 
-    public CommandProtocol(Socket host, Message message) {
+    public CommandProtocol(Message message) {
         this.message = message;
-        this.hostSocket = host;
     }
 
-    public Message proccessCommand(){
+    public Message processCommand(){
         Message.Command command = message.getCommand();
         Message response = null;
         switch (command) {
@@ -38,32 +36,31 @@ public class CommandProtocol {
             case OPENACCOUNT:
                 Client newClient = new ClientBuilder()
                         .setName(message.getAccountName())
-                        .setHost(hostSocket.getInetAddress())
                         .setBalance(0) //TODO: table needs to be double
                         .setAuctionHouse(false)
                         .build();
 
                 int newUserId = Bank.getActive().createClient(newClient);
-                if( newUserId != 999){
+                if( newUserId != -999){
                     Bank.getActive().clients.add(newClient);
                     response = new Message.Builder()
                             .response(Message.Response.SUCCESS)
                             .accountId(newUserId)
-                            .senderId(000);
+                            .senderId(0);
                 }
 
 
                 break;
 
             case GETHOUSES:
-                Message res = new Message.Builder().houses(Bank.getActive().getHouses()).nullId();
+                Message res = new Message.Builder().connectionReqs(Bank.getActive().getHouses()).nullId();
                 System.out.println("sending auction houses");
                 break;
 
             case REGISTERHOUSE:
                 Client house = new ClientBuilder()
                         .setName(message.getAccountName())
-                        .setHost(hostSocket.getInetAddress()) //TODO: rewrite to use conreqs
+                        .setHost(message.getConnectionReqs().get(0).getIp()) //TODO: rewrite to use conreqs
                         .setPortNumber(message.getConnectionReqs().get(0).getPort())
                         .setBalance(0) //TODO: table needs to be double
                         .setAuctionHouse(true)

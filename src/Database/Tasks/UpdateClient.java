@@ -24,7 +24,7 @@ public class UpdateClient extends Task {
             pstmt.setInt(2, client.getPort());
             pstmt.setInt(3, (int)client.getBalance());
             //DEBUG: dummy values for now
-            pstmt.setBoolean(4, true);
+            pstmt.setBoolean(4, client.isAuctionHouse());
             pstmt.setInt(5, client.getID());
 
             pstmt.execute();

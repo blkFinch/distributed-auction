@@ -1,2 +1,4 @@
-package Database.Tasks;public class ReadClient {
+package Database.Tasks;
+
+public class ReadClient {
 }
