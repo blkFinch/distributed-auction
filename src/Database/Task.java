@@ -1,7 +1,8 @@
 package Database;
 
 public abstract class Task {
-    public void Execute(){
+    public int Execute(){
         System.out.println("Executing task");
+        return 999;
     }
 }

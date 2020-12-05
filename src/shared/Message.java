@@ -223,6 +223,7 @@ public class Message implements Serializable {
     public enum Response {
         SUCCESS,
         OVERDRAFT,
+        FAILURE
     }
 
     /**
