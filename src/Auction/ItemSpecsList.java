@@ -12,12 +12,12 @@ class ItemSpecs {
     double minimumBid;
 }
 
-public class itemsList {
+public class ItemSpecsList {
     protected static ArrayList<ItemSpecs> itemsList;
 
     /**
      * createItemSpecsList reads a list of names, descriptions and minimum bids
-     * from a file.
+     * from a file line by line until .
      */
     public static void createItemSpecsList() {
         try {

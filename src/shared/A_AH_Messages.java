@@ -2,21 +2,22 @@ package shared;
 
 import Auction.Item;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class AgentAuctionMessages {
-    private final AAMessageTopic  topic;       //what kind of message is it
+public class A_AH_Messages implements Serializable {
+    private final A_AH_MTopic     topic;       //what kind of message is it
     private final ArrayList<Item> auctionList; //list of items in the auction
     private final Double          bid;         //bid value
     private final int             accountId;   //Client ID from first contact with Auction
     private final int             itemId;      //The item identification
-    private final String          name;        //Item name
+    private final String itemName;        //Item name
 
     /**
      * AgentAuctionMessage Builder
      */
     public static class Builder {
-        private AAMessageTopic  topic       = null;
+        private A_AH_MTopic topic       = null;
         private ArrayList<Item> auctionList = null;
         private Double          bid         = null;
         private int             accountId   = -1;
@@ -61,8 +62,8 @@ public class AgentAuctionMessages {
          *
          * @return AgentAuctionMessage Builder
          */
-        public AgentAuctionMessages build() {
-            return new AgentAuctionMessages(this);
+        public A_AH_Messages build() {
+            return new A_AH_Messages(this);
         }
 
         /**
@@ -77,7 +78,7 @@ public class AgentAuctionMessages {
         }
 
         /**
-         * name sets the message's name
+         * name sets the message's item name
          *
          * @param name Builder
          * @return builder
@@ -102,7 +103,7 @@ public class AgentAuctionMessages {
          * @param topic enum
          * @return builder
          */
-        public Builder topic(AAMessageTopic topic) {
+        public Builder topic(A_AH_MTopic topic) {
             this.topic = topic;
             return this;
         }
@@ -113,7 +114,7 @@ public class AgentAuctionMessages {
      *
      * @return returns the AMType type
      */
-    public AAMessageTopic getTopic(){
+    public A_AH_MTopic getTopic(){
         return topic;
     }
 
@@ -122,13 +123,13 @@ public class AgentAuctionMessages {
      *
      * @param builder builder
      */
-    public AgentAuctionMessages(Builder builder) {
+    public A_AH_Messages(Builder builder) {
         this.topic       = builder.topic;
         this.auctionList = builder.auctionList;
         this.bid        = builder.bid;
         this.itemId      = builder.itemId;
         this.accountId   = builder.accountId;
-        this.name        = builder.name;
+        this.itemName = builder.name;
     }
 
     /**
@@ -172,8 +173,8 @@ public class AgentAuctionMessages {
      *
      * @return name String
      */
-    public String getName() {
-        return  name;
+    public String getItemName() {
+        return itemName;
     }
 
     /**
@@ -207,7 +208,7 @@ public class AgentAuctionMessages {
      * Enums to let the Agent/Auction House know the topic when
      * sending/receiving messages.
      */
-    public enum AAMessageTopic {
+    public enum A_AH_MTopic {
         BID,        //client submits bid on item
         DEREGISTER, //client de-registers from auction house
         OUTBID,     //Auction tells agent they were outbid
