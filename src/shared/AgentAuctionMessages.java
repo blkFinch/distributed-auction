@@ -4,8 +4,8 @@ import Auction.Item;
 
 import java.util.ArrayList;
 
-public class A_AH_Messages {
-    private final A_AH_MTopic topic;       //what kind of message is it
+public class AgentAuctionMessages {
+    private final AAMessageTopic  topic;       //what kind of message is it
     private final ArrayList<Item> auctionList; //list of items in the auction
     private final Double          bid;         //bid value
     private final int             accountId;   //Client ID from first contact with Auction
@@ -16,7 +16,7 @@ public class A_AH_Messages {
      * AgentAuctionMessage Builder
      */
     public static class Builder {
-        private A_AH_MTopic topic       = null;
+        private AAMessageTopic  topic       = null;
         private ArrayList<Item> auctionList = null;
         private Double          bid         = null;
         private int             accountId   = -1;
@@ -61,8 +61,8 @@ public class A_AH_Messages {
          *
          * @return AgentAuctionMessage Builder
          */
-        public A_AH_Messages build() {
-            return new A_AH_Messages(this);
+        public AgentAuctionMessages build() {
+            return new AgentAuctionMessages(this);
         }
 
         /**
@@ -102,7 +102,7 @@ public class A_AH_Messages {
          * @param topic enum
          * @return builder
          */
-        public Builder topic(A_AH_MTopic topic) {
+        public Builder topic(AAMessageTopic topic) {
             this.topic = topic;
             return this;
         }
@@ -113,7 +113,7 @@ public class A_AH_Messages {
      *
      * @return returns the AMType type
      */
-    public A_AH_MTopic getTopic(){
+    public AAMessageTopic getTopic(){
         return topic;
     }
 
@@ -122,22 +122,13 @@ public class A_AH_Messages {
      *
      * @param builder builder
      */
-    public A_AH_Messages(Builder builder) {
+    public AgentAuctionMessages(Builder builder) {
         this.topic       = builder.topic;
         this.auctionList = builder.auctionList;
-        this.bid         = builder.bid;
+        this.bid        = builder.bid;
         this.itemId      = builder.itemId;
         this.accountId   = builder.accountId;
         this.name        = builder.name;
-    }
-
-    /**
-     * getItemName returns  item name from message
-     *
-     * @return name String
-     */
-    public String getItemName(){
-        return name;
     }
 
     /**
@@ -216,7 +207,7 @@ public class A_AH_Messages {
      * Enums to let the Agent/Auction House know the topic when
      * sending/receiving messages.
      */
-    public enum A_AH_MTopic {
+    public enum AAMessageTopic {
         BID,        //client submits bid on item
         DEREGISTER, //client de-registers from auction house
         OUTBID,     //Auction tells agent they were outbid
