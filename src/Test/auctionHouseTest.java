@@ -41,7 +41,7 @@ public class auctionHouseTest {
                 .nullId();
 
         //Send request to Bank
-        out.writeObject(newUserRequest);
+        out.writeObject(loginRequest);
 
         while(true){
             Message messageIn = (Message) in.readObject();

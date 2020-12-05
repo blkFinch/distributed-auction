@@ -23,7 +23,7 @@ public class DBCommandProtocol {
                 int id = message.getAccountId();
                 ReadClient rc = new ReadClient(id);
                 try {
-                    Client getClient = rc.inject();
+                    Client getClient = (Client) SyncInjector.getActive().executeInjection(rc);
                     response = new DBMessage.Builder()
                             .response(Message.Response.SUCCESS)
                             .accountId(id)
@@ -40,7 +40,7 @@ public class DBCommandProtocol {
                 Client putClient = (Client) message.getPayload();
                 CreateClient cc = new CreateClient(putClient);
                 try {
-                    int newID = cc.inject();
+                    int newID = (int) SyncInjector.getActive().executeInjection(cc);
                     response = new DBMessage.Builder()
                             .response(Message.Response.SUCCESS)
                             .accountId(newID)
