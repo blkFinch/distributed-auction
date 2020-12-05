@@ -19,12 +19,19 @@ public class BankThread extends Thread {
     }
 
     public void run() {
-        System.out.println("running new bank thread");
+        System.out.println(
+                "running new bank thread from " + socket.getInetAddress()
+        );
+
         try {
-            Message message = readMessage();
-            CommandProtocol cp = new CommandProtocol(message);
-            Message res = cp.processCommand();
-            objOut.writeObject(res);
+            Message message;
+
+            while(( message = readMessage() ) != null){
+                CommandProtocol cp = new CommandProtocol(message);
+                Message res = cp.processCommand();
+                objOut.writeObject(res);
+            }
+
 
         } catch (Exception e) {
             e.printStackTrace();

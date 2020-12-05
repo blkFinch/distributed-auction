@@ -44,7 +44,7 @@ public class CreateClient implements SQLInjector<Integer> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        dbConn.close();
+
         return id;
     }
 }

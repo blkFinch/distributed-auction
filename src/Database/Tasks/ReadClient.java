@@ -28,7 +28,7 @@ public class ReadClient implements SQLInjector {
                 .setBalance(rs.getInt("balance"))
                 .setAuctionHouse(rs.getBoolean("isAuctionHouse"))
                 .build();
-        DBconn.close();
+
         return client;
     }
 }
