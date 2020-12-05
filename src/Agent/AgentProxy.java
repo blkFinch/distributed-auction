@@ -1,6 +1,6 @@
 package Agent;
 
-import shared.Message;
+import shared.BankMessages;
 
 import java.io.*;
 import java.net.Socket;
@@ -14,7 +14,7 @@ public class AgentProxy implements Runnable{
     private int portNum;
     private String login;
     private Socket socket;
-    private List<Message> inMessages;
+    private List<BankMessages> inMessages;
     private ObjectOutputStream out;
     private boolean running;
 
@@ -38,20 +38,20 @@ public class AgentProxy implements Runnable{
         out = new ObjectOutputStream(socket.getOutputStream());
         out.flush();
         ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-        Message fromServer;
-        Message newUserRequest = new Message.Builder()
-                .command(Message.Command.OPENACCOUNT)
+        BankMessages fromServer;
+        BankMessages newUserRequest = new BankMessages.Builder()
+                .command(BankMessages.Command.OPENACCOUNT)
                 .accountName(username)
                 .nullId();
-        Message getHouses = new Message.Builder()
-                .command(Message.Command.GETHOUSES)
+        BankMessages getHouses = new BankMessages.Builder()
+                .command(BankMessages.Command.GETHOUSES)
                 .nullId();
 
         out.writeObject(newUserRequest);
         out.writeObject(getHouses);
 
         //while(running){
-            fromServer = (Message)in.readObject();
+            fromServer = (BankMessages)in.readObject();
             System.out.println("Bank: " + fromServer.toString());
             inMessages.add(fromServer);
         //}
@@ -59,7 +59,7 @@ public class AgentProxy implements Runnable{
 
     public void setLogin(String log){ login = log; }
 
-    public synchronized void sendMessage(Message message){
+    public synchronized void sendMessage(BankMessages message){
         try {
             out.writeObject(message);
         } catch(IOException e){
@@ -69,7 +69,7 @@ public class AgentProxy implements Runnable{
 
     public synchronized String readMessages(){
         String messages = "";
-        for(Message mes : inMessages){ messages += (mes+"\n"); }
+        for(BankMessages mes : inMessages){ messages += (mes+"\n"); }
         inMessages.clear();
         return messages;
     }

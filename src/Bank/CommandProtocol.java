@@ -1,35 +1,34 @@
 package Bank;
 
-import shared.Message;
+import shared.BankMessages;
 
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class CommandProtocol {
-    private final Message message;
+    private final BankMessages message;
     private final Socket hostSocket;
 
-    public CommandProtocol(Socket host, Message message) {
+    public CommandProtocol(Socket host, BankMessages message) {
         this.message = message;
         this.hostSocket = host;
     }
 
-    public Message proccessCommand(){
-        Message.Command command = message.getCommand();
-        Message response = null;
+    public BankMessages proccessCommand(){
+        BankMessages.Command command = message.getCommand();
+        BankMessages response = null;
         switch (command) {
             case LOGIN:
                 Client user = Bank.getActive().getClient(message.getSenderId());
                 if (user != null) {
-                    response = new Message.Builder()
-                            .response(Message.Response.SUCCESS)
+                    response = new BankMessages.Builder()
+                            .response(BankMessages.Response.SUCCESS)
                             .senderId(000);
 
                     Bank.getActive().clients.add(user);
 
                 }else{
-                    response  = new Message.Builder()
-                            .response(Message.Response.FAILURE)
+                    response  = new BankMessages.Builder()
+                            .response(BankMessages.Response.FAILURE)
                             .arguments(new String[]{"no user found"})
                             .senderId(000);
                 }
@@ -46,8 +45,8 @@ public class CommandProtocol {
                 int newUserId = Bank.getActive().createClient(newClient);
                 if( newUserId != 999){
                     Bank.getActive().clients.add(newClient);
-                    response = new Message.Builder()
-                            .response(Message.Response.SUCCESS)
+                    response = new BankMessages.Builder()
+                            .response(BankMessages.Response.SUCCESS)
                             .accountId(newUserId)
                             .senderId(000);
                 }
@@ -56,7 +55,7 @@ public class CommandProtocol {
                 break;
 
             case GETHOUSES:
-                Message res = new Message.Builder().houses(Bank.getActive().getHouses()).nullId();
+                BankMessages res = new BankMessages.Builder().houses(Bank.getActive().getHouses()).nullId();
                 System.out.println("sending auction houses");
                 break;
 
@@ -72,8 +71,8 @@ public class CommandProtocol {
                 int newAHId = Bank.getActive().createClient(house);
                 if( newAHId != 999){
                     Bank.getActive().registerAuctionHouse(house);
-                    response = new Message.Builder()
-                            .response(Message.Response.SUCCESS)
+                    response = new BankMessages.Builder()
+                            .response(BankMessages.Response.SUCCESS)
                             .accountId(newAHId)
                             .senderId(000);
                 }

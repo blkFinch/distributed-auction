@@ -1,10 +1,9 @@
 package Test;
 
 import shared.ConnectionReqs;
-import shared.Message;
+import shared.BankMessages;
 
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +20,12 @@ public class auctionHouseTest {
         System.out.println("running on port: " + portNumber);
 
 //            //Build simple request
-        Message loginRequest = new Message.Builder()
-                .command(Message.Command.LOGIN)
+        BankMessages loginRequest = new BankMessages.Builder()
+                .command(BankMessages.Command.LOGIN)
                 .senderId(1);
 
-        Message newUserRequest = new Message.Builder()
-                                            .command(Message.Command.OPENACCOUNT)
+        BankMessages newUserRequest = new BankMessages.Builder()
+                                            .command(BankMessages.Command.OPENACCOUNT)
                                             .accountName("Jimmy")
                                             .nullId();
 
@@ -34,8 +33,8 @@ public class auctionHouseTest {
         List<ConnectionReqs> reqs = new ArrayList<>();
         reqs.add(req);
 
-        Message newAhRequest = new Message.Builder()
-                .command(Message.Command.REGISTERHOUSE)
+        BankMessages newAhRequest = new BankMessages.Builder()
+                .command(BankMessages.Command.REGISTERHOUSE)
                 .accountName("AH-320")
                 .connectionReqs(reqs)
                 .nullId();
@@ -43,9 +42,9 @@ public class auctionHouseTest {
         out.writeObject(newAhRequest);
 
         while(true){
-            Message messageIn = (Message) in.readObject();
+            BankMessages messageIn = (BankMessages) in.readObject();
 
-            if(messageIn.getResponse() == Message.Response.SUCCESS){
+            if(messageIn.getResponse() == BankMessages.Response.SUCCESS){
                 System.out.println("SUCCESS!");
                 System.out.println("user id: " + messageIn.getAccountId());
             }

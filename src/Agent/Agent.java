@@ -1,10 +1,7 @@
 package Agent;
 
-import shared.Message;
+import shared.BankMessages;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,9 +21,9 @@ public class Agent{
 
     public void runBank(){ bankProxy.run(); }
 
-    public void sendBankMessage(Message message){ bankProxy.sendMessage(message); }
+    public void sendBankMessage(BankMessages message){ bankProxy.sendMessage(message); }
 
-    public void sendAuctionMessage(int ind, Message message){
+    public void sendAuctionMessage(int ind, BankMessages message){
         auctionProxies.get(ind).sendMessage(message);
     }
 

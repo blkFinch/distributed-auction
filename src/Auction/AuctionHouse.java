@@ -2,7 +2,7 @@ package Auction;
 
 import shared.A_AH_Messages;
 import shared.ConnectionReqs;
-import shared.Message;
+import shared.BankMessages;
 
 import java.io.*;
 import java.net.*;
@@ -12,7 +12,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class AuctionHouse {
     private final  ArrayList<Item>        auctionList     = new ArrayList<>();
-    private final  BlockingQueue<Boolean> check = new LinkedBlockingDeque<>();
+    private final  BlockingQueue<Boolean> check           = new LinkedBlockingDeque<>();
     private static boolean                running         = true;
     private        double                 balance         = 0.0;
     private        int                    auctionId;
@@ -61,10 +61,11 @@ public class AuctionHouse {
         ConnectionReqs bankReqs = new ConnectionReqs(ip, port);
         List<ConnectionReqs> ahInfo = new LinkedList<>();
         ahInfo.add(bankReqs);
-        Message register = new Message.Builder().command(
-                Message.Command.REGISTERHOUSE)
-                .connectionReqs(ahInfo).senderId(-1);
+        BankMessages register = new BankMessages.Builder().command(
+                BankMessages.Command.REGISTERHOUSE)
+                .connectionReqs(ahInfo).nullId();
         sendToBank(register);
+
         Thread inThread = new Thread(new AuctionIn());
         inThread.start();
 
@@ -82,8 +83,8 @@ public class AuctionHouse {
             try {
                 ioIn = new ObjectInputStream(bankSocket.getInputStream());
                 while(running){
-                    Message message = (Message) ioIn.readObject();
-                    Message.Command topic = message.getCommand();
+                    BankMessages message = (BankMessages) ioIn.readObject();
+                    BankMessages.Command topic = message.getCommand();
                     switch(topic){
                         case LOGIN:
                             login(message);
@@ -98,7 +99,7 @@ public class AuctionHouse {
                 }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
-            } catch(IOException e){
+            } catch(IOException e) {
                 try {
                     ioIn.close();
                 } catch (IOException ex) {
@@ -107,35 +108,52 @@ public class AuctionHouse {
             }
         }
 
-        private void getHouses(Message message) {
+        private void getHouses(BankMessages message) {
         }
 
-        private void registerHouse(Message message) {
+        private void registerHouse(BankMessages message) {
 
         }
 
-        private void login(Message message) {
+        private void login(BankMessages message) {
         }
 
-        private void openAccount(String message) {
-
+        private void hold(BankMessages message) {
+            int bidder = message.getAccountId();
+            BankMessages.Response response = message.getResponse();
+            Agent temp = agentSearch(bidder);
+            if (temp != null) {
+                try{
+                    if (response == BankMessages.Response.SUCCESS) {
+                        temp.bankSignOff.put(true);
+                    }else if(response == BankMessages.Response.OVERDRAFT){
+                        temp.bankSignOff.put(false);
+                    }
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
         }
 
         /**
-         * updates the balance variable to the bank's balance
+         * updates the balance variable to the bank balance given by the bank,
          *
-         * @param message Message
+         * @param message the message with the available balance for this object
          */
-        private void bankBalance(Message message) {
+        private void bankBalance(BankMessages message) {
             balance = message.getBalance();
         }
 
-        private void released(String message) {
-
+        private void released(BankMessages message){
+            BankMessages.Response response = message.getResponse();
         }
-
-        private void registered(String message) {
-
+        private void registered(BankMessages message){
+            auctionId = message.getAccountId();
+            check.add(true);
+            Thread timer = new Thread(new auctionListMaintenance());
+            timer.setDaemon(true);
+            timer.setPriority(4);
+            timer.start();
         }
     }
 
@@ -262,25 +280,25 @@ public class AuctionHouse {
         private void agentShutdown(Boolean reason) {
             message = null;
             agentsList.remove(this);
-            try{
-                if(reason){
+            try {
+                if(reason) {
                     A_AH_Messages shutdown = A_AH_Messages.Builder.newBuilder()
                             .topic(A_AH_Messages.A_AH_MTopic.DEREGISTER)
                             .build();
                     sendOut(shutdown);
-                    if(!agentsSocket.isClosed()){
+                    if(!agentsSocket.isClosed()) {
                         agentOut.close();
                         agentIn.close();
                         agentsSocket.close();
                     }
-                }else{
-                    if(!agentsSocket.isClosed()){
+                } else {
+                    if(!agentsSocket.isClosed()) {
                         agentOut.close();
                         agentIn.close();
                         agentsSocket.close();
                     }
                 }
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -380,12 +398,13 @@ public class AuctionHouse {
          * accept the bid.
          * @param message The message with AMType BID
          */
-        private void bid(A_AH_Messages message){
-            int    itemId = message.getItem();
+        private void bid(A_AH_Messages message) {
+            int    itemId   = message.getItem();
             int    bidderId = message.getAccountId();
-            String name = message.getItemName();
-            double amount = message.getBid();
-            Item bidItem = itemSearch(itemId);
+            String name     = message.getItemName();
+            double amount   = message.getBid();
+            Item bidItem    = itemSearch(itemId);
+
             if(bidItem == null){
                 reject(itemId,name);
                 return;
@@ -395,8 +414,8 @@ public class AuctionHouse {
                 value = bidItem.getMinimumBid();
             }
             if(amount > value){
-                Message requestHold = new Message.Builder()
-                        .command(Message.Command.BLOCK)
+                BankMessages requestHold = new BankMessages.Builder()
+                        .command(BankMessages.Command.BLOCK)
                         .accountId(bidderId).cost(amount).senderId(this.agentId);
                 try{
                     //requests the hold.
@@ -431,8 +450,8 @@ public class AuctionHouse {
          * @param amount the amount requested to release
          */
         private synchronized void release(int id, Double amount){
-            Message release = new Message.Builder()
-                    .command(Message.Command.UNBLOCK)
+            BankMessages release = new BankMessages.Builder()
+                    .command(BankMessages.Command.UNBLOCK)
                     .accountId(id).cost(amount).senderId(auctionId);
             sendToBank(release);
         }
@@ -512,8 +531,8 @@ public class AuctionHouse {
         Agent agent = agentSearch(bidder);
         if (agent != null) {
             agent.winner(item);
-            Message release = new Message.Builder()
-                    .command(Message.Command.UNBLOCK)
+            BankMessages release = new BankMessages.Builder()
+                    .command(BankMessages.Command.UNBLOCK)
                     .cost(item.getCurrentBid())
                     .accountId(bidder).senderId(auctionId);
             sendToBank(release);
@@ -541,10 +560,10 @@ public class AuctionHouse {
      * Looped messages (GET_AVAILABLE) are ignored when adding to log.
      * @param message message being sent to the bank.
      */
-    private synchronized void sendToBank(Message message) {
+    private synchronized void sendToBank(BankMessages message) {
         try {
-            Message.Command temp = message.getCommand();
-            if(temp != Message.Command.GETBALANCE){
+            BankMessages.Command temp = message.getCommand();
+            if(temp != BankMessages.Command.GETBALANCE) {
                 System.err.println("Bank: " + message);
             }
             ioOut.reset();
@@ -555,9 +574,9 @@ public class AuctionHouse {
     }
 
     public void getBankBalance(){
-        Message getAvailable = new Message
+        BankMessages getAvailable = new BankMessages
                 .Builder()
-                .command(Message.Command.GETBALANCE)
+                .command(BankMessages.Command.GETBALANCE)
                 .senderId(auctionId);
         sendToBank(getAvailable);
     }

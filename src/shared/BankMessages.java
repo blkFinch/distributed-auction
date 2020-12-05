@@ -9,8 +9,7 @@ import java.util.List;
  * Message for communicating across sockets. Adapted from
  * https://github.com/ApolloRez/DistributedAuction/tree/master/src
  */
-public class Message implements Serializable {
-    private static final long          serialVersionUID = -1195974328835714539L;
+public class BankMessages implements Serializable {
     private final Command              command;
     private final Double               balance;
     private final int                  senderId;
@@ -18,7 +17,7 @@ public class Message implements Serializable {
     private final String               accountName;
     private final String []            arguments;
     private final List<ConnectionReqs> connectionReqs;
-    private final List<Client>          houses;
+    private final List<Client>         houses;
     private final Response             response;
 
     /**
@@ -29,10 +28,10 @@ public class Message implements Serializable {
         private Double               cost           = null;
         private int                  senderId       = -1;
         private int                  accountId      = -1;
-        private String               accountName     = null;
-        private String []            arguments       = null;
+        private String               accountName    = null;
+        private String []            arguments      = null;
         private List<ConnectionReqs> connectionReqs = null;
-        private List<Client>        houses = null;
+        private List<Client>         houses         = null;
         private Response             response       = null;
 
         /**
@@ -111,13 +110,13 @@ public class Message implements Serializable {
          * @param senderId UUID
          * @return Message
          */
-        public Message senderId(int senderId) {
+        public BankMessages senderId(int senderId) {
             this.senderId = senderId;
-            return new Message(this);
+            return new BankMessages(this);
         }
 
-        public Message nullId(){
-            return new Message(this);
+        public BankMessages nullId(){
+            return new BankMessages(this);
         }
     }
 
@@ -126,7 +125,7 @@ public class Message implements Serializable {
      *
      * @param builder Builder
      */
-    private Message(Builder builder) {
+    private BankMessages(Builder builder) {
         this.accountId      = builder.accountId;
         this.balance        = builder.cost;
         this.senderId       = builder.senderId;
