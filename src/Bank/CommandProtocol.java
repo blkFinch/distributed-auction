@@ -21,6 +21,7 @@ public class CommandProtocol {
                 if (user != null) {
                     response = new Message.Builder()
                             .accountId(user.getID())
+                            .connectionReqs(Bank.getActive().getHouses())
                             .response(Message.Response.SUCCESS)
                             .senderId(000);
 
@@ -47,6 +48,7 @@ public class CommandProtocol {
                     response = new Message.Builder()
                             .response(Message.Response.SUCCESS)
                             .accountId(newUserId)
+                            .connectionReqs(Bank.getActive().getHouses())
                             .senderId(0);
                 }
 
@@ -75,8 +77,6 @@ public class CommandProtocol {
                             .accountId(newAHId)
                             .senderId(000);
                 }
-
-
         }
 
         return response;
