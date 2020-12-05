@@ -1,23 +1,23 @@
 package Agent;
 
+import shared.ConnectionReqs;
 import shared.Message;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Agent{
     private String username;
     private static AgentProxy bankProxy;
-    private static List<AgentProxy> auctionProxies;
-    private List<String> auctionNames;
+    private static Map<ConnectionReqs, AgentProxy> auctionProxies;
 
     public Agent(String user, String host, String port, boolean newAcc) throws Exception{
         username = user;
-        auctionNames = new ArrayList<>();
         bankProxy = new AgentProxy(user,"bank", host, port, newAcc);
+        auctionProxies = new HashMap<>();
         //bankProxy.run();
     }
 
@@ -29,7 +29,20 @@ public class Agent{
         auctionProxies.get(ind).sendMessage(message);
     }
 
-    public List<String> getAuctionNames(){ return auctionNames; }
+    public void updateAuctionProxies(){
+        List<ConnectionReqs> newConns = bankProxy.getNewConnections();
+        AgentProxy auctionProxy;
+        for(ConnectionReqs conn : newConns){
+            try{
+                auctionProxy = new AgentProxy(username,"auction",
+                        conn.getIp(), ""+conn.getPort(), false);
+                //auctionProxies.put(conn, )
+            } catch(IOException e){
+                System.out.println("Connection to auction house failed");
+            }
+        }
+    }
+
 
     /*public static void main(String[] args){
         BufferedReader in=new BufferedReader(new InputStreamReader(System.in));

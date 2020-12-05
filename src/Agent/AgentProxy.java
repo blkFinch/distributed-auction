@@ -1,5 +1,6 @@
 package Agent;
 
+import shared.ConnectionReqs;
 import shared.Message;
 
 import java.io.*;
@@ -15,6 +16,7 @@ public class AgentProxy implements Runnable{
     private boolean newAccount;
     private Socket socket;
     private List<Message> inMessages;
+    private List<ConnectionReqs> newConnections;
     private ObjectOutputStream out;
     private boolean running;
 
@@ -31,11 +33,12 @@ public class AgentProxy implements Runnable{
         }
         newAccount = newAcc;
         inMessages = new ArrayList<>();
+        newConnections = new ArrayList<>();
         running = true;
     }
 
-    private void clientHandler(String host, int port) throws Exception{
-        socket = new Socket(host, port);
+    private void bankHandler() throws Exception{
+        socket = new Socket(hostIP, portNum);
         out = new ObjectOutputStream(socket.getOutputStream());
         out.flush();
         ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
@@ -54,12 +57,32 @@ public class AgentProxy implements Runnable{
         else{
             loginRequest = new Message.Builder()
                     .command(Message.Command.LOGIN)
-                    .accountName(username)
-                    .nullId();
+                    .senderId(Integer.parseInt(username));
         }
 
+        System.out.println("Server: " + loginRequest.toString());
         out.writeObject(loginRequest);
-        out.writeObject(getHouses);
+        //System.out.println("Server: " + getHouses.toString());
+        //out.writeObject(getHouses);
+
+        while(running){
+            fromServer = (Message)in.readObject();
+            System.out.println("Bank: " + fromServer.toString());
+            if(fromServer.getConnectionReqs() != null){
+                newConnections.addAll(fromServer.getConnectionReqs());
+            }
+            else{
+                inMessages.add(fromServer);
+            }
+        }
+    }
+
+    private void auctionHandler() throws Exception{
+        socket = new Socket(hostIP, portNum);
+        out = new ObjectOutputStream(socket.getOutputStream());
+        out.flush();
+        ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+        Message fromServer;
 
         while(running){
             fromServer = (Message)in.readObject();
@@ -83,11 +106,19 @@ public class AgentProxy implements Runnable{
         return messages;
     }
 
+    public List<ConnectionReqs> getNewConnections(){
+        List<ConnectionReqs> connList = new ArrayList<>(newConnections);
+        newConnections.clear();
+        return connList;
+    }
+
     @Override
     public void run(){
         try{
-            if(proxyType == 0 || proxyType == 1){
-                clientHandler(hostIP, portNum);
+            if(proxyType == 0){
+                bankHandler();
+            } else if (proxyType == 1){
+                auctionHandler();
             }
             else{ System.out.println("Connection failed."); }
         } catch(Exception e){

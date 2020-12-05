@@ -166,7 +166,7 @@ public class AgentGUI extends Application{
 
         VBox loginVBox = new VBox(5);
         HBox loginNameBox = new HBox(5);
-        Label loginNameLabel = new Label("Username:");
+        Label loginNameLabel = new Label("User ID:");
         TextField loginNameField = new TextField();
         loginNameBox.getChildren().addAll(loginNameLabel, loginNameField);
         loginNameBox.setAlignment(Pos.CENTER);
