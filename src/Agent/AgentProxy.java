@@ -12,7 +12,6 @@ public class AgentProxy implements Runnable{
     private int proxyType;
     private String hostIP;
     private int portNum;
-    private String login;
     private Socket socket;
     private List<Message> inMessages;
     private ObjectOutputStream out;
@@ -50,14 +49,12 @@ public class AgentProxy implements Runnable{
         out.writeObject(newUserRequest);
         out.writeObject(getHouses);
 
-        //while(running){
+        while(running){
             fromServer = (Message)in.readObject();
             System.out.println("Bank: " + fromServer.toString());
             inMessages.add(fromServer);
-        //}
+        }
     }
-
-    public void setLogin(String log){ login = log; }
 
     public synchronized void sendMessage(Message message){
         try {

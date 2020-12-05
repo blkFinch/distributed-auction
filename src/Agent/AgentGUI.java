@@ -27,6 +27,10 @@ public class AgentGUI extends Application{
     private ScrollPane messageLog;
     private Button checkBalance;
     private VBox placeBidButtons;
+    private Scene createScene;
+    private Scene loginScene;
+    private String host;
+    private String port;
     private boolean connected;
 
     @Override
@@ -94,55 +98,92 @@ public class AgentGUI extends Application{
         BorderPane.setAlignment(placeBidBox, Pos.CENTER);
         placeBid.setBottom(placeBidBox);
 
-        Stage loginStage = new Stage();
-        Scene loginScene;
-        VBox loginVBox = new VBox(5);
-        HBox loginNameBox = new HBox(5);
-        HBox loginBalBox = new HBox(5);
-        HBox loginIPBox = new HBox(5);
-        HBox loginPortBox = new HBox(5);
-        Label loginNameLabel = new Label("Username:");
-        TextField loginNameField = new TextField();
-        loginNameBox.getChildren().addAll(loginNameLabel, loginNameField);
-        loginNameBox.setAlignment(Pos.CENTER);
-        Label loginBalLabel = new Label("Initial Balance:");
-        TextField loginBalField = new TextField();
-        loginBalBox.getChildren().addAll(loginBalLabel, loginBalField);
-        loginBalBox.setAlignment(Pos.CENTER);
-        Label loginIPLabel = new Label("Bank IP:");
-        TextField loginIPField = new TextField();
-        loginIPBox.getChildren().addAll(loginIPLabel, loginIPField);
-        loginIPBox.setAlignment(Pos.CENTER);
-        Label loginPortLabel = new Label("Bank Port:");
-        TextField loginPortField = new TextField();
-        loginPortBox.getChildren().addAll(loginPortLabel, loginPortField);
-        loginPortBox.setAlignment(Pos.CENTER);
-        Button loginButton = new Button("Create Account");
-        loginVBox.getChildren().addAll(loginNameBox, loginBalBox, loginIPBox,
-                loginPortBox, loginButton);
-        loginVBox.setAlignment(Pos.CENTER);
-        loginStage.initModality(Modality.APPLICATION_MODAL);
-        loginStage.initOwner(primaryStage);
-        loginStage.setAlwaysOnTop(true);
-        loginStage.setTitle("Log In");
-        loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            String user = loginNameField.getText();
-            String host = loginIPField.getText();
-            String port = loginPortField.getText();
-            String login = user + ":n:"
-                    + loginBalField.getText() + ":0";
+        Stage openStage = new Stage();
+        Scene openScene;
+        VBox openVBox = new VBox(5);
+        HBox openIPBox = new HBox(5);
+        HBox openPortBox = new HBox(5);
+        HBox openButtonBox = new HBox(5);
+        Label openIPLabel = new Label("Bank IP:");
+        TextField openIPField = new TextField();
+        openIPBox.getChildren().addAll(openIPLabel, openIPField);
+        openIPBox.setAlignment(Pos.CENTER);
+        Label openPortLabel = new Label("Bank Port:");
+        TextField openPortField = new TextField();
+        openPortBox.getChildren().addAll(openPortLabel, openPortField);
+        openPortBox.setAlignment(Pos.CENTER);
+        Button createAccountButton = new Button("Create Account");
+        createAccountButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            host = openIPField.getText();
+            port = openPortField.getText();
+            openStage.setScene(createScene);
+        });
+        Button logInButton = new Button("Log In");
+        logInButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            host = openIPField.getText();
+            port = openPortField.getText();
+            openStage.setScene(loginScene);
+        });
+        openButtonBox.getChildren().addAll(createAccountButton, logInButton);
+        openButtonBox.setAlignment(Pos.CENTER);
+        openVBox.getChildren().addAll(openIPBox, openPortBox, openButtonBox);
+        openVBox.setAlignment(Pos.CENTER);
+        openStage.initModality(Modality.APPLICATION_MODAL);
+        openStage.initOwner(primaryStage);
+        openStage.setAlwaysOnTop(true);
+        openStage.setTitle("Open Connection");
+        openScene = new Scene(openVBox, 250, 180);
+        openStage.setScene(openScene);
+        openStage.show();
+
+        VBox createVBox = new VBox(5);
+        HBox createNameBox = new HBox(5);
+        HBox createBalBox = new HBox(5);
+        Label createNameLabel = new Label("Username:");
+        TextField createNameField = new TextField();
+        createNameBox.getChildren().addAll(createNameLabel, createNameField);
+        createNameBox.setAlignment(Pos.CENTER);
+        Label createBalLabel = new Label("Initial Balance:");
+        TextField createBalField = new TextField();
+        createBalBox.getChildren().addAll(createBalLabel, createBalField);
+        createBalBox.setAlignment(Pos.CENTER);
+        Button createButton = new Button("Create Account");
+        createVBox.getChildren().addAll(createNameBox, createBalBox, createButton);
+        createVBox.setAlignment(Pos.CENTER);
+        openStage.setTitle("Create Account");
+        createButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            String user = createNameField.getText();
             try{
-                agent = new Agent(user, host, port, login);
-                loginStage.close();
+                agent = new Agent(user, host, port);
+                openStage.close();
                 agent.runBank();
             } catch(Exception e){
                 System.out.println("Connection failed. Try again.");
             }
         });
+        createScene = new Scene(createVBox, 250, 180);
 
+        VBox loginVBox = new VBox(5);
+        HBox loginNameBox = new HBox(5);
+        Label loginNameLabel = new Label("Username:");
+        TextField loginNameField = new TextField();
+        loginNameBox.getChildren().addAll(loginNameLabel, loginNameField);
+        loginNameBox.setAlignment(Pos.CENTER);
+        Button loginButton = new Button("Log In");
+        loginVBox.getChildren().addAll(loginNameBox, loginButton);
+        loginVBox.setAlignment(Pos.CENTER);
+        openStage.setTitle("Log In");
+        loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            String user = createNameField.getText();
+            try{
+                agent = new Agent(user, host, port);
+                openStage.close();
+                agent.runBank();
+            } catch(Exception e){
+                System.out.println("Connection failed. Try again.");
+            }
+        });
         loginScene = new Scene(loginVBox, 250, 180);
-        loginStage.setScene(loginScene);
-        loginStage.show();
 
         scene = new Scene(chooseAuction, 762, 553);
         primaryStage.setScene(scene);

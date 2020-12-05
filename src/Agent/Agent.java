@@ -14,11 +14,10 @@ public class Agent{
     private static List<AgentProxy> auctionProxies;
     private List<String> auctionNames;
 
-    public Agent(String user, String host, String port, String login) throws Exception{
+    public Agent(String user, String host, String port) throws Exception{
         username = user;
         auctionNames = new ArrayList<>();
         bankProxy = new AgentProxy(user,"bank", host, port);
-        bankProxy.setLogin(login);
         //bankProxy.run();
     }
 
