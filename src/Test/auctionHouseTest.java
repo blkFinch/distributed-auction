@@ -36,12 +36,12 @@ public class auctionHouseTest {
 
         Message newAhRequest = new Message.Builder()
                 .command(Message.Command.REGISTERHOUSE)
-                .accountName("AH-320")
+                .accountName("AH-420")
                 .connectionReqs(reqs)
                 .nullId();
 
         //Send request to Bank
-        out.writeObject(newUserRequest);
+        out.writeObject(newAhRequest);
 
         while(true){
             Message messageIn = (Message) in.readObject();
@@ -49,6 +49,14 @@ public class auctionHouseTest {
             if(messageIn.getResponse() == Message.Response.SUCCESS){
                 System.out.println("SUCCESS!");
                 System.out.println("user id: " + messageIn.getAccountId());
+
+
+                out.writeObject(loginRequest);
+
+                if(messageIn.getResponse() == Message.Response.SUCCESS){
+                    System.out.println("SUCCESS!");
+                    System.out.println(messageIn.getConnectionReqs());
+                }
             }
         }
 

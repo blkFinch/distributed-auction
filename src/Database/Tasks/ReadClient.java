@@ -3,10 +3,12 @@ package Database.Tasks;
 import Bank.Client;
 import Bank.ClientBuilder;
 import Database.DatabaseManager;
+import Database.Task;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.concurrent.Callable;
 
 public class ReadClient implements SQLInjector {
     private final int id;
@@ -15,7 +17,7 @@ public class ReadClient implements SQLInjector {
         this.id = id;
     }
 
-    public synchronized Client inject() throws Exception {
+    public Client inject() throws Exception {
         Connection DBconn = DatabaseManager.getConn();
         Statement statement = DBconn.createStatement();
         ResultSet rs = statement.executeQuery("SELECT * FROM clients WHERE id=" + id);
@@ -26,7 +28,7 @@ public class ReadClient implements SQLInjector {
                 .setBalance(rs.getInt("balance"))
                 .setAuctionHouse(rs.getBoolean("isAuctionHouse"))
                 .build();
-        DBconn.close();
+
         return client;
     }
 }

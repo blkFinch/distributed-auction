@@ -35,7 +35,7 @@ public class UpdateClient implements SQLInjector {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        DBconn.close();
+
         return 1;
     }
 }
