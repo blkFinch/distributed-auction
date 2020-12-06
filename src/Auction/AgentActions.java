@@ -8,7 +8,6 @@ import Auction.AuctionHouseSpecs;
 import Auction.AH_AgentThread;
 import Auction.BankActions;
 
-import java.io.IOException;
 import java.util.UUID;
 
 public class AgentActions {
@@ -25,25 +24,25 @@ public class AgentActions {
         int itemID = message.getItem();
         int bidderId = message.getAccountId();
         String name = message.getItemName();
-        double cost = message.getBid();
+        int cost = message.getBid();
         Item bidItem = itemSearch(itemID);
         if(bidItem == null){
             reject(itemID,name);
             return;
         }
-        double value = bidItem.getCurrentBid();
+        int value = bidItem.getCurrentBid();
         if( value < bidItem.getMinimumBid()){
             value = bidItem.getMinimumBid();
         }
         if(cost > value){
             Message requestHold = new Message.Builder()
-                    .command(Message.Command.HOLD)
-                    .accountId(bidderId).amount(cost).send(this.agentId);
+                    .command(Message.Command.BLOCK)
+                    .accountId(bidderId).cost(cost).senderId(bidderId);
             try{
                 //requests the hold.
                 BankActions.sendToBank(requestHold);
                 //waits for the response from bank.
-                Boolean success = bankSignOff.take();
+                Boolean success = AH_AgentThread.bankSignOff.take();
                 if(success){
                     //accepts bid and lets the last bidder know
                     //they were outbidded
@@ -63,6 +62,42 @@ public class AgentActions {
         }else{
             reject(itemID,name);
         }
+    }
+
+    /**
+     * Once a bid by an Agent is accepted, this method lets the agent
+     * know their bid was accepted. The message also contains the updated
+     * catalogue
+     * @param item int of the item bid on
+     * @param name String/name of the item bid on
+     */
+    private static void accept(int item, String name){
+        A_AH_Messages accept = A_AH_Messages.Builder.newBuilder()
+                .topic(A_AH_MTopic.SUCCESS)
+                .itemId(item)
+                .name(name)
+                .auctionList(auctionList)
+                .build();
+        AH_AgentThread.sendOut(accept);
+    }
+
+    /**
+     * outBid replaces the new bid/bidder with the new ones and
+     * tells the old bidder they were outbid.
+     *
+     * @param oldBidder int ID
+     * @param item Item
+     */
+    private static void outBid(int oldBidder, Item item){
+        int agent = agentSearch(oldBidder);
+        A_AH_Messages outbid = A_AH_Messages.Builder.newB()
+                .type(A_AH_MTopic.OUTBID)
+                .item(item.getItemID())
+                .name(item.name())
+                .id(agentId)
+                .build();
+        assert agent != null;
+        AH_AgentThread.sendOut(outbid);
     }
 
     /**
@@ -140,7 +175,7 @@ public class AgentActions {
      * @param id the account(bidder) having their funds released
      * @param amount the amount requested to release
      */
-    private synchronized void release(int id, int amount) {
+    private static synchronized void release(int id, int amount) {
         Message unBlock = new Message.Builder()
                 .command(Message.Command.UNBLOCK)
                 .accountId(id)

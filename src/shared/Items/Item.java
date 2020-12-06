@@ -6,14 +6,14 @@ public class Item implements Serializable {
     private static int    auctionId;
     private static String name;
     private static String description;
-    private static double minimumBid;
-    private static double currentBid;
+    private static int minimumBid;
+    private static int currentBid;
     private static int    bidderId;
     private static long   remainingTime;
     private static long   bidTime;
     private static int    itemId;
 
-    public Item(String setName, String descriptionSet, double value, int Id) {
+    public Item(String setName, String descriptionSet, int value, int Id) {
         description   = descriptionSet;
         name          = setName;
         minimumBid    = value;
@@ -40,7 +40,7 @@ public class Item implements Serializable {
      *
      * @return currentBid double
      */
-    public double getCurrentBid() {
+    public int getCurrentBid() {
         return currentBid;
     }
 
@@ -49,7 +49,7 @@ public class Item implements Serializable {
      *
      * @return minimumBid double
      */
-    public double getMinimumBid() {
+    public int getMinimumBid() {
         return minimumBid;
     }
 
@@ -59,7 +59,7 @@ public class Item implements Serializable {
      * @param bidder String
      * @param amount double
      */
-    public void newBid(int bidder, double amount) {
+    public void newBid(int bidder, int amount) {
         this.bidderId = bidder;
         this.currentBid = amount;
         resetBidTime();
@@ -87,7 +87,7 @@ public class Item implements Serializable {
      * @param bidder int
      * @param bid double
      */
-    public void setBid(int bidder, double bid){
+    public void setBid(int bidder, int bid){
         this.bidderId = bidder;
         this.currentBid = bid;
         resetBidTime();

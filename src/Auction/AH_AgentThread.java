@@ -6,11 +6,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class AH_AgentThread extends Thread {
     protected static Socket agentSocket;
     private static ObjectInputStream agentIn;
     private static ObjectOutputStream agentOut;
+    static BlockingQueue<Boolean> bankSignOff = new LinkedBlockingDeque<>();
     /**
      * Constructor for an AgentReqs. Takes socket from AuctionHouseServer,
      * opens in and out streams for it and begins communication.
@@ -61,7 +64,7 @@ public class AH_AgentThread extends Thread {
 
     /**
      * This method is given an AuctionMessage and writes/sends it to
-     * agentSocket. The method add the sent message to the log.
+     * agentSocket.
      * @param message the message being sent
      */
     static void sendOut(A_AH_Messages message) {

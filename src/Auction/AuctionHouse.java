@@ -405,14 +405,14 @@ public class AuctionHouse {
             int    itemId   = message.getItem();
             int    bidderId = message.getAccountId();
             String name     = message.getItemName();
-            double amount   = message.getBid();
+            int amount   = message.getBid();
             Item bidItem    = itemSearch(itemId);
 
             if(bidItem == null) {
                 reject(itemId,name);
                 return;
             }
-            double value = bidItem.getCurrentBid();
+            int value = bidItem.getCurrentBid();
             if( value < bidItem.getMinimumBid()){
                 value = bidItem.getMinimumBid();
             }
@@ -452,7 +452,7 @@ public class AuctionHouse {
          * @param id the account(bidder) having their funds released
          * @param amount the amount requested to release
          */
-        private synchronized void release(int id, Double amount) {
+        private synchronized void release(int id, int amount) {
             Message release = new Message.Builder()
                     .command(Message.Command.UNBLOCK)
                     .accountId(id).cost(amount).senderId(auctionId);
@@ -467,7 +467,7 @@ public class AuctionHouse {
          */
         private void reject(int itemId, String name) {
             A_AH_Messages reject = A_AH_Messages.Builder.newBuilder()
-                    .topic(A_AH_Messages.A_AH_MTopic.OVERDRAFT)
+                    .topic(A_AH_Messages.A_AH_MTopic.FAILURE)
                     .name(name)
                     .itemId(itemId)
                     .build();

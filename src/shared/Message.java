@@ -147,9 +147,9 @@ public class Message implements Serializable {
     }
 
     /**
-     * Get the UUID of the target.
+     * Get the int of the target.
      *
-     * @return UUID
+     * @return int
      */
     public int getAccountId() {
         return accountId;
