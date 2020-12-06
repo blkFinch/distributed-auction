@@ -53,7 +53,7 @@ public class AgentProxy extends Thread{
             loginRequest = new Message.Builder()
                     .command(Message.Command.OPENACCOUNT)
                     .accountName(username)
-                    .cost(initBal)
+                    .balance(initBal)
                     .nullId();
         }
         else{

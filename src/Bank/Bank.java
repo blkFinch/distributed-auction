@@ -27,8 +27,8 @@ public class Bank {
     ArrayList<Client> clients;
 
     private Bank(){
-        clients = new ArrayList<Client>();
-        houses = new HashMap<Integer, Client>();
+        clients = new ArrayList<Client>(); //All Active users including AH and Agents
+        houses = new HashMap<Integer, Client>(); //Active AH
     }
 
     /**
@@ -48,6 +48,13 @@ public class Bank {
      * Gets a list of active AuctionHouses and their Connection Info
      * @return List of ConnectionReqs
      */
+
+    public void loginUser(Client user){
+        if(user.isAuctionHouse()){
+            houses.put(user.getID(), user);
+        }
+        clients.add(user);
+    }
     public synchronized List<ConnectionReqs> getHouses(){
         List<ConnectionReqs> reqs = new ArrayList<ConnectionReqs>();
         for(Client house : houses.values()){
@@ -60,6 +67,7 @@ public class Bank {
 
     public synchronized int registerAuctionHouse(Client house) {
         houses.put(house.getID(), house);
+        clients.add(house);
         return house.getID();
     }
 
@@ -68,6 +76,14 @@ public class Bank {
             if (client.getID() == id){ return client;}
         }
         return null;
+    }
+
+    public void deregisterUser(Client user){
+        if(user.isAuctionHouse()){
+            houses.remove(user.getID());
+        }
+
+        clients.remove(user);
     }
 
 

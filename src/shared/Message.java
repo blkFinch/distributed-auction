@@ -24,7 +24,7 @@ public class Message implements Serializable {
      */
     public static class Builder {
         private Command              command        = null;
-        private int                  cost           = 0;
+        private int                  balance           = 0;
         private int                  senderId       = -1;
         private int                  accountId      = -1;
         private String               accountName     = null;
@@ -71,8 +71,8 @@ public class Message implements Serializable {
          * @param cost Double
          * @return Builder
          */
-        public Builder cost(int cost) {
-            this.cost = cost;
+        public Builder balance(int cost) {
+            this.balance = cost;
             return this;
         }
 
@@ -125,7 +125,7 @@ public class Message implements Serializable {
      */
     private Message(Builder builder) {
         this.accountId      = builder.accountId;
-        this.balance        = builder.cost;
+        this.balance        = builder.balance;
         this.senderId       = builder.senderId;
         this.accountName    = builder.accountName;
         this.arguments      = builder.arguments;

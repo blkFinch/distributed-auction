@@ -16,33 +16,46 @@ public class CommandProtocol {
     public Message processCommand(){
         Message.Command command = message.getCommand();
         Message response = null;
+        Client target = null;
+        int targetId = 0;
+
         switch (command) {
             case LOGIN:
-                Client user = Bank.getActive().getClient(message.getSenderId());
-                if (user != null) {
+                target = Bank.getActive().getClient(message.getSenderId());
+                if (target != null) {
                     response = new Message.Builder()
-                            .accountId(user.getID())
+                            .accountId(target.getID())
                             .connectionReqs(Bank.getActive().getHouses())
                             .response(Message.Response.SUCCESS)
                             .senderId(0);
 
-                    Bank.getActive().clients.add(user);
+                    Bank.getActive().loginUser(target);
 
                 }else{
                     response  = failureResponse(-999);
                 }
                 break;
 
+            case DEREGISTER:
+                target  = Bank.getActive().findActiveClient(message.getSenderId());
+                Bank.getActive().deregisterUser(target);
+                response = new Message.Builder()
+                                        .response(Message.Response.SUCCESS)
+                                        .accountId(target.getID())
+                                        .arguments(new String[]{"LOGOUT successful"})
+                                        .senderId(0);
+                break;
+
             case OPENACCOUNT:
-                Client newClient = new ClientBuilder()
+                target = new ClientBuilder()
                         .setName(message.getAccountName())
                         .setBalance(message.getBalance())
                         .setAuctionHouse(false)
                         .build();
 
-                int newUserId = Bank.getActive().createClient(newClient);
+                int newUserId = Bank.getActive().createClient(target);
                 if( newUserId != -999){
-                    Bank.getActive().clients.add(newClient);
+                    Bank.getActive().clients.add(target);
                     response = new Message.Builder()
                             .response(Message.Response.SUCCESS)
                             .accountId(newUserId)
@@ -54,22 +67,22 @@ public class CommandProtocol {
                 break;
 
             case GETHOUSES:
-                response = new Message.Builder().connectionReqs(Bank.getActive().getHouses()).nullId();
-                System.out.println("sending auction houses");
+                response = new Message.Builder()
+                        .connectionReqs(Bank.getActive().getHouses()).nullId();
                 break;
 
             case REGISTERHOUSE:
-                Client house = new ClientBuilder()
+                target= new ClientBuilder()
                         .setName(message.getAccountName())
-                        .setHost(message.getConnectionReqs().get(0).getIp()) //TODO: rewrite to use conreqs
+                        .setHost(message.getConnectionReqs().get(0).getIp())
                         .setPortNumber(message.getConnectionReqs().get(0).getPort())
                         .setBalance(0) //TODO: table needs to be double
                         .setAuctionHouse(true)
                         .build();
 
-                int newAHId = Bank.getActive().createClient(house);
+                int newAHId = Bank.getActive().createClient(target);
                 if( newAHId != 999){
-                    Bank.getActive().registerAuctionHouse(house);
+                    Bank.getActive().registerAuctionHouse(target);
                     response = new Message.Builder()
                             .response(Message.Response.SUCCESS)
                             .accountId(newAHId)
@@ -79,14 +92,23 @@ public class CommandProtocol {
                 }
                 break;
 
+            case GETBALANCE:
+                target = Bank.getActive().getClient(message.getAccountId());
+                int balance = target.getBalance();
+                response = new Message.Builder().response(Message.Response.SUCCESS)
+                                                .balance(balance)
+                                                .accountId(target.getID())
+                                                .senderId(0);
+                break;
+
             case BLOCK:
-                int blockID = message.getAccountId();
-                Client blockClient = Bank.getActive().findActiveClient(blockID);
-               if(blockClient.holdFunds(message.getBalance())){
+                targetId = message.getAccountId();
+                target = Bank.getActive().findActiveClient(targetId);
+               if(target.holdFunds(message.getBalance())){
                    response = new Message.Builder()
                                         .response(Message.Response.SUCCESS)
-                                        .accountId(blockID)
-                                        .accountName(blockClient.getName())
+                                        .accountId(targetId)
+                                        .accountName(target.getName())
                                         .senderId(0);
                }else{
                    response = failureResponse(-888);
@@ -94,18 +116,37 @@ public class CommandProtocol {
                 break;
 
             case DEPOSIT:
-                int depID = message.getAccountId();
-                Client depClient = Bank.getActive().findActiveClient(depID);
-                Bank.getActive().depositInto(depClient, message.getBalance());
+                targetId = message.getAccountId();
+                target = Bank.getActive().findActiveClient(targetId);
+                Bank.getActive().depositInto(target, message.getBalance());
                 response = new Message.Builder()
                                     .response(Message.Response.SUCCESS)
-                                    .accountName(depClient.getName())
-                                    .accountId(depID)
-                                    .cost(depClient.getBalance())
+                                    .accountName(target.getName())
+                                    .accountId(targetId)
+                                    .balance(target.getBalance())
                                     .senderId(0);
                 break;
 
+            case UNBLOCK:
+                targetId = message.getAccountId();
+                target = Bank.getActive().findActiveClient(targetId);
+                target.releaseFunds(message.getBalance());
+                response = new Message.Builder()
+                                    .response(Message.Response.SUCCESS)
+                                    .senderId(0);
+                break;
 
+            case TRANSFER:
+                targetId = message.getAccountId();
+                target = Bank.getActive().findActiveClient(targetId);
+                int funds = Bank.getActive().withdrawFunds(target, message.getBalance());
+                int recieverId = message.getSenderId();
+                Client reciever = Bank.getActive().findActiveClient(recieverId);
+                reciever.deposit(funds);
+                response = new Message.Builder()
+                                    .response(Message.Response.SUCCESS)
+                                    .balance(reciever.getBalance())
+                                    .senderId(0);
         }
 
         return response;
@@ -118,4 +159,6 @@ public class CommandProtocol {
                 .senderId(0);
         return err;
     }
+
+
 }
