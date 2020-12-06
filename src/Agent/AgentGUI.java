@@ -209,10 +209,14 @@ public class AgentGUI extends Application{
     private FlowPane updateAvailableAuctions(){
         FlowPane flow = new FlowPane(20, 10);
         Button auction;
-        Set<String> auctions = agent.getAuctionNames();
+        Set<String> auctions;
+        Font buttonFont = new Font(20);
+        agent.updateAuctionProxies();
+        auctions = agent.getAuctionNames();
         for(String a : auctions){
             final String auctionName = a;
             auction = new Button(a);
+            auction.setFont(buttonFont);
             auction.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 agent.setCurrentAuction(auctionName);
                 placeBid.setRight(messageLog);
