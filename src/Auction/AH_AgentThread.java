@@ -6,28 +6,22 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.concurrent.LinkedBlockingDeque;
 
 public class AH_AgentThread extends Thread {
-    private final Socket agentSocket;
+    protected static Socket agentSocket;
+    private static ObjectInputStream agentIn;
+    private static ObjectOutputStream agentOut;
     /**
      * Constructor for an AgentReqs. Takes socket from AuctionHouseServer,
      * opens in and out streams for it and begins communication.
      *
      * @param socket the accepted socket from the server variable
      */
-    public AH_AgentThread(Socket socket) {
+    public AH_AgentThread(Socket socket) throws IOException {
         this.agentSocket = socket;
-        bankSignOff = new LinkedBlockingDeque<>();
-        try {
-            agentIn = new ObjectInputStream(agentSocket.getInputStream());
-            agentOut = new ObjectOutputStream(
-                    agentSocket.getOutputStream());
-            Thread client = new Thread(this);
-            client.start();
-        } catch(IOException e) {
-            agentsList.remove(this);
-        }
+        agentOut = new ObjectOutputStream(socket.getOutputStream());
+        agentOut.flush();
+        agentIn = new ObjectInputStream(socket.getInputStream());
     }
 
     /**
@@ -36,6 +30,7 @@ public class AH_AgentThread extends Thread {
      */
     @Override
     public void run() {
+        A_AH_Messages message;
         do {
             try{
                 message = (A_AH_Messages) agentIn.readObject();
@@ -45,22 +40,55 @@ public class AH_AgentThread extends Thread {
                 }
                 switch(topic) {
                     case BID:
-                        bid(message);
+                        AgentActions.bid(message);
                         break;
                     case REGISTER:
-                        register(message);
-                        break;
-                    case UPDATE:
-                        update();
+                        AgentActions.register(message);
                         break;
                     case DEREGISTER:
-                        agentShutdown(false);
+                        agentShutdown();
+                        break;
+                    case UPDATE:
+                        AgentActions.update();
                         break;
                 }
             } catch (IOException|ClassNotFoundException e) {
-                agentShutdown(false);
+                agentShutdown();
                 message = null;
             }
-        } while(message != null && running);
+        } while(message != null);// && running);
+    }
+
+    /**
+     * This method is given an AuctionMessage and writes/sends it to
+     * agentSocket. The method add the sent message to the log.
+     * @param message the message being sent
+     */
+    static void sendOut(A_AH_Messages message) {
+        try{
+            if(message.getTopic() != A_AH_Messages.A_AH_MTopic.UPDATE) {
+                System.err.println("To Agent: " + message);
+            }
+            agentOut.reset();
+            agentOut.writeObject(message);
+        } catch(IOException e) {
+            agentShutdown();
+        }
+    }
+
+    static void agentShutdown() {
+        A_AH_Messages message = AgentActions.deRegister();
+        try {
+            agentOut.reset();
+
+            agentOut.writeObject(message);
+            if(!agentSocket.isClosed()){
+                agentOut.close();
+                agentIn.close();
+                agentSocket.close();
+            }
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
     }
 }

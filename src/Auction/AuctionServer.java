@@ -1,10 +1,9 @@
 package Auction;
 
 import shared.ConnectionReqs;
+import Auction.AuctionHouseSpecs;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -12,6 +11,7 @@ public class AuctionServer {
     private static boolean running = true;
 
     public static void main(String[] args) throws IOException {
+        AuctionHouseSpecs.createAuctionList(3);
         if (args.length != 1) {
             System.err.println(
                     "Usage: java BankServer <port number>");
@@ -31,17 +31,17 @@ public class AuctionServer {
         ServerSocket auctionSocket = new ServerSocket(portNumber);
         System.out.println("listening...");
 
-        /*while(true) {
+        while(true) {
             try {
                 while(running) {
-                    Socket clientSocket  = auctionSocket.accept();
+                    Socket clientSocket = auctionSocket.accept();
                     //processess inputs
-                    AH_AgentThread bt = new AH_AgentThread(clientSocket);
-                    bt.start();
+                    AH_AgentThread at = new AH_AgentThread(clientSocket);
+                    at.start();
                 }
             } catch (IOException e) {
                 running = false;
             }
-        }*/
+        }
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class Message implements Serializable {
     private final Command              command;
-    private final Double               balance;
+    private final int balance;
     private final int                  senderId;
     private final int                  accountId;
     private final String               accountName;
@@ -25,7 +25,7 @@ public class Message implements Serializable {
      */
     public static class Builder {
         private Command              command        = null;
-        private Double               cost           = null;
+        private int                  cost           = 0;
         private int                  senderId       = -1;
         private int                  accountId      = -1;
         private String               accountName    = null;
@@ -73,7 +73,7 @@ public class Message implements Serializable {
          * @param cost Double
          * @return Builder
          */
-        public Builder cost(Double cost) {
+        public Builder cost(int cost) {
             this.cost = cost;
             return this;
         }
@@ -118,6 +118,15 @@ public class Message implements Serializable {
         public Message nullId(){
             return new Message(this);
         }
+
+        /**
+         * newBuilder returns a new builder
+         *
+         * @return returns the created builder
+         */
+        public static Builder newBuilder() {
+            return new Builder();
+        }
     }
 
     /**
@@ -151,7 +160,7 @@ public class Message implements Serializable {
      *
      * @return balance Double
      */
-    public Double getBalance() {
+    public int getBalance() {
         return balance;
     }
 
@@ -205,7 +214,7 @@ public class Message implements Serializable {
     @Override
     public String toString() {
         String message = "{";
-        if (balance != null)        message += ("amount=" + balance);
+        if (balance != 0)           message += ("amount=" + balance);
         if (senderId != -1)         message += ("\n\t\tsender=" + senderId);
         if (accountId != -1)        message += ("\n\t\taccountId=" + accountId);
         if (command != null)        message += ("\n\t\tcommand=" + command);

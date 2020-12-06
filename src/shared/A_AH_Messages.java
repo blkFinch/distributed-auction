@@ -17,7 +17,7 @@ public class A_AH_Messages implements Serializable {
      * AgentAuctionMessage Builder
      */
     public static class Builder {
-        private A_AH_MTopic topic       = null;
+        private A_AH_MTopic     topic       = null;
         private ArrayList<Item> auctionList = null;
         private Double          bid         = null;
         private int             accountId   = -1;
@@ -126,10 +126,10 @@ public class A_AH_Messages implements Serializable {
     public A_AH_Messages(Builder builder) {
         this.topic       = builder.topic;
         this.auctionList = builder.auctionList;
-        this.bid        = builder.bid;
+        this.bid         = builder.bid;
         this.itemId      = builder.itemId;
         this.accountId   = builder.accountId;
-        this.itemName = builder.name;
+        this.itemName    = builder.name;
     }
 
     /**
@@ -209,10 +209,10 @@ public class A_AH_Messages implements Serializable {
      * sending/receiving messages.
      */
     public enum A_AH_MTopic {
-        BID,        //client submits bid on item
-        DEREGISTER, //client de-registers from auction house
-        OUTBID,     //Auction tells agent they were outbid
-        OVERDRAFT,  //Auction tells agent their bid was refused
+        BID,        //client submits bid on item-
+        DEREGISTER, //client de-registers from auction house-
+        OUTBID,     //Auction tells agent they were outbid-
+        FAILURE,  //Auction tells agent their bid was refused
         REGISTER,   //agent registers with auction
         SUCCESS,    //Auction tells agent the bid was accepted
         UPDATE,     //Auction updates auctionList for client

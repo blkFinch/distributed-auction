@@ -28,7 +28,7 @@ public class BankActions {
         }
     }
 
-    public Message sendToBank(Message message) {
+    public static Message sendToBank(Message message) {
         try {
             Socket bankSocket = new Socket("localHost", 6000);
             ObjectOutputStream out = new ObjectOutputStream(bankSocket.getOutputStream());
