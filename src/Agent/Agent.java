@@ -1,6 +1,6 @@
 package Agent;
 
-import shared.BankMessages;
+import shared.Message;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +21,9 @@ public class Agent{
 
     public void runBank(){ bankProxy.run(); }
 
-    public void sendBankMessage(BankMessages message){ bankProxy.sendMessage(message); }
+    public void sendBankMessage(Message message){ bankProxy.sendMessage(message); }
 
-    public void sendAuctionMessage(int ind, BankMessages message){
+    public void sendAuctionMessage(int ind, Message message){
         auctionProxies.get(ind).sendMessage(message);
     }
 

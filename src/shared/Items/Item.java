@@ -1,4 +1,4 @@
-package Auction;
+package shared.Items;
 
 import java.io.Serializable;
 

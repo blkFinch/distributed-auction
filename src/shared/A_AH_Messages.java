@@ -1,6 +1,6 @@
 package shared;
 
-import Auction.Item;
+import shared.Items.Item;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ public class A_AH_Messages implements Serializable {
     private final Double          bid;         //bid value
     private final int             accountId;   //Client ID from first contact with Auction
     private final int             itemId;      //The item identification
-    private final String itemName;        //Item name
+    private final String          itemName;    //Item name
 
     /**
      * AgentAuctionMessage Builder

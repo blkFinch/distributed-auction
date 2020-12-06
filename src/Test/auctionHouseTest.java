@@ -1,7 +1,7 @@
 package Test;
 
 import shared.ConnectionReqs;
-import shared.BankMessages;
+import shared.Message;
 
 import java.io.*;
 import java.net.Socket;
@@ -20,12 +20,12 @@ public class auctionHouseTest {
         System.out.println("running on port: " + portNumber);
 
 //            //Build simple request
-        BankMessages loginRequest = new BankMessages.Builder()
-                .command(BankMessages.Command.LOGIN)
+        Message loginRequest = new Message.Builder()
+                .command(Message.Command.LOGIN)
                 .senderId(1);
 
-        BankMessages newUserRequest = new BankMessages.Builder()
-                                            .command(BankMessages.Command.OPENACCOUNT)
+        Message newUserRequest = new Message.Builder()
+                                            .command(Message.Command.OPENACCOUNT)
                                             .accountName("Jimmy")
                                             .nullId();
 
@@ -33,8 +33,8 @@ public class auctionHouseTest {
         List<ConnectionReqs> reqs = new ArrayList<>();
         reqs.add(req);
 
-        BankMessages newAhRequest = new BankMessages.Builder()
-                .command(BankMessages.Command.REGISTERHOUSE)
+        Message newAhRequest = new Message.Builder()
+                .command(Message.Command.REGISTERHOUSE)
                 .accountName("AH-320")
                 .connectionReqs(reqs)
                 .nullId();
@@ -42,9 +42,9 @@ public class auctionHouseTest {
         out.writeObject(newAhRequest);
 
         while(true){
-            BankMessages messageIn = (BankMessages) in.readObject();
+            Message messageIn = (Message) in.readObject();
 
-            if(messageIn.getResponse() == BankMessages.Response.SUCCESS){
+            if(messageIn.getResponse() == Message.Response.SUCCESS){
                 System.out.println("SUCCESS!");
                 System.out.println("user id: " + messageIn.getAccountId());
             }

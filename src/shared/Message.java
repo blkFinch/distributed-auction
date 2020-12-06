@@ -9,7 +9,7 @@ import java.util.List;
  * Message for communicating across sockets. Adapted from
  * https://github.com/ApolloRez/DistributedAuction/tree/master/src
  */
-public class BankMessages implements Serializable {
+public class Message implements Serializable {
     private final Command              command;
     private final Double               balance;
     private final int                  senderId;
@@ -110,13 +110,13 @@ public class BankMessages implements Serializable {
          * @param senderId UUID
          * @return Message
          */
-        public BankMessages senderId(int senderId) {
+        public Message senderId(int senderId) {
             this.senderId = senderId;
-            return new BankMessages(this);
+            return new Message(this);
         }
 
-        public BankMessages nullId(){
-            return new BankMessages(this);
+        public Message nullId(){
+            return new Message(this);
         }
     }
 
@@ -125,7 +125,7 @@ public class BankMessages implements Serializable {
      *
      * @param builder Builder
      */
-    private BankMessages(Builder builder) {
+    private Message(Builder builder) {
         this.accountId      = builder.accountId;
         this.balance        = builder.cost;
         this.senderId       = builder.senderId;

@@ -1,6 +1,6 @@
 package Bank;
 
-import shared.BankMessages;
+import shared.Message;
 
 import java.io.*;
 import java.net.Socket;
@@ -21,9 +21,9 @@ public class BankThread extends Thread {
     public void run() {
         System.out.println("running new bank thread");
         try {
-            BankMessages message = readMessage();
+            Message message = readMessage();
             CommandProtocol cp = new CommandProtocol(socket, message); //TODO:refactor remove need for passing socket
-            BankMessages res = cp.proccessCommand();
+            Message res = cp.proccessCommand();
             objOut.writeObject(res);
 
         } catch (Exception e) {
@@ -31,8 +31,8 @@ public class BankThread extends Thread {
         }
     }
 
-    private BankMessages readMessage() throws IOException, ClassNotFoundException {
-        BankMessages message = (BankMessages) objIn.readObject();
+    private Message readMessage() throws IOException, ClassNotFoundException {
+        Message message = (Message) objIn.readObject();
         return message;
     }
 }
