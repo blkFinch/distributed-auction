@@ -13,7 +13,7 @@ public class Client implements Serializable {
     private final int ID;
     private int portNumber;
     private String host;
-    private double balance;
+    private int balance;
     private double heldFunds;
     private String name;
     private boolean isAuctionHouse = false;
@@ -27,7 +27,7 @@ public class Client implements Serializable {
         return host;
     }
 
-    public double getBalance(){
+    public int getBalance(){
         return this.balance;
     }
     public double getHeldFunds() { return this.heldFunds; }

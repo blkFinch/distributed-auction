@@ -18,7 +18,7 @@ public class CreateClient implements SQLInjector<Integer> {
      * @throws Exception if unable to connect to DB
      */
     @Override
-    public synchronized Integer inject() throws Exception {
+    public Integer inject() throws Exception {
         Connection dbConn = DatabaseManager.getConn();
         int id = 999; //default to bad id
         String sql = "INSERT INTO clients " +

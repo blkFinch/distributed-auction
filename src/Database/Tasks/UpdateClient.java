@@ -7,14 +7,24 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+/**
+ * SQLInjector to update client in the database. Given a client
+ * this will generate a statement to update that client in DB
+ */
 public class UpdateClient implements SQLInjector {
     private Client client;
     public UpdateClient(Client client){
         this.client = client;
     }
 
+    /**
+     * The injection to be used by the single threaded SyncInjector
+     * to prevent stepping on the database
+     * @return
+     * @throws Exception
+     */
     @Override
-    public synchronized Integer inject() throws Exception {
+    public Integer inject() throws Exception {
         Connection DBconn = DatabaseManager.getConn();
         String sql = "UPDATE clients SET" +
                 " host = ?, port = ?, balance = ?, isAuctionHouse = ?, name = ? " +
