@@ -19,13 +19,14 @@ public class BankActions {
     }
     //Methods actions block, register, unblock
 
-    public void registerBank(ConnectionReqs reqs, String name) {
+    public Message registerBank(List<ConnectionReqs> reqsList, String name) {
         Message message = new Message.Builder().command(Message.Command.REGISTERHOUSE)
-                .connectionReqs((List<ConnectionReqs>) reqs).accountName(name).nullId();
+                .connectionReqs(reqsList).accountName(name).nullId();
         Message response = sendToBank(message);
         if(response.getResponse() == Message.Response.SUCCESS) {
             System.out.println("Connection Success");
         }
+        return response;
     }
 
     public static Message sendToBank(Message message) {

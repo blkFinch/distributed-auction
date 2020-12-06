@@ -21,8 +21,7 @@ public class Item implements Serializable {
         currentBid    = minimumBid;
         bidderId      = -1;
         remainingTime = 30; //30 seconds until bid is final
-        itemId        = Integer.parseInt(String.valueOf(Math.random()*1000) +
-                String.valueOf(System.currentTimeMillis()));
+        itemId        = -1;
         bidTime       = System.currentTimeMillis();
     }
 

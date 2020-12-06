@@ -5,4 +5,8 @@ package Auction;
  * methods.
  */
 public class MessageProcessor implements Runnable {
+    @Override
+    public void run() {
+
+    }
 }

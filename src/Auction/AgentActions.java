@@ -4,11 +4,6 @@ import shared.A_AH_Messages;
 import shared.A_AH_Messages.A_AH_MTopic;
 import shared.Items.Item;
 import shared.Message;
-import Auction.AuctionHouseSpecs;
-import Auction.AH_AgentThread;
-import Auction.BankActions;
-
-import java.util.UUID;
 
 public class AgentActions {
     /**
@@ -24,7 +19,7 @@ public class AgentActions {
         int itemID = message.getItem();
         int bidderId = message.getAccountId();
         String name = message.getItemName();
-        int cost = message.getBid();
+        int bid = message.getBid();
         Item bidItem = itemSearch(itemID);
         if(bidItem == null){
             reject(itemID,name);
@@ -34,10 +29,10 @@ public class AgentActions {
         if( value < bidItem.getMinimumBid()){
             value = bidItem.getMinimumBid();
         }
-        if(cost > value){
+        if(bid > value){
             Message requestHold = new Message.Builder()
                     .command(Message.Command.BLOCK)
-                    .accountId(bidderId).cost(cost).senderId(bidderId);
+                    .accountId(bidderId).cost(bid).senderId(bidderId);
             try{
                 //requests the hold.
                 BankActions.sendToBank(requestHold);
@@ -45,14 +40,14 @@ public class AgentActions {
                 Boolean success = AH_AgentThread.bankSignOff.take();
                 if(success){
                     //accepts bid and lets the last bidder know
-                    //they were outbidded
+                    //they were outbid
                     int oldBidder = bidItem.getBidderId();
                     if(oldBidder != -1){
                         release(oldBidder, value);
                         outBid(oldBidder, bidItem);
                     }
-                    bidItem.outBid(bidderId, cost);
-                    accept(bidItem.getItemID(), bidItem.name());
+                    bidItem.setBid(bidderId, bid);
+                    accept(bidItem.getItemID(), bidItem.getName());
                 }else{
                     reject(itemID,name);
                 }
@@ -76,7 +71,7 @@ public class AgentActions {
                 .topic(A_AH_MTopic.SUCCESS)
                 .itemId(item)
                 .name(name)
-                .auctionList(auctionList)
+                //.auctionList(auctionList)
                 .build();
         AH_AgentThread.sendOut(accept);
     }
@@ -89,14 +84,14 @@ public class AgentActions {
      * @param item Item
      */
     private static void outBid(int oldBidder, Item item){
-        int agent = agentSearch(oldBidder);
-        A_AH_Messages outbid = A_AH_Messages.Builder.newB()
-                .type(A_AH_MTopic.OUTBID)
-                .item(item.getItemID())
-                .name(item.name())
-                .id(agentId)
+        //int agent = agentSearch(oldBidder);
+        A_AH_Messages outbid = A_AH_Messages.Builder.newBuilder()
+                .topic(A_AH_MTopic.OUTBID)
+                .itemId(item.getItemID())
+                .name(item.getName())
+                .accountId(item.getBidderId())
                 .build();
-        assert agent != null;
+        //assert agent != -1;
         AH_AgentThread.sendOut(outbid);
     }
 
@@ -107,10 +102,10 @@ public class AgentActions {
      * @param message The register message the agent sent
      */
     static A_AH_Messages register(A_AH_Messages message) {
-        int agentId = message.getAccountId();
+        //int agentId = message.getAccountId();
         A_AH_Messages reply = A_AH_Messages.Builder.newBuilder()
                 .topic(A_AH_MTopic.REGISTER)
-                //.auctionId(auctionId)
+                .accountId(AuctionServer.getAuctionId())
                 .auctionList(AuctionHouseSpecs.getAuctionList())
                 .build();
         return reply;

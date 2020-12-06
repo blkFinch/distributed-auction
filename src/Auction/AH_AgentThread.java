@@ -14,6 +14,8 @@ public class AH_AgentThread extends Thread {
     private static ObjectInputStream agentIn;
     private static ObjectOutputStream agentOut;
     static BlockingQueue<Boolean> bankSignOff = new LinkedBlockingDeque<>();
+    private int agentId;
+
     /**
      * Constructor for an AgentReqs. Takes socket from AuctionHouseServer,
      * opens in and out streams for it and begins communication.

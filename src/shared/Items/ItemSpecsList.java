@@ -1,6 +1,7 @@
 package shared.Items;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -14,21 +15,24 @@ public class ItemSpecsList {
      * from a file line by line until .
      */
     public static void createItemSpecsList() {
+        itemsList = new ArrayList<>();
         try {
-            ClassLoader loader = Thread.currentThread().getContextClassLoader();
-            InputStream is = loader.getResourceAsStream("itemSpecs.txt");
-            assert is != null;
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String specsString;
-            while((specsString = br.readLine()) != null) {
+            //ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            //InputStream is = loader.getResourceAsStream("Resources/itemSpecs.txt");
+            //assert is != null;
+            //InputStream is = this.getClass().getResourceAsStream("Resources/itemSpecs.txt");
+            BufferedReader br = new BufferedReader(new FileReader("Resources/itemSpecs.txt"));
+            String specsString = br.readLine();
+            do {
                 ItemSpecs specs = new ItemSpecs();
                 String[] companies = specsString.split(":");
                 specs.name = companies[0];
                 specs.description = companies[1];
-                specs.minimumBid = Double.parseDouble(companies[2]);
+                specs.minimumBid = Integer.parseInt(companies[2]);
                 //maybe add ID?
                 itemsList.add(specs);
-            }
+            } while((specsString = br.readLine()) != null);
+            br.close();
         } catch(Exception e) {
             e.printStackTrace();
         }
