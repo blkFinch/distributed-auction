@@ -1,6 +1,6 @@
 package shared;
 
-import Auction.Item;
+import shared.Items.Item;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class A_AH_Messages implements Serializable {
     private final A_AH_MTopic     topic;       //what kind of message is it
     private final ArrayList<Item> auctionList; //list of items in the auction
-    private final Double          bid;         //bid value
+    private final int          bid;         //bid value
     private final int             accountId;   //Client ID from first contact with Auction
     private final int             itemId;      //The item identification
     private final String itemName;        //Item name
@@ -19,7 +19,7 @@ public class A_AH_Messages implements Serializable {
     public static class Builder {
         private A_AH_MTopic topic       = null;
         private ArrayList<Item> auctionList = null;
-        private Double          bid         = null;
+        private int             bid         = 0;
         private int             accountId   = -1;
         private int             itemId      = -1;
         private String          name        = null;
@@ -49,10 +49,10 @@ public class A_AH_Messages implements Serializable {
         /**
          * bid sets the message's bid
          *
-         * @param bid double
+         * @param bid int
          * @return builder
          */
-        public Builder bid(double bid) {
+        public Builder bid(int bid) {
             this.bid = bid;
             return this;
         }
@@ -153,9 +153,9 @@ public class A_AH_Messages implements Serializable {
     /**
      * getBid returns message's bid
      *
-     * @return bid double
+     * @return bid int
      */
-    public Double getBid() {
+    public int getBid() {
         return bid;
     }
 
@@ -191,7 +191,7 @@ public class A_AH_Messages implements Serializable {
         if(auctionList != null) {
             message = message + ", catalogue: "+auctionList;
         }
-        if(bid != null) {
+        if(bid != 0) {
             message = message+", bid:"+bid;
         }
         if(itemId != -1) {
@@ -212,7 +212,7 @@ public class A_AH_Messages implements Serializable {
         BID,        //client submits bid on item
         DEREGISTER, //client de-registers from auction house
         OUTBID,     //Auction tells agent they were outbid
-        OVERDRAFT,  //Auction tells agent their bid was refused
+        FAILURE,  //Auction tells agent their bid was refused
         REGISTER,   //agent registers with auction
         SUCCESS,    //Auction tells agent the bid was accepted
         UPDATE,     //Auction updates auctionList for client
