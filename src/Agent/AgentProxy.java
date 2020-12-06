@@ -1,5 +1,6 @@
 package Agent;
 
+import shared.A_AH_Messages;
 import shared.ConnectionReqs;
 import shared.Message;
 
@@ -10,6 +11,7 @@ import java.util.List;
 
 public class AgentProxy extends Thread{
     private String username;
+    private int userID;
     private int initBal;
     private int proxyType;
     private String hostIP;
@@ -17,6 +19,7 @@ public class AgentProxy extends Thread{
     private boolean newAccount;
     private Socket socket;
     private List<Message> inMessages;
+    private List<A_AH_Messages> aucInMessages;
     private List<ConnectionReqs> newConnections;
     private ObjectOutputStream out;
     private boolean running;
@@ -34,6 +37,7 @@ public class AgentProxy extends Thread{
         }
         newAccount = newAcc;
         inMessages = new ArrayList<>();
+        aucInMessages = new ArrayList<>();
         newConnections = new ArrayList<>();
         running = true;
     }
@@ -62,7 +66,7 @@ public class AgentProxy extends Thread{
                     .senderId(Integer.parseInt(username));
         }
 
-        System.out.println("Server: " + loginRequest.toString());
+        System.out.println("Agent: " + loginRequest.toString());
         out.writeObject(loginRequest);
 
         while(running){
@@ -82,14 +86,23 @@ public class AgentProxy extends Thread{
         out = new ObjectOutputStream(socket.getOutputStream());
         out.flush();
         ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-        Message fromServer;
+        A_AH_Messages fromServer;
+        A_AH_Messages register = new A_AH_Messages.Builder()
+                .topic(A_AH_Messages.A_AH_MTopic.REGISTER)
+                .accountId(userID)
+                .build();
+
+        System.out.println("Agent: " + register.toString());
+        out.writeObject(register);
 
         while(running){
-            fromServer = (Message)in.readObject();
-            System.out.println("Bank: " + fromServer.toString());
-            inMessages.add(fromServer);
+            fromServer = (A_AH_Messages) in.readObject();
+            System.out.println("Auction: " + fromServer.toString());
+            aucInMessages.add(fromServer);
         }
     }
+
+    public void setUserID(int id){ userID = id; }
 
     public void setInitBal(int bal){ initBal = bal; }
 
@@ -101,9 +114,8 @@ public class AgentProxy extends Thread{
         }
     }
 
-    public synchronized String readMessages(){
-        String messages = "";
-        for(Message mes : inMessages){ messages += (mes+"\n"); }
+    public synchronized List<Message> readBankMessages(){
+        List<Message> messages = new ArrayList<>(inMessages);
         inMessages.clear();
         return messages;
     }
