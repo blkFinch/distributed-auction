@@ -6,6 +6,9 @@ Galen Hutchison
 Ashley Krattiger
 Ryan Cooper
 
+## Project Structure
+![](Resources/Bank.png = 100x20)
+
 ## Message System
 ### Error Codes
 Error codes can be found on a message with FAILURE response
