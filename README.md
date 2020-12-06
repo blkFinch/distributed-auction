@@ -6,6 +6,9 @@ Galen Hutchison
 Ashley Krattiger
 Ryan Cooper
 
+## Project Structure
+  ![image](Resources/Bank.png)
+
 ## Message System
 ### Error Codes
 Error codes can be found on a message with FAILURE response
@@ -25,9 +28,9 @@ ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 out.writeObject(message);
 ~~~
 #### Commands
-<b> Creating a New User </b>
+
   
-command: OPENACCOUNT   
+<b>OPENACCOUNT </b>     
 arguments: Name (the user name), <i>optional: "auction" "port number"</i>  
 Example:  
 open a new user account
@@ -38,24 +41,55 @@ Message openAccountRequest = new Message.Builder()
                                         .nullId();
 ~~~
 
+<b>REGISTERHOUSE</b>  
 open a new AuctionHouse account
-
+requires: accountName, connectionReqs
+Please generate a list with you ip and open port as the first element
 ~~~
 Message newAhRequest = new Message.Builder()
-                .command(Message.Command.OPENACCOUNT)
+                .command(Message.Command.REGISTERHOUSE)
                 .accountName("AH-100")
-                .arguments(new String[]{"auction","8000"})
+                .connectionReqs({Your Connection Info})
                 .nullId();
 ~~~
 
-command: LOGIN  
-arguments: userId
-
+<b>LOGIN</b>   
+requires: senderID
+Use this command if you have already Created an account
+and wish to use that entry in the DB
 ~~~
 Message loginRequest = new Message.Builder()
                 .command(Message.Command.LOGIN)
                 .senderId(1);
 ~~~
+RESPONSE: connectionReqs = connectionReqs of all active banks
+
+<b>GETBALANCE</b>  
+requires: accountId
+returns the current balance of an active client. Failure response if client
+is not in active session
+
+RESPONSE: balance = requested balance, accountID = client id
+
+<b>BLOCK</b>  
+requires: accountId, balance
+Will block the client of accountId to the amount of balance
+return: SUCCESS if successful, FAILURE if client doesnt have enough funds
+err= -888  
+  
+<b>DEPOSIT</b>
+requires: accountId, balance
+
+<b>TRANSFER</b>
+requires: accountId, senderId, balance
+transer balance from accountId to senderId. Will transer 0 if accountID does
+not have funds
+
+<b> DEREGISTER</b>    
+Make sure to deregister before logging out. 
+requires: senderID
+
+
   
 
 ### Setting up the Database

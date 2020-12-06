@@ -42,7 +42,7 @@ public class AuctionHouse {
      */
     private void addSpecs(ItemSpecs itemSpecs, int auctionId) {
         Item item = new Item(itemSpecs.name, itemSpecs.description,
-                itemSpecs.minimumBid, auctionId);
+                (int) itemSpecs.minimumBid, auctionId);
         auctionList.add(item);
     }
 
@@ -390,14 +390,14 @@ public class AuctionHouse {
                 reject(itemId,name);
                 return;
             }
-            double value = bidItem.getCurrentBid();
+            int value = bidItem.getCurrentBid();
             if( value < bidItem.getMinimumBid()){
                 value = bidItem.getMinimumBid();
             }
             if(amount > value){
                 Message requestHold = new Message.Builder()
                         .command(Message.Command.BLOCK)
-                        .accountId(bidderId).cost(amount).senderId(this.agentId);
+                        .accountId(bidderId).balance((int)amount).senderId(this.agentId);
                 try{
                     //requests the hold.
                     sendToBank(requestHold);
@@ -411,7 +411,7 @@ public class AuctionHouse {
                             release(oldBidder, value);
                             outBid(oldBidder, bidItem);
                         }
-                        bidItem.setBid(bidderId, amount);
+                        bidItem.setBid(bidderId, (int)Math.round(amount));
                         accept(bidItem.getItemID(), bidItem.getName());
                     }else{
                         reject(itemId,name);
@@ -430,10 +430,10 @@ public class AuctionHouse {
          * @param id the account(bidder) having their funds released
          * @param amount the amount requested to release
          */
-        private synchronized void release(int id, Double amount){
+        private synchronized void release(int id, int amount){
             Message release = new Message.Builder()
                     .command(Message.Command.UNBLOCK)
-                    .accountId(id).cost(amount).senderId(auctionId);
+                    .accountId(id).balance(amount).senderId(auctionId);
             sendToBank(release);
         }
 
@@ -514,7 +514,7 @@ public class AuctionHouse {
             agent.winner(item);
             Message release = new Message.Builder()
                     .command(Message.Command.UNBLOCK)
-                    .cost(item.getCurrentBid())
+                    .balance((int)item.getCurrentBid())
                     .accountId(bidder).senderId(auctionId);
             sendToBank(release);
         }
