@@ -10,15 +10,16 @@ public class Agent{
     private final String username;
     private static AgentProxy bankProxy;
     private static Map<String, AgentProxy> auctionProxies;
+    private AgentProxy currentAuction;
 
-    public Agent(String user, String host, String port, boolean newAcc) throws Exception{
+    public Agent(String user, String host, String port, boolean newAcc, int initBal) throws Exception{
         username = user;
         bankProxy = new AgentProxy(user,"bank", host, port, newAcc);
         auctionProxies = new HashMap<>();
-        //bankProxy.run();
+        if(newAcc){ bankProxy.setInitBal(initBal); }
     }
 
-    public void runBank(){ bankProxy.run(); }
+    public void runBank(){ bankProxy.start(); }
 
     public void sendBankMessage(Message message){ bankProxy.sendMessage(message); }
 
@@ -28,13 +29,15 @@ public class Agent{
 
     public Set<String> getAuctionNames(){ return auctionProxies.keySet(); }
 
+    public void setCurrentAuction(String key){ currentAuction = auctionProxies.get(key); }
+
     public void updateAuctionProxies(){
         List<ConnectionReqs> newConnections = bankProxy.getNewConnections();
         AgentProxy auctionProxy;
         for(ConnectionReqs conn : newConnections){
             try{
-                auctionProxy = new AgentProxy(username,"auction",
-                        conn.getIp(), ""+conn.getPort(), false);
+                auctionProxy = new AgentProxy(username,"auction", conn.getIp(),
+                        ""+conn.getPort(), false);
                 auctionProxies.put(conn.getName(), auctionProxy);
             } catch(IOException e){
                 System.out.println("Connection to auction house failed");
@@ -42,59 +45,5 @@ public class Agent{
         }
     }
 
-
-    /*public static void main(String[] args){
-        BufferedReader in=new BufferedReader(new InputStreamReader(System.in));
-        String input;
-        String type;
-        String host;
-        int port;
-        boolean connected = false;
-        auctionProxies = new ArrayList<>();
-
-        while(!connected){
-            System.out.println("What type of server are you connecting to?");
-            try{
-                type = in.readLine();
-            } catch(IOException e){
-                type = "none";
-            }
-            System.out.println("What is the host IP?");
-            try{
-                host = in.readLine();
-            } catch(IOException e){
-                host = "localhost";
-            }
-            System.out.println("What is the port?");
-            try{
-                input = in.readLine();
-                port = Integer.parseInt(input);
-                if(type.equals("bank")){
-                    bankProxy = new AgentProxy(username, type, host, ""+port);
-                    bankProxy.run();
-                }
-                else{
-                    auctionProxies.add(new AgentProxy(username, type, host, ""+port));
-                }
-                connected = true;
-            } catch(Exception e){
-                System.out.println("Connection failed. Try again.");
-            }
-        }
-        System.out.println("You are now connected.");
-        String messages;
-        while(true){
-            messages = bankProxy.readMessages();
-            if(!messages.equals("")){
-                System.out.println("Bank: "+messages);
-            }
-            for(AgentProxy a : auctionProxies){
-                messages = a.readMessages();
-                if(!messages.equals("")){
-                    System.out.println("Auction: "+messages);
-                }
-            }
-        }
-    } */
 }
 

@@ -8,8 +8,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AgentProxy implements Runnable{
+public class AgentProxy extends Thread{
     private String username;
+    private int initBal;
     private int proxyType;
     private String hostIP;
     private int portNum;
@@ -52,6 +53,7 @@ public class AgentProxy implements Runnable{
             loginRequest = new Message.Builder()
                     .command(Message.Command.OPENACCOUNT)
                     .accountName(username)
+                    .cost(initBal)
                     .nullId();
         }
         else{
@@ -62,8 +64,6 @@ public class AgentProxy implements Runnable{
 
         System.out.println("Server: " + loginRequest.toString());
         out.writeObject(loginRequest);
-        //System.out.println("Server: " + getHouses.toString());
-        //out.writeObject(getHouses);
 
         while(running){
             fromServer = (Message)in.readObject();
@@ -90,6 +90,8 @@ public class AgentProxy implements Runnable{
             inMessages.add(fromServer);
         }
     }
+
+    public void setInitBal(int bal){ initBal = bal; }
 
     public synchronized void sendMessage(Message message){
         try {

@@ -84,6 +84,7 @@ public class AgentGUI extends Application{
         backButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             scene.setRoot(chooseAuction);
             chooseAuction.setLeft(checkBalance);
+            chooseAuction.setRight(messageLog);
         });
         backButton.setFont(new Font(15));
         placeBidButtons = new VBox(10, backButton);
@@ -154,11 +155,13 @@ public class AgentGUI extends Application{
         openStage.setTitle("Create Account");
         createButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             String user = createNameField.getText();
+            int initBal = Integer.parseInt(createBalField.getText());
             try{
-                agent = new Agent(user, host, port, true);
+                agent = new Agent(user, host, port, true, initBal);
                 openStage.close();
                 agent.runBank();
                 connected = true;
+                System.out.println("end of try");
             } catch(Exception e){
                 System.out.println("Connection failed. Try again.");
             }
@@ -178,7 +181,7 @@ public class AgentGUI extends Application{
         loginButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             String user = createNameField.getText();
             try{
-                agent = new Agent(user, host, port, false);
+                agent = new Agent(user, host, port, false, 0);
                 openStage.close();
                 agent.runBank();
                 connected = true;
@@ -208,7 +211,14 @@ public class AgentGUI extends Application{
         Button auction;
         Set<String> auctions = agent.getAuctionNames();
         for(String a : auctions){
+            final String auctionName = a;
             auction = new Button(a);
+            auction.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                agent.setCurrentAuction(auctionName);
+                placeBid.setRight(messageLog);
+                placeBidButtons.getChildren().add(checkBalance);
+                scene.setRoot(placeBid);
+            });
             flow.getChildren().add(auction);
         }
         flow.setAlignment(Pos.CENTER);

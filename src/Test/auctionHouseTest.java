@@ -23,7 +23,7 @@ public class auctionHouseTest {
 //            //Build simple request
         Message loginRequest = new Message.Builder()
                 .command(Message.Command.LOGIN)
-                .senderId(1);
+                .senderId(100);
 
         Message newUserRequest = new Message.Builder()
                                             .command(Message.Command.OPENACCOUNT)
@@ -43,15 +43,15 @@ public class auctionHouseTest {
         //Send request to Bank
         out.writeObject(newAhRequest);
 
-        while(true){
-            Message messageIn = (Message) in.readObject();
+        Message messageIn;
+        while((messageIn = (Message)in.readObject()) != null){
 
             if(messageIn.getResponse() == Message.Response.SUCCESS){
                 System.out.println("SUCCESS!");
                 System.out.println("user id: " + messageIn.getAccountId());
 
 
-                out.writeObject(loginRequest);
+                //out.writeObject(loginRequest);
 
                 if(messageIn.getResponse() == Message.Response.SUCCESS){
                     System.out.println("SUCCESS!");
