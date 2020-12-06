@@ -45,6 +45,8 @@ public class Agent{
 
     public void setCurrentAuction(String key){ currentAuction = auctionProxies.get(key); }
 
+    public ArrayList<Item> getCurrentItems() { return currentItems; }
+
     public void updateAuctionProxies(){
         List<ConnectionReqs> newConnections = bankProxy.getNewConnections();
         AgentProxy auctionProxy;
@@ -78,8 +80,10 @@ public class Agent{
             auctionMessages = proxy.readAuctionMessages();
             for(A_AH_Messages mes : auctionMessages){
                 messageList.add(key + ": " + mes.toString());
-                if(mes.getAuctionList() != null){
-                    currentItems = mes.getAuctionList();
+                if(key.equals(currentAuction.getName())){
+                    if(mes.getAuctionList() != null ){
+                        currentItems = mes.getAuctionList();
+                    }
                 }
             }
         }

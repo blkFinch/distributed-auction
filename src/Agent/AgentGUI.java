@@ -1,5 +1,6 @@
 package Agent;
 
+import Auction.Item;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -22,6 +23,7 @@ import javafx.stage.Stage;
 import shared.A_AH_Messages;
 import shared.Message;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 public class AgentGUI extends Application{
@@ -36,11 +38,14 @@ public class AgentGUI extends Application{
     private VBox placeBidButtons;
     private Scene createScene;
     private Scene loginScene;
+    private FlowPane itemList;
     private AnimationTimer a;
     private String host;
     private String port;
     private boolean connected;
+    private boolean bidScreen;
     private String currAuction;
+    private String chosenItem;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -48,6 +53,9 @@ public class AgentGUI extends Application{
 
         userID = -1;
         connected = false;
+        bidScreen = false;
+        currAuction = "";
+        chosenItem = null;
 
         Image mainStreet = new Image("file:Resources\\CartoonMainStreet.jpg");
         BackgroundFill imageSet = new BackgroundFill(new
@@ -104,11 +112,16 @@ public class AgentGUI extends Application{
             chooseAuction.setLeft(checkBalance);
             chooseAuction.setRight(messageLog);
             currAuction = "";
+            bidScreen = false;
         });
         backButton.setFont(new Font(15));
         placeBidButtons = new VBox(10, backButton);
         placeBid.setLeft(placeBidButtons);
         BorderPane.setAlignment(placeBidButtons, Pos.TOP_LEFT);
+
+        itemList = new FlowPane();
+        placeBid.setCenter(itemList);
+        BorderPane.setAlignment(itemList, Pos.CENTER);
 
         TextField enterBid = new TextField();
         enterBid.setFont(new Font(18));
@@ -232,7 +245,9 @@ public class AgentGUI extends Application{
                 }
                 if(username.equals("")){ username = agent.getUsername(); }
                 if(connected && (now%10000) == 0){
-                    chooseAuction.setCenter(updateAvailableAuctions());
+                    agent.handleMessages();
+                    if(bidScreen){ placeBid.setCenter(updateAvailableItems()); }
+                    else{ chooseAuction.setCenter(updateAvailableAuctions()); }
                 }
             }
         };
@@ -254,6 +269,7 @@ public class AgentGUI extends Application{
                 placeBid.setRight(messageLog);
                 placeBidButtons.getChildren().add(checkBalance);
                 currAuction = a;
+                bidScreen = true;
                 scene.setRoot(placeBid);
             });
             flow.getChildren().add(auction);
@@ -263,10 +279,73 @@ public class AgentGUI extends Application{
     }
 
     private FlowPane updateAvailableItems(){
-        FlowPane flow = new FlowPane(20, 10);
+        ArrayList<Item> currentItems = agent.getCurrentItems();
+        BorderPane border;
+        Label itemName;
         Canvas canvas;
+        Label currBid;
         GraphicsContext gc;
         Image picture;
-        return flow;
+        String itemFileName;
+        String[] temp;
+        int index = 0;
+        itemList = new FlowPane(20, 10);
+        for(Item item : currentItems){
+            itemName = new Label(item.getName());
+            itemName.setTextFill(Color.WHITE);
+
+            itemFileName = "";
+            temp = item.getName().split("\\s+");
+            for(String s : temp){ itemFileName += s; }
+            itemFileName += ".jpg";
+            canvas = new Canvas(200, 200);
+            picture = new Image("file:Resources\\Items\\"+itemFileName);
+            gc = canvas.getGraphicsContext2D();
+            gc.setFill(Color.WHITE);
+            gc.fillRect(0, 0, 200, 200);
+            gc.drawImage(picture, 0, 0);
+            if(chosenItem != null && chosenItem.equals(item.getName())){
+                gc.setStroke(Color.YELLOW);
+                gc.setLineWidth(7);
+                gc.strokeRect(0, 0, 200, 200);
+            }
+            final int ind = index;
+            final String itemNameFinal = item.getName();
+            final String itemFileFinal = itemFileName;
+            canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                BorderPane bord = (BorderPane)itemList.getChildren().get(ind);
+                Canvas can = (Canvas)bord.getCenter();
+                GraphicsContext graph = can.getGraphicsContext2D();
+                Image pic;
+                if(chosenItem == null){
+                    graph.setStroke(Color.YELLOW);
+                    graph.setLineWidth(7);
+                    graph.strokeRect(0, 0, 200, 200);
+                    chosenItem = itemNameFinal;
+                }
+                else if(chosenItem.equals(itemNameFinal)){
+                    pic = new Image("file:Resources\\Items\\"+itemFileFinal);
+                    graph.setFill(Color.WHITE);
+                    graph.fillRect(0, 0, 200, 200);
+                    graph.drawImage(pic, 0, 0);
+                    chosenItem = null;
+                }
+            });
+
+            currBid = new Label("Bid: $"+item.getCurrentBid());
+            currBid.setTextFill(Color.WHITE);
+
+            border = new BorderPane();
+            border.setTop(itemName);
+            border.setCenter(canvas);
+            border.setBottom(currBid);
+            BorderPane.setAlignment(itemName, Pos.CENTER);
+            BorderPane.setAlignment(canvas, Pos.CENTER);
+            BorderPane.setAlignment(currBid, Pos.CENTER);
+            itemList.getChildren().add(border);
+            index++;
+        }
+        itemList.setAlignment(Pos.CENTER);
+        return itemList;
     }
 }
