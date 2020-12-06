@@ -120,6 +120,12 @@ public class AgentProxy extends Thread{
         return messages;
     }
 
+    public synchronized List<A_AH_Messages> readAuctionMessages(){
+        List<A_AH_Messages> messages = new ArrayList<>(aucInMessages);
+        aucInMessages.clear();
+        return messages;
+    }
+
     public List<ConnectionReqs> getNewConnections(){
         List<ConnectionReqs> connList = new ArrayList<>(newConnections);
         newConnections.clear();

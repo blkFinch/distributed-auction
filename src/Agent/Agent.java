@@ -1,5 +1,7 @@
 package Agent;
 
+import Auction.Item;
+import shared.A_AH_Messages;
 import shared.ConnectionReqs;
 import shared.Message;
 
@@ -9,17 +11,25 @@ import java.util.*;
 public class Agent{
     private final String username;
     private int userID;
-    private static AgentProxy bankProxy;
-    private static Map<String, AgentProxy> auctionProxies;
+    private AgentProxy bankProxy;
+    private Map<String, AgentProxy> auctionProxies;
     private AgentProxy currentAuction;
+    private ArrayList<Item> currentItems;
+    private List<String> messageList;
 
     public Agent(String user, String host, String port, boolean newAcc, int initBal) throws Exception{
         username = user;
         userID = -1;
         bankProxy = new AgentProxy(user,"bank", host, port, newAcc);
         auctionProxies = new HashMap<>();
+        currentItems = new ArrayList<>();
+        messageList = new ArrayList<>();
         if(newAcc){ bankProxy.setInitBal(initBal); }
     }
+
+    public String getUsername(){ return username; }
+
+    public int getUserID(){ return userID; }
 
     public void runBank(){ bankProxy.start(); }
 
@@ -27,8 +37,8 @@ public class Agent{
 
     public void sendBankMessage(Message message){ bankProxy.sendMessage(message); }
 
-    public void sendAuctionMessage(String key, Message message){
-        auctionProxies.get(key).sendMessage(message);
+    public void sendAuctionMessage(Message message){
+        currentAuction.sendMessage(message);
     }
 
     public Set<String> getAuctionNames(){ return auctionProxies.keySet(); }
@@ -53,10 +63,24 @@ public class Agent{
 
     public void handleMessages(){
         List<Message> bankMessages = bankProxy.readBankMessages();
+        List<A_AH_Messages> auctionMessages;
+        Set<String> keySet = auctionProxies.keySet();
+        AgentProxy proxy;
         for(Message mes : bankMessages){
+            messageList.add("Bank: " + mes.toString());
             if(userID == -1 && mes.getAccountId() != -1){
                 userID = mes.getAccountId();
                 setProxyID(bankProxy);
+            }
+        }
+        for(String key : keySet){
+            proxy = auctionProxies.get(key);
+            auctionMessages = proxy.readAuctionMessages();
+            for(A_AH_Messages mes : auctionMessages){
+                messageList.add(key + ": " + mes.toString());
+                if(mes.getAuctionList() != null){
+                    currentItems = mes.getAuctionList();
+                }
             }
         }
     }

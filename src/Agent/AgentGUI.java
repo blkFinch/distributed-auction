@@ -5,6 +5,8 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -17,12 +19,16 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import shared.A_AH_Messages;
+import shared.Message;
 
 import java.util.Set;
 
 public class AgentGUI extends Application{
     private Scene scene;
     private Agent agent;
+    private String username;
+    private int userID;
     private BorderPane chooseAuction;
     private BorderPane placeBid;
     private ScrollPane messageLog;
@@ -30,14 +36,17 @@ public class AgentGUI extends Application{
     private VBox placeBidButtons;
     private Scene createScene;
     private Scene loginScene;
+    private AnimationTimer a;
     private String host;
     private String port;
     private boolean connected;
+    private String currAuction;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Agent");
 
+        userID = -1;
         connected = false;
 
         Image mainStreet = new Image("file:Resources\\CartoonMainStreet.jpg");
@@ -69,6 +78,15 @@ public class AgentGUI extends Application{
         depositFunds.setFont(new Font(18));
         Button deposit = new Button("Deposit");
         deposit.setFont(new Font(18));
+        deposit.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            int dep = Integer.parseInt(depositFunds.getText());
+            Message depositMessage = new Message.Builder()
+                    .command(Message.Command.DEPOSIT)
+                    .balance(dep)
+                    .accountId(userID)
+                    .nullId();
+            agent.sendBankMessage(depositMessage);
+        });
         HBox chooseAuctionBox = new HBox(10, depositFunds, deposit);
         chooseAuctionBox.setAlignment(Pos.CENTER);
         chooseAuction.setBottom(chooseAuctionBox);
@@ -85,6 +103,7 @@ public class AgentGUI extends Application{
             scene.setRoot(chooseAuction);
             chooseAuction.setLeft(checkBalance);
             chooseAuction.setRight(messageLog);
+            currAuction = "";
         });
         backButton.setFont(new Font(15));
         placeBidButtons = new VBox(10, backButton);
@@ -95,6 +114,13 @@ public class AgentGUI extends Application{
         enterBid.setFont(new Font(18));
         Button bid = new Button("Place Bid");
         bid.setFont(new Font(18));
+        bid.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            Double bidAmount = Double.parseDouble(enterBid.getText());
+            /*A_AH_Messages bidMessage = new A_AH_Messages.Builder()
+                    .bid(bidAmount)
+                    .accountId(userID)
+                    .*/
+        });
         HBox placeBidBox = new HBox(10, enterBid, bid);
         placeBidBox.setAlignment(Pos.CENTER);
         BorderPane.setAlignment(placeBidBox, Pos.CENTER);
@@ -161,7 +187,8 @@ public class AgentGUI extends Application{
                 openStage.close();
                 agent.runBank();
                 connected = true;
-                System.out.println("end of try");
+                username = user;
+                a.start();
             } catch(Exception e){
                 System.out.println("Connection failed. Try again.");
             }
@@ -185,6 +212,8 @@ public class AgentGUI extends Application{
                 openStage.close();
                 agent.runBank();
                 connected = true;
+                username = "";
+                a.start();
             } catch(Exception e){
                 System.out.println("Connection failed. Try again.");
             }
@@ -195,15 +224,18 @@ public class AgentGUI extends Application{
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        AnimationTimer a = new AnimationTimer() {
+        a = new AnimationTimer() {
             @Override
             public void handle(long now) {
+                if(userID == -1 && agent.getUserID() != -1){
+                    userID = agent.getUserID();
+                }
+                if(username.equals("")){ username = agent.getUsername(); }
                 if(connected && (now%10000) == 0){
                     chooseAuction.setCenter(updateAvailableAuctions());
                 }
             }
         };
-        a.start();
     }
 
     private FlowPane updateAvailableAuctions(){
@@ -221,11 +253,20 @@ public class AgentGUI extends Application{
                 agent.setCurrentAuction(auctionName);
                 placeBid.setRight(messageLog);
                 placeBidButtons.getChildren().add(checkBalance);
+                currAuction = a;
                 scene.setRoot(placeBid);
             });
             flow.getChildren().add(auction);
         }
         flow.setAlignment(Pos.CENTER);
+        return flow;
+    }
+
+    private FlowPane updateAvailableItems(){
+        FlowPane flow = new FlowPane(20, 10);
+        Canvas canvas;
+        GraphicsContext gc;
+        Image picture;
         return flow;
     }
 }
