@@ -7,7 +7,7 @@ Ashley Krattiger
 Ryan Cooper
 
 ## Project Structure
-  ![image](Resources/Bank.png =300x)
+  ![image](Resources/Bank.png)
 
 ## Message System
 ### Error Codes
