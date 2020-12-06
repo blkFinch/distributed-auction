@@ -6,6 +6,14 @@ Galen Hutchison
 Ashley Krattiger
 Ryan Cooper
 
+## Message System
+### Error Codes
+Error codes can be found on a message with FAILURE response
+The accountID field will be sent with the error code  
+
+ - -999 => Invalid Lookup  
+ - -888 => Insufficient Funds 
+
 ## Bank Server
 This is the main server for the program. It houses the Database and accepts concurrent connections
 
@@ -47,7 +55,8 @@ arguments: userId
 Message loginRequest = new Message.Builder()
                 .command(Message.Command.LOGIN)
                 .senderId(1);
-~~~  
+~~~
+  
 
 ### Setting up the Database
 add sqlite-jdbc-3.21.0.21.jar to classpath available from intellj package manager 

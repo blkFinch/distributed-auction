@@ -3,6 +3,7 @@ package Database;
 import Bank.Client;
 import Database.Tasks.CreateClient;
 import Database.Tasks.ReadClient;
+import Database.Tasks.UpdateClient;
 import shared.DBMessage;
 import shared.Message;
 
@@ -49,6 +50,16 @@ public class DBCommandProtocol {
                     e.printStackTrace();
                     response = failureResponse(-999);
                 }
+
+            case UPDATE:
+                Client updateClient = (Client) message.getPayload();
+                UpdateClient uc = new UpdateClient(updateClient);
+                int uID = (int) SyncInjector.getActive().executeInjection(uc);
+                response = new DBMessage.Builder()
+                                .response(Message.Response.SUCCESS)
+                                .accountId(uID)
+                                .build();
+                break;
 
         }
 

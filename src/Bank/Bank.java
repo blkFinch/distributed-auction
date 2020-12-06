@@ -63,26 +63,37 @@ public class Bank {
         return house.getID();
     }
 
+    public Client findActiveClient(int id){
+        for (Client client: clients) {
+            if (client.getID() == id){ return client;}
+        }
+        return null;
+    }
+
 
     //MONEY HANDLING
     //
 
+    /**
+     * Deposits money into client balance and updates DB
+     * @param client
+     * @param amount
+     */
     public synchronized void depositInto(Client client, int amount){
         client.deposit(amount);
         updateClient(client);
     }
 
-    public synchronized void blockFunds(Client client, int amount){
-        client.holdFunds(amount);
-    }
-
-    public synchronized void releaseFunds(Client client, int amount){
-        client.releaseFunds(amount);
-    }
-
+    /**
+     * Withdraws money and updates DB
+     * @param client
+     * @param amount
+     * @return the amount withdrawn
+     */
     public synchronized int withdrawFunds(Client client, int amount){
         if(client.releaseFunds(amount)){
             client.withdraw(amount);
+            updateClient(client);
             return amount;
         }else{
             return 0;
@@ -111,16 +122,23 @@ public class Bank {
         return -999;
     }
 
-    //TODO: make db call
+    /**
+     * Updats client record in DB
+     * @param client
+     * @return Client that was just updated
+     */
     public synchronized Client updateClient(Client client){
-        UpdateClient uc = new UpdateClient(client);
-        try {
-            uc.inject();
-        } catch (Exception e) {
-            e.printStackTrace();
+        DBMessage req = new DBMessage.Builder()
+                .command(DBMessage.Command.UPDATE)
+                .table(DBMessage.Table.CLIENT)
+                .payload(client)
+                .build();
+
+        DBMessage response = sendToDB(req);
+        if(response.getResponse() == Message.Response.SUCCESS){
+            return client;
         }
-        System.out.println("Updated client id: " + client.getID());
-        return client;
+        return null;
     }
 
     /**

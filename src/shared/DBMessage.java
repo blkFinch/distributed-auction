@@ -140,7 +140,8 @@ public class DBMessage implements Serializable {
      */
     public enum Command {
         GET,
-        PUT
+        PUT,
+        UPDATE
     }
 
     public enum  Table{

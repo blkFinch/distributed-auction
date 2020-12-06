@@ -1,5 +1,6 @@
 package Bank;
 
+import shared.DBMessage;
 import shared.Message;
 
 import java.io.ObjectOutputStream;
@@ -23,15 +24,12 @@ public class CommandProtocol {
                             .accountId(user.getID())
                             .connectionReqs(Bank.getActive().getHouses())
                             .response(Message.Response.SUCCESS)
-                            .senderId(000);
+                            .senderId(0);
 
                     Bank.getActive().clients.add(user);
 
                 }else{
-                    response  = new Message.Builder()
-                            .response(Message.Response.FAILURE)
-                            .arguments(new String[]{"no user found"})
-                            .senderId(000);
+                    response  = failureResponse(-999);
                 }
                 break;
 
@@ -50,9 +48,9 @@ public class CommandProtocol {
                             .accountId(newUserId)
                             .connectionReqs(Bank.getActive().getHouses())
                             .senderId(0);
+                }else{
+                    response = failureResponse(-999);
                 }
-
-
                 break;
 
             case GETHOUSES:
@@ -75,15 +73,49 @@ public class CommandProtocol {
                     response = new Message.Builder()
                             .response(Message.Response.SUCCESS)
                             .accountId(newAHId)
-                            .senderId(000);
+                            .senderId(0);
+                }else{
+                    response = failureResponse(-999);
                 }
                 break;
 
             case BLOCK:
                 int blockID = message.getAccountId();
+                Client blockClient = Bank.getActive().findActiveClient(blockID);
+               if(blockClient.holdFunds(message.getBalance())){
+                   response = new Message.Builder()
+                                        .response(Message.Response.SUCCESS)
+                                        .accountId(blockID)
+                                        .accountName(blockClient.getName())
+                                        .senderId(0);
+               }else{
+                   response = failureResponse(-888);
+               }
                 break;
+
+            case DEPOSIT:
+                int depID = message.getAccountId();
+                Client depClient = Bank.getActive().findActiveClient(depID);
+                Bank.getActive().depositInto(depClient, message.getBalance());
+                response = new Message.Builder()
+                                    .response(Message.Response.SUCCESS)
+                                    .accountName(depClient.getName())
+                                    .accountId(depID)
+                                    .cost(depClient.getBalance())
+                                    .senderId(0);
+                break;
+
+
         }
 
         return response;
+    }
+
+    private Message failureResponse(int errCode){
+        Message err = new Message.Builder()
+                .response(Message.Response.FAILURE)
+                .accountId(errCode)
+                .senderId(0);
+        return err;
     }
 }
