@@ -68,7 +68,7 @@ public class Item implements Serializable {
     /**
      * restBidTime sets new bidTime to time of current bid
      */
-    public void resetBidTime() {
+    public static void resetBidTime() {
         bidTime = System.currentTimeMillis();
     }
 
