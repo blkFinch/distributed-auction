@@ -1,6 +1,7 @@
 package shared;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 public class DBMessage implements Serializable {
@@ -129,6 +130,19 @@ public class DBMessage implements Serializable {
 
     public Object getPayload() {
         return payload;
+    }
+
+    @Override
+    public String toString() {
+        return "DBMessage{" +
+                "command=" + command +
+                ", table=" + table +
+                ", senderId=" + senderId +
+                ", accountId=" + accountId +
+                ", arguments=" + Arrays.toString(arguments) +
+                ", response=" + response +
+                ", payload=" + payload +
+                '}';
     }
 
     /**

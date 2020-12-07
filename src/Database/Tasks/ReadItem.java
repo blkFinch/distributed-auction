@@ -19,7 +19,7 @@ public class ReadItem implements  SQLInjector{
     public Item inject() throws Exception {
         Connection DBconn = DatabaseManager.getConn();
         Statement statement = DBconn.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * FROM clients WHERE id=" + id);
+        ResultSet rs = statement.executeQuery("SELECT * FROM items WHERE id=" + id);
 
         String name = rs.getString("name");
         String desc = rs.getString("desc");

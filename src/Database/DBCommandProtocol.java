@@ -66,6 +66,7 @@ public class DBCommandProtocol {
         int id = message.getAccountId();
         ReadItem ri = new ReadItem(id);
         Item item = (Item) SyncInjector.getActive().executeInjection(ri);
+        System.out.println(item.toString());
         if(item != null){
             response = new DBMessage.Builder()
                             .response(Message.Response.SUCCESS)

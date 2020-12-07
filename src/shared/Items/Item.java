@@ -3,15 +3,15 @@ package shared.Items;
 import java.io.Serializable;
 
 public class Item implements Serializable {
-    private static int    auctionId;
-    private static String name;
-    private static String description;
-    private static int minimumBid;
-    private static int currentBid;
-    private static int    bidderId;
-    private static long   remainingTime;
-    private static long   bidTime;
-    private static int    itemId;
+    private  int    auctionId;
+    private  String name;
+    private  String description;
+    private  int minimumBid;
+    private  int currentBid;
+    private  int    bidderId;
+    private  long   remainingTime;
+    private  long   bidTime;
+    private  int    itemId;
 
     public Item(String setName, String descriptionSet, int value, int Id) {
         description   = descriptionSet;
@@ -120,7 +120,17 @@ public class Item implements Serializable {
         return bidderId;
     }
 
-    public static String getDescription() {
+    public String getDescription() {
         return description;
+    }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", minimumBid=" + minimumBid +
+                ", itemId=" + itemId +
+                '}';
     }
 }
