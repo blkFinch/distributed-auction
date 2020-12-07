@@ -1,8 +1,8 @@
 package Database;
 
-import Auction.Item;
 import Database.Tasks.CreateItem;
 import shared.ItemFaker;
+import shared.Items.Item;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;

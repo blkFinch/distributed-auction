@@ -1,7 +1,8 @@
 package Database.Tasks;
 
-import Auction.Item;
+
 import Database.DatabaseManager;
+import shared.Items.Item;
 
 import java.sql.*;
 

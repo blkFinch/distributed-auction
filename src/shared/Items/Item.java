@@ -25,6 +25,7 @@ public class Item implements Serializable {
         bidTime       = System.currentTimeMillis();
     }
 
+
     /**
      * getName returns name String
      *
@@ -117,5 +118,9 @@ public class Item implements Serializable {
      */
     public int getBidderId(){
         return bidderId;
+    }
+
+    public static String getDescription() {
+        return description;
     }
 }
