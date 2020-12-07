@@ -54,6 +54,7 @@ public class AgentActions {
                 if(oldBidder != -1){
                     release(oldBidder, value);
                     outBid(oldBidder);
+                    Item.resetBidTime();
                 }
                 bidItem.setBid(bidderId, bid);
                 accept(bidItem.getItemID(), bidItem.getName());
