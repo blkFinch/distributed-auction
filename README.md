@@ -90,7 +90,16 @@ Make sure to deregister before logging out.
 requires: senderID
 
 
-  
+ ## DatabaseServer
+ 
+ Only the bank and Auction Houses should talk to Database
+ It accepts DBMessage
+ 
+ ### Commands
+ 
+ <b> GET ITEM</b>  
+ COMMAND: GET TABLE: ITEMS
+ Requires: id
 
 ### Setting up the Database
 add sqlite-jdbc-3.21.0.21.jar to classpath available from intellj package manager 
