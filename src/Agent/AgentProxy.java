@@ -114,6 +114,14 @@ public class AgentProxy extends Thread{
         }
     }
 
+    public synchronized void sendAuctionMessage(A_AH_Messages message){
+        try {
+            out.writeObject(message);
+        } catch(IOException e){
+            System.out.println("Message failed to send");
+        }
+    }
+
     public synchronized List<Message> readBankMessages(){
         List<Message> messages = new ArrayList<>(inMessages);
         inMessages.clear();

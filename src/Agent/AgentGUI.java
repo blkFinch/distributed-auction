@@ -1,6 +1,5 @@
 package Agent;
 
-import Auction.Item;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -21,6 +20,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import shared.A_AH_Messages;
+import shared.Items.Item;
 import shared.Message;
 
 import java.util.ArrayList;
@@ -46,6 +46,7 @@ public class AgentGUI extends Application{
     private boolean bidScreen;
     private String currAuction;
     private String chosenItem;
+    private int chosenItemID;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -56,6 +57,7 @@ public class AgentGUI extends Application{
         bidScreen = false;
         currAuction = "";
         chosenItem = null;
+        chosenItemID = 0;
 
         Image mainStreet = new Image("file:Resources\\CartoonMainStreet.jpg");
         BackgroundFill imageSet = new BackgroundFill(new
@@ -128,11 +130,18 @@ public class AgentGUI extends Application{
         Button bid = new Button("Place Bid");
         bid.setFont(new Font(18));
         bid.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            Double bidAmount = Double.parseDouble(enterBid.getText());
-            /*A_AH_Messages bidMessage = new A_AH_Messages.Builder()
-                    .bid(bidAmount)
-                    .accountId(userID)
-                    .*/
+            int bidAmount;
+            A_AH_Messages bidMessage;
+            if(chosenItem != null){
+                bidAmount = Integer.parseInt(enterBid.getText());
+                bidMessage = new A_AH_Messages.Builder()
+                        .itemId(chosenItemID)
+                        .accountId(userID)
+                        .name(chosenItem)
+                        .bid(bidAmount)
+                        .build();
+                agent.sendAuctionMessage(bidMessage);
+            }
         });
         HBox placeBidBox = new HBox(10, enterBid, bid);
         placeBidBox.setAlignment(Pos.CENTER);
@@ -312,6 +321,7 @@ public class AgentGUI extends Application{
             final int ind = index;
             final String itemNameFinal = item.getName();
             final String itemFileFinal = itemFileName;
+            final int itemID = item.getItemID();
             canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 BorderPane bord = (BorderPane)itemList.getChildren().get(ind);
                 Canvas can = (Canvas)bord.getCenter();
@@ -322,6 +332,7 @@ public class AgentGUI extends Application{
                     graph.setLineWidth(7);
                     graph.strokeRect(0, 0, 200, 200);
                     chosenItem = itemNameFinal;
+                    chosenItemID = itemID;
                 }
                 else if(chosenItem.equals(itemNameFinal)){
                     pic = new Image("file:Resources\\Items\\"+itemFileFinal);
@@ -329,6 +340,7 @@ public class AgentGUI extends Application{
                     graph.fillRect(0, 0, 200, 200);
                     graph.drawImage(pic, 0, 0);
                     chosenItem = null;
+                    chosenItemID = 0;
                 }
             });
 

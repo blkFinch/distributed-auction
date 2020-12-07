@@ -1,8 +1,8 @@
 package Agent;
 
-import Auction.Item;
 import shared.A_AH_Messages;
 import shared.ConnectionReqs;
+import shared.Items.Item;
 import shared.Message;
 
 import java.io.IOException;
@@ -37,8 +37,8 @@ public class Agent{
 
     public void sendBankMessage(Message message){ bankProxy.sendMessage(message); }
 
-    public void sendAuctionMessage(Message message){
-        currentAuction.sendMessage(message);
+    public void sendAuctionMessage(A_AH_Messages message){
+        currentAuction.sendAuctionMessage(message);
     }
 
     public Set<String> getAuctionNames(){ return auctionProxies.keySet(); }
