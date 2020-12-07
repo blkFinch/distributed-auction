@@ -3,8 +3,10 @@ package Database;
 import Bank.Client;
 import Database.Tasks.CreateClient;
 import Database.Tasks.ReadClient;
+import Database.Tasks.ReadItem;
 import Database.Tasks.UpdateClient;
 import shared.DBMessage;
+import shared.Items.Item;
 import shared.Message;
 
 public class DBCommandProtocol {
@@ -21,20 +23,13 @@ public class DBCommandProtocol {
         switch (command){
             //TODO: only bank should get client
             case GET:
-                int id = message.getAccountId();
-                ReadClient rc = new ReadClient(id);
-                try {
-                    Client getClient = (Client) SyncInjector.getActive().executeInjection(rc);
-                    response = new DBMessage.Builder()
-                            .response(Message.Response.SUCCESS)
-                            .accountId(id)
-                            .payload(getClient)
-                            .build();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    response = failureResponse(-999);
+                if(message.getTable() == DBMessage.Table.CLIENT){
+                    response = getClient();
                 }
+                if(message.getTable() == DBMessage.Table.ITEM){
+                    response = getItem();
+                }
+
                 break;
 
             case PUT:
@@ -63,6 +58,44 @@ public class DBCommandProtocol {
 
         }
 
+        return response;
+    }
+
+    public DBMessage getItem(){
+        DBMessage response;
+        int id = message.getAccountId();
+        ReadItem ri = new ReadItem(id);
+        Item item = (Item) SyncInjector.getActive().executeInjection(ri);
+        if(item != null){
+            response = new DBMessage.Builder()
+                            .response(Message.Response.SUCCESS)
+                            .accountId(id)
+                            .payload(item)
+                            .build();
+        }else{
+            response = new DBMessage.Builder()
+                            .response(Message.Response.FAILURE)
+                            .build();
+        }
+        return response;
+    }
+
+    public DBMessage getClient() {
+        DBMessage response;
+        int id = message.getAccountId();
+        ReadClient rc = new ReadClient(id);
+        try {
+            Client getClient = (Client) SyncInjector.getActive().executeInjection(rc);
+            response = new DBMessage.Builder()
+                    .response(Message.Response.SUCCESS)
+                    .accountId(id)
+                    .payload(getClient)
+                    .build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = failureResponse(-999);
+        }
         return response;
     }
 
