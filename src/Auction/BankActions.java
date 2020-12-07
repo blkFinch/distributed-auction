@@ -25,7 +25,6 @@ public class BankActions {
         Message response = sendToBank(message);
         assert response != null;
         AuctionServer.auctionId = response.getAccountId();
-        CountDown.addItems(4);
         CountDown count = new CountDown();
         Thread timer = new Thread(count);
         timer.setDaemon(true);
