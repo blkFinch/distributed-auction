@@ -44,7 +44,12 @@ public class AH_AgentThread extends Thread {
                 message = (A_AH_Messages) agentIn.readObject();
                 A_AH_Messages.A_AH_MTopic topic = message.getTopic();
                 if(topic != A_AH_Messages.A_AH_MTopic.UPDATE) {
-                    System.err.println("From a client: " + message);
+                    System.out.println("From a client: " + message);
+                }
+                if(topic != A_AH_Messages.A_AH_MTopic.DEREGISTER) {
+                    System.out.println(
+                            "deregister requested by " + message.getAccountId());
+                    running = false;
                 }
                 switch(topic) {
                     case BID:

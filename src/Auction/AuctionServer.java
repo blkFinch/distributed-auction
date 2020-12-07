@@ -50,6 +50,7 @@ public class AuctionServer {
                     activeAgents.add(at);
                     at.start();
             } catch (IOException e) {
+                e.printStackTrace();
                 running = false;
             }
         }

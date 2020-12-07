@@ -33,19 +33,24 @@ public class CountDown implements Runnable {
         CountDown.addItems(3);
         while(AH_AgentThread.running) {
             try {
+                int i = 0;
                 ArrayList<Item> auctionList = getAuctionList();
+                int size = auctionList.size();
                 int needed =  3 - auctionList.size();
+
                 if(needed > 0){
                     addItems(needed);
                 }
                 //change to while
-                for(Item value : auctionList) {
+                while(i < size) {
+                    Item listItem = auctionList.get(i);
                     long currentTime = System.currentTimeMillis();
-                    value.remainingTime(currentTime);
-                    long timeLeft = value.getRemainingTime();
+                    listItem.remainingTime(currentTime);
+                    long timeLeft = listItem.getRemainingTime();
                     if (timeLeft <= 0) {
-                        itemResult(value);
+                        itemResult(listItem);
                     }
+                    i++;
                 }
                 Thread.sleep(500);
             } catch (InterruptedException e) {
