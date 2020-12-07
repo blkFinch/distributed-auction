@@ -1,6 +1,8 @@
 package Agent;
 
+import shared.A_AH_Messages;
 import shared.ConnectionReqs;
+import shared.Items.Item;
 import shared.Message;
 
 import java.io.IOException;
@@ -8,42 +10,99 @@ import java.util.*;
 
 public class Agent{
     private final String username;
-    private static AgentProxy bankProxy;
-    private static Map<String, AgentProxy> auctionProxies;
+    private int userID;
+    private AgentProxy bankProxy;
+    private Map<String, AgentProxy> auctionProxies;
+    private Map<String, ArrayList<Item>> auctionItems;
     private AgentProxy currentAuction;
+    private List<String> messageList;
 
     public Agent(String user, String host, String port, boolean newAcc, int initBal) throws Exception{
         username = user;
+        userID = -1;
         bankProxy = new AgentProxy(user,"bank", host, port, newAcc);
         auctionProxies = new HashMap<>();
+        auctionItems = new HashMap<>();
+        messageList = new ArrayList<>();
         if(newAcc){ bankProxy.setInitBal(initBal); }
     }
 
+    public String getUsername(){ return username; }
+
+    public int getUserID(){ return userID; }
+
     public void runBank(){ bankProxy.start(); }
+
+    private void setProxyID(AgentProxy proxy){ proxy.setUserID(userID); }
 
     public void sendBankMessage(Message message){ bankProxy.sendMessage(message); }
 
-    public void sendAuctionMessage(String key, Message message){
-        auctionProxies.get(key).sendMessage(message);
+    public void sendAuctionMessage(A_AH_Messages message){
+        currentAuction.sendAuctionMessage(message);
     }
 
     public Set<String> getAuctionNames(){ return auctionProxies.keySet(); }
 
     public void setCurrentAuction(String key){ currentAuction = auctionProxies.get(key); }
 
+    public ArrayList<Item> getCurrentItems() {
+        return auctionItems.get(currentAuction.getAuctionName());
+    }
+
+    public List<String> getMessageList(){
+        List<String> newMessages = new ArrayList<>(messageList);
+        messageList.clear();
+        return newMessages;
+    }
+
     public void updateAuctionProxies(){
         List<ConnectionReqs> newConnections = bankProxy.getNewConnections();
         AgentProxy auctionProxy;
         for(ConnectionReqs conn : newConnections){
-            try{
-                auctionProxy = new AgentProxy(username,"auction", conn.getIp(),
-                        ""+conn.getPort(), false);
-                auctionProxies.put(conn.getName(), auctionProxy);
-            } catch(IOException e){
-                System.out.println("Connection to auction house failed");
+            if(!auctionProxies.containsKey(conn.getName())) {
+                try{
+                    auctionProxy = new AgentProxy(username, "auction", conn.getIp(),
+                            "" + conn.getPort(), false);
+                    setProxyID(auctionProxy);
+                    auctionProxy.setAuctionName(conn.getName());
+                    auctionProxy.start();
+                    auctionProxies.put(conn.getName(), auctionProxy);
+                } catch(IOException e){
+                    System.out.println("Connection to auction house failed");
+                }
             }
         }
     }
 
+    public void handleMessages(){
+        List<Message> bankMessages = bankProxy.readBankMessages();
+        List<A_AH_Messages> auctionMessages;
+        ArrayList<Item> itemList;
+        Set<String> keySet = auctionProxies.keySet();
+        AgentProxy proxy;
+        for(Message mes : bankMessages){
+            messageList.add("Bank: " + mes.toString());
+            if(userID == -1 && mes.getAccountId() != -1){
+                userID = mes.getAccountId();
+                setProxyID(bankProxy);
+            }
+        }
+        for(String key : keySet){
+            proxy = auctionProxies.get(key);
+            auctionMessages = proxy.readAuctionMessages();
+            for(A_AH_Messages mes : auctionMessages){
+                messageList.add(key + ": " + mes.toString());
+                if(mes.getAuctionList() != null){
+                    itemList = new ArrayList<>(mes.getAuctionList());
+                    if(auctionItems.containsKey(key)){
+                        auctionItems.replace(key, itemList);
+                    }
+                    else{
+                        auctionItems.put(key, itemList);
+                    }
+                }
+            }
+        }
+    }
 }
 

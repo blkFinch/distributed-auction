@@ -24,11 +24,11 @@ public class Message implements Serializable {
      */
     public static class Builder {
         private Command              command        = null;
-        private int                  balance           = 0;
+        private int                  balance        = 0;
         private int                  senderId       = -1;
         private int                  accountId      = -1;
-        private String               accountName     = null;
-        private String []            arguments       = null;
+        private String               accountName    = null;
+        private String []            arguments      = null;
         private List<ConnectionReqs> connectionReqs = null;
         private Response             response       = null;
 

@@ -8,10 +8,10 @@ import java.util.ArrayList;
 public class A_AH_Messages implements Serializable {
     private final A_AH_MTopic     topic;       //what kind of message is it
     private final ArrayList<Item> auctionList; //list of items in the auction
-    private final int          bid;         //bid value
+    private final int             bid;         //bid value
     private final int             accountId;   //Client ID from first contact with Auction
     private final int             itemId;      //The item identification
-    private final String itemName;        //Item name
+    private final String          itemName;    //Item name
 
     /**
      * AgentAuctionMessage Builder
@@ -212,7 +212,7 @@ public class A_AH_Messages implements Serializable {
         BID,        //client submits bid on item
         DEREGISTER, //client de-registers from auction house
         OUTBID,     //Auction tells agent they were outbid
-        FAILURE,  //Auction tells agent their bid was refused
+        REJECT,    //Auction tells agent their bid was refused
         REGISTER,   //agent registers with auction
         SUCCESS,    //Auction tells agent the bid was accepted
         UPDATE,     //Auction updates auctionList for client

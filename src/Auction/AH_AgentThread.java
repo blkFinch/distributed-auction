@@ -14,7 +14,8 @@ public class AH_AgentThread extends Thread {
     private static ObjectInputStream agentIn;
     private static ObjectOutputStream agentOut;
     static BlockingQueue<Boolean> bankSignOff = new LinkedBlockingDeque<>();
-    private int agentId;
+    public Integer AgentId;
+    int agentId;
 
     /**
      * Constructor for an AgentReqs. Takes socket from AuctionHouseServer,
@@ -48,6 +49,7 @@ public class AH_AgentThread extends Thread {
                         AgentActions.bid(message);
                         break;
                     case REGISTER:
+                        agentId = message.getAccountId();
                         AgentActions.register(message);
                         break;
                     case DEREGISTER:
@@ -82,11 +84,9 @@ public class AH_AgentThread extends Thread {
     }
 
     static void agentShutdown() {
-        A_AH_Messages message = AgentActions.deRegister();
+        AgentActions.deRegister();
         try {
             agentOut.reset();
-
-            agentOut.writeObject(message);
             if(!agentSocket.isClosed()){
                 agentOut.close();
                 agentIn.close();

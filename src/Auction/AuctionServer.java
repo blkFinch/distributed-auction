@@ -9,6 +9,8 @@ import javax.management.AttributeList;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -23,11 +25,12 @@ public class AuctionServer {
 
     public static void main(String[] args) throws IOException {
         AuctionHouseSpecs.createAuctionList(3);
-        /*try (final DatagramSocket socket = new DatagramSocket()) {
+        String ip = "localHost";
+        try (final DatagramSocket socket = new DatagramSocket()) {
             socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
             ip = socket.getLocalAddress().getHostAddress();
-        }*/
-        String ip = "localHost";
+        }
+
         int port = 5600;
         //setIPAddress reference auctionspecs
         //send registration
@@ -69,13 +72,13 @@ public class AuctionServer {
      * searches for agent in active agent list
      * @param id id of agent we want
      * @return returns the agentProxy we want, null otherwise
-     *//*
-    private AH_AgentThread agentSearch(int id){
-        for(AH_AgentThread agent: activeAgents){
-            if(agent.getAgentId.equals(id)){
+     */
+    static AH_AgentThread agentSearch(int id) {
+        for(AH_AgentThread agent: activeAgents) {
+            if(agent.agentId == id) {
                 return agent;
             }
         }
         return null;
-    }*/
+    }
 }

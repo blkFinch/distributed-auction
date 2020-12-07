@@ -36,7 +36,7 @@ public class BankActions {
             out.flush();
             ObjectInputStream in = new ObjectInputStream(bankSocket.getInputStream());
             out.writeObject(message);
-            System.out.println("out written");
+            //System.out.println("out written");
             Message response = (Message) in.readObject();
             return response;
         } catch (IOException | ClassNotFoundException e) {
