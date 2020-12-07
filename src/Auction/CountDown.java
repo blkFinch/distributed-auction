@@ -69,14 +69,18 @@ public class CountDown implements Runnable {
         int bidder = item.getBidderId();
         AH_AgentThread agent = AuctionServer.agentSearch(bidder);
         if (bidder != -1) {
-
-            agent.winner(item);
-            //add success check
             Message release = new Message.Builder()
                     .command(Message.Command.TRANSFER)
                     .balance(item.getCurrentBid())
                     .accountId(bidder).senderId(AuctionServer.auctionId);
-            BankActions.sendToBank(release);
+            Message response = BankActions.sendToBank(release);
+            assert response != null;
+            if(response.getResponse() == Message.Response.SUCCESS) {
+                System.out.println("Item Transferred");
+                agent.winner(item);
+            } else {
+                System.out.println("Item Transfer failed");
+            }
             auctionList.remove(item);
         }
     }
