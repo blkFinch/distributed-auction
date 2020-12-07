@@ -9,6 +9,10 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.Random;
 
+/**
+ * Test for getting random item from server.
+ * Make sure DBServer.java is running
+ */
 public class ItemTest {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -24,7 +28,7 @@ public class ItemTest {
         DBMessage itemReq = new DBMessage.Builder()
                                 .command(DBMessage.Command.GET)
                                 .table(DBMessage.Table.ITEM)
-                                .accountId(3)
+                                .accountId(randInt)
                                 .build();
 
         out.writeObject(itemReq);
