@@ -46,7 +46,7 @@ public class AH_AgentThread extends Thread {
                 if(topic != A_AH_Messages.A_AH_MTopic.UPDATE) {
                     System.out.println("From a client: " + message);
                 }
-                if(topic != A_AH_Messages.A_AH_MTopic.DEREGISTER) {
+                if(topic == A_AH_Messages.A_AH_MTopic.DEREGISTER) {
                     System.out.println(
                             "deregister requested by " + message.getAccountId());
                     running = false;
