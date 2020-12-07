@@ -72,7 +72,7 @@ public class AH_AgentThread extends Thread {
     static void sendOut(A_AH_Messages message) {
         try{
             if(message.getTopic() != A_AH_Messages.A_AH_MTopic.UPDATE) {
-                System.err.println("To Agent: " + message);
+                System.out.println("To Agent: " + message);
             }
             agentOut.reset();
             agentOut.writeObject(message);

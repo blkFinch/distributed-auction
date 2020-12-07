@@ -5,6 +5,8 @@ import shared.A_AH_Messages.A_AH_MTopic;
 import shared.Items.Item;
 import shared.Message;
 
+import java.io.IOException;
+
 public class AgentActions {
     /**
      * This method grabs the itemID, bidderId, name, and amount of the
@@ -101,14 +103,14 @@ public class AgentActions {
      * also stores the agent's UUID for future reference
      * @param message The register message the agent sent
      */
-    static A_AH_Messages register(A_AH_Messages message) {
-        //int agentId = message.getAccountId();
+    static void register(A_AH_Messages message) {
+        int agentId = message.getAccountId();
         A_AH_Messages reply = A_AH_Messages.Builder.newBuilder()
                 .topic(A_AH_MTopic.REGISTER)
                 .accountId(AuctionServer.getAuctionId())
                 .auctionList(AuctionHouseSpecs.getAuctionList())
                 .build();
-        return reply;
+        AH_AgentThread.sendOut(reply);
     }
 
     /**
