@@ -17,6 +17,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import shared.A_AH_Messages;
@@ -24,6 +25,7 @@ import shared.Items.Item;
 import shared.Message;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class AgentGUI extends Application{
@@ -34,6 +36,7 @@ public class AgentGUI extends Application{
     private BorderPane chooseAuction;
     private BorderPane placeBid;
     private ScrollPane messageLog;
+    private VBox messageList;
     private Button checkBalance;
     private VBox placeBidButtons;
     private Scene createScene;
@@ -78,10 +81,18 @@ public class AgentGUI extends Application{
 
         messageLog = new ScrollPane();
         messageLog.setPrefViewportWidth(180);
+        messageList = new VBox(10);
+        messageLog.setContent(messageList);
         chooseAuction.setRight(messageLog);
 
         checkBalance = new Button("Check Balance");
         checkBalance.setFont(new Font(15));
+        checkBalance.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            Message checkBal = new Message.Builder()
+                    .accountId(userID)
+                    .nullId();
+            agent.sendBankMessage(checkBal);
+        });
         chooseAuction.setLeft(checkBalance);
 
         TextField depositFunds = new TextField();
@@ -260,6 +271,7 @@ public class AgentGUI extends Application{
                 if(username.equals("")){ username = agent.getUsername(); }
                 if(connected && (now%10000) == 0){
                     agent.handleMessages();
+                    updateMessageLog();
                     if(bidScreen){ placeBid.setCenter(updateAvailableItems()); }
                     else{ chooseAuction.setCenter(updateAvailableAuctions()); }
                 }
@@ -367,5 +379,20 @@ public class AgentGUI extends Application{
         }
         itemList.setAlignment(Pos.CENTER);
         return itemList;
+    }
+
+    private void updateMessageLog(){
+        List<String> newMessages = agent.getMessageList();
+        String[] split;
+        String compiledMessage;
+        for(String mes : newMessages){
+            compiledMessage = "";
+            split = mes.split(",");
+            for(String segment : split){
+                compiledMessage += segment;
+                compiledMessage += ",\n";
+            }
+            messageList.getChildren().add(new Text(compiledMessage));
+        }
     }
 }

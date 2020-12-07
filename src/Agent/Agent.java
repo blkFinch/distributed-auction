@@ -49,6 +49,12 @@ public class Agent{
         return auctionItems.get(currentAuction.getAuctionName());
     }
 
+    public List<String> getMessageList(){
+        List<String> newMessages = new ArrayList<>(messageList);
+        messageList.clear();
+        return newMessages;
+    }
+
     public void updateAuctionProxies(){
         List<ConnectionReqs> newConnections = bankProxy.getNewConnections();
         AgentProxy auctionProxy;
