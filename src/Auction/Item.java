@@ -13,16 +13,13 @@ public class Item implements Serializable {
     private static long   bidTime;
     private static int    itemId;
 
-    public Item(String setName, String descriptionSet, int value, int Id) {
+    public Item(String setName, String descriptionSet, int value) {
         description   = descriptionSet;
         name          = setName;
         minimumBid    = value;
-        auctionId     = Id;
         currentBid    = minimumBid;
         bidderId      = -1;
         remainingTime = 30; //30 seconds until bid is final
-        itemId        = Integer.parseInt(String.valueOf(Math.random()*1000) +
-                String.valueOf(System.currentTimeMillis()));
         bidTime       = System.currentTimeMillis();
     }
 
@@ -33,6 +30,10 @@ public class Item implements Serializable {
      */
     public String getName() {
         return name;
+    }
+
+    public static String getDescription() {
+        return description;
     }
 
     /**

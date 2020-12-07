@@ -42,7 +42,7 @@ public class AuctionHouse {
      */
     private void addSpecs(ItemSpecs itemSpecs, int auctionId) {
         Item item = new Item(itemSpecs.name, itemSpecs.description,
-                (int) itemSpecs.minimumBid, auctionId);
+                (int) itemSpecs.minimumBid);
         auctionList.add(item);
     }
 
