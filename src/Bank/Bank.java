@@ -180,6 +180,7 @@ public class Bank {
         DBMessage response = sendToDB(req);
         if(response.getResponse() == Message.Response.SUCCESS){
             thisClient = (Client) response.getPayload();
+
         }
         return thisClient;
     }

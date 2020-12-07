@@ -29,11 +29,15 @@ public class BankThread extends Thread {
 
             while(running){
                 message = readMessage();
+
                 if (message.getCommand() == Message.Command.DEREGISTER){
-                    System.out.println("deregister comm");
+                    //Breaks loop after final return message
+                    System.out.println(
+                            "deregister requested by " + message.getSenderId());
+
                     running = false;
                 }
-                System.out.println("generating cp");
+
                 CommandProtocol cp = new CommandProtocol(message);
                 Message res = cp.processCommand();
                 objOut.writeObject(res);
