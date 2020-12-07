@@ -35,7 +35,7 @@ public class Agent{
 
     private void setProxyID(AgentProxy proxy){ proxy.setUserID(userID); }
 
-    public void sendBankMessage(Message message){ bankProxy.sendMessage(message); }
+    public void sendBankMessage(Message message){ bankProxy.sendBankMessage(message); }
 
     public void sendAuctionMessage(A_AH_Messages message){
         currentAuction.sendAuctionMessage(message);
@@ -59,17 +59,13 @@ public class Agent{
         List<ConnectionReqs> newConnections = bankProxy.getNewConnections();
         AgentProxy auctionProxy;
         for(ConnectionReqs conn : newConnections){
-            if(!auctionProxies.containsKey(conn.getName())) {
-                try{
-                    auctionProxy = new AgentProxy(username, "auction", conn.getIp(),
-                            "" + conn.getPort(), false);
-                    setProxyID(auctionProxy);
-                    auctionProxy.setAuctionName(conn.getName());
-                    auctionProxy.start();
-                    auctionProxies.put(conn.getName(), auctionProxy);
-                } catch(IOException e){
-                    System.out.println("Connection to auction house failed");
-                }
+            if(!auctionProxies.containsKey(conn.getName())){
+                auctionProxy = new AgentProxy(username, "auction", conn.getIp(),
+                        "" + conn.getPort(), false);
+                setProxyID(auctionProxy);
+                auctionProxy.setAuctionName(conn.getName());
+                auctionProxy.start();
+                auctionProxies.put(conn.getName(), auctionProxy);
             }
         }
     }
