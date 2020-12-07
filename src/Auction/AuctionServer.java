@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class AuctionServer {
+    static int port;
     public static int auctionId;
     static ServerSocket auctionSocket;
     public static ConnectionReqs reqs;
@@ -27,7 +28,8 @@ public class AuctionServer {
             ip = socket.getLocalAddress().getHostAddress();
         }
 
-        int port = 5600;
+        port = 5600;
+        ip = "127.0.0.1";
         //setIPAddress reference auctionspecs
         //send registration
         reqs = new ConnectionReqs(ip, port);

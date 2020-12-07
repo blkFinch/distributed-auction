@@ -1,12 +1,22 @@
 package Auction;
 
+import shared.ConnectionReqs;
 import shared.DBMessage;
 import shared.Items.Item;
 import shared.Message;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class CountDown implements Runnable {
+    private static ObjectOutputStream dBOut;
+    private static ObjectInputStream dBIn;
     public static ArrayList<Item> auctionList = new ArrayList<>();
     private static final ArrayList<Item> auctionHistory = new ArrayList<>();
 
@@ -20,10 +30,11 @@ public class CountDown implements Runnable {
      */
     @Override
     public void run() {
-        while(AH_AgentThread.running) {
+        CountDown.addItems(3);
+        /*while(AH_AgentThread.running) {
             try {
                 ArrayList<Item> auctionList = getAuctionList();
-                int needed =  4 - auctionList.size();
+                int needed =  3 - auctionList.size();
                 if(needed > 0){
                     addItems(needed);
                 }
@@ -39,7 +50,7 @@ public class CountDown implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 
     /**
@@ -63,13 +74,35 @@ public class CountDown implements Runnable {
     }
 
     static void addItems(int needed) {
+        List<ConnectionReqs> reqsList = new ArrayList<>();
+        reqsList.add(AuctionServer.reqs);
+        Socket dBSocket = null;
         while(needed > 0) {
-            //message = DBMessage.Builder().command(GET).table.(ITEMS).accountId(your random int).build
-            DBMessage message = new DBMessage.Builder().command(DBMessage.Command.GET)
-                  .table(DBMessage.Table.ITEM).accountId((int) (Math.random() * (199))).build();
-            if(!auctionHistory.contains((Item) message.getPayload())) {
-                auctionList.add((Item) message.getPayload());
-                auctionHistory.add((Item) message.getPayload());
+            Item item = null;
+            Random random = new Random();
+            int randInt = random.nextInt(200);
+            DBMessage dBMessage = null;
+            try {
+                dBSocket = new Socket("localHost", 6002);
+                dBOut = new ObjectOutputStream(dBSocket.getOutputStream());
+                dBOut.flush();
+                dBIn = new ObjectInputStream(dBSocket.getInputStream());
+                dBMessage = new DBMessage.Builder()
+                        .command(DBMessage.Command.GET)
+                        .table(DBMessage.Table.ITEM)
+                        .accountId(randInt)
+                        .build();
+                dBOut.writeObject(dBMessage);
+                System.out.println("listening...");
+                DBMessage response = (DBMessage) dBIn.readObject();
+                item = (Item) response.getPayload();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            if(!auctionHistory.contains(item)) {
+                System.out.println(dBMessage.toString());
+                auctionList.add(item);
+                auctionHistory.add(item);
                 needed--;
             }
         }
