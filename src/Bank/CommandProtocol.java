@@ -54,8 +54,9 @@ public class CommandProtocol {
                         .build();
 
                 int newUserId = Bank.getActive().createClient(target);
-                if( newUserId != -999){
-                    Bank.getActive().clients.add(target);
+                Client savedClient = Bank.getActive().getClient(newUserId);
+                if( savedClient != null){
+                    Bank.getActive().loginUser(savedClient);
                     response = new Message.Builder()
                             .response(Message.Response.SUCCESS)
                             .accountId(newUserId)
