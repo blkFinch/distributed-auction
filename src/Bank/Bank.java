@@ -50,6 +50,9 @@ public class Bank {
      */
 
     public void loginUser(Client user){
+        System.out.println(
+                "logging in user :  " + user.getID() +":" + user.getName()
+        );
         if(user.isAuctionHouse()){
             houses.put(user.getID(), user);
         }
@@ -72,7 +75,9 @@ public class Bank {
     }
 
     public Client findActiveClient(int id){
+        System.out.println("logging out user id: "+ id);
         for (Client client: clients) {
+            System.out.println("checking " + client.getID());
             if (client.getID() == id){ return client;}
         }
         return null;

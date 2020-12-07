@@ -19,6 +19,7 @@ public class BankThread extends Thread {
     }
 
     public void run() {
+        boolean running = true;
         System.out.println(
                 "running new bank thread from " + socket.getInetAddress()
         );
@@ -26,14 +27,22 @@ public class BankThread extends Thread {
         try {
             Message message;
 
-            while(( message = readMessage() ) != null){
+            while(running){
+                message = readMessage();
+                if (message.getCommand() == Message.Command.DEREGISTER){
+                    System.out.println("deregister comm");
+                    running = false;
+                }
+                System.out.println("generating cp");
                 CommandProtocol cp = new CommandProtocol(message);
                 Message res = cp.processCommand();
                 objOut.writeObject(res);
+
             }
 
 
         } catch (Exception e) {
+            System.out.println("Thread closed roughly >_< use deregister please!");
             e.printStackTrace();
         }
     }
