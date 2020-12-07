@@ -25,7 +25,6 @@ public class ItemSpecsList {
                 specs.name = companies[0];
                 specs.description = companies[1];
                 specs.minimumBid = Integer.parseInt(companies[2]);
-                //maybe add ID?
                 itemsList.add(specs);
             } while((specsString = br.readLine()) != null);
             br.close();

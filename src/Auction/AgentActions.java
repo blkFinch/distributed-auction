@@ -5,9 +5,12 @@ import shared.A_AH_Messages.A_AH_MTopic;
 import shared.Items.Item;
 import shared.Message;
 
-import java.io.IOException;
-
 public class AgentActions {
+    private static int    itemID;
+    private static int    bidderId;
+    private static String name;
+    private static int    bid;
+    private static Item   bidItem;
     /**
      * This method grabs the itemID, bidderId, name, and amount of the
      * item to bid on. First it checks if the item is still for sale, then
@@ -18,45 +21,54 @@ public class AgentActions {
      * @param message The message with AMType BID
      */
     static void bid(A_AH_Messages message) {
-        int itemID = message.getItem();
-        int bidderId = message.getAccountId();
-        String name = message.getItemName();
-        int bid = message.getBid();
-        Item bidItem = itemSearch(itemID);
-        if(bidItem == null){
+        itemID   = message.getItem();
+        bidderId = message.getAccountId();
+        name     = message.getItemName();
+        bid      = message.getBid();
+        bidItem = itemSearch(itemID);
+        if(bidItem == null) {
             reject(itemID,name);
             return;
         }
+        int minimumBid = bidItem.getMinimumBid();
         int value = bidItem.getCurrentBid();
-        if( value < bidItem.getMinimumBid()){
-            value = bidItem.getMinimumBid();
+        if( value < minimumBid) {
+            value = minimumBid;
         }
         if(bid > value){
-            Message requestHold = new Message.Builder()
-                    .command(Message.Command.BLOCK)
-                    .accountId(bidderId).balance(bid).senderId(bidderId);
-            try{
-                //requests the hold.
-                BankActions.sendToBank(requestHold);
-                //waits for the response from bank.
-                Boolean success = AH_AgentThread.bankSignOff.take();
-                if(success){
-                    //accepts bid and lets the last bidder know
-                    //they were outbid
-                    int oldBidder = bidItem.getBidderId();
-                    if(oldBidder != -1){
-                        release(oldBidder, value);
-                        outBid(oldBidder, bidItem);
-                    }
-                    bidItem.setBid(bidderId, bid);
-                    accept(bidItem.getItemID(), bidItem.getName());
-                }else{
-                    reject(itemID,name);
+            Message requestBlock = new Message.Builder()
+                .command(Message.Command.BLOCK)
+                .accountId(bidderId)
+                .balance(bid)
+                .senderId(bidderId);
+            //requests the hold.
+            Message response = BankActions.sendToBank(requestBlock);
+            if(response.getResponse() == Message.Response.SUCCESS) {
+                A_AH_Messages accept = A_AH_Messages.Builder.newBuilder()
+                        .topic(A_AH_MTopic.SUCCESS)
+                        .itemId(message.getItem())
+                        .name(name)
+                        .auctionList(AuctionHouseSpecs.getAuctionList())
+                        .build();
+                AH_AgentThread.sendOut(accept);
+                int oldBidder = bidItem.getBidderId();
+                if(oldBidder != -1){
+                    release(oldBidder, value);
+                    outBid(oldBidder, bidItem);
                 }
-            }catch(InterruptedException e){
-                e.printStackTrace();
+                bidItem.setBid(bidderId, bid);
+                accept(bidItem.getItemID(), bidItem.getName());
+            } else if(response.getResponse() == Message.Response.FAILURE) {
+                A_AH_Messages accept = A_AH_Messages.Builder.newBuilder()
+                        .topic(A_AH_MTopic.REJECT)
+                        .itemId(message.getItem())
+                        .name(name)
+                        .auctionList(AuctionHouseSpecs.getAuctionList())
+                        .build();
+                AH_AgentThread.sendOut(accept);
+                reject(itemID,name);
             }
-        }else{
+        } else {
             reject(itemID,name);
         }
     }
@@ -73,7 +85,7 @@ public class AgentActions {
                 .topic(A_AH_MTopic.SUCCESS)
                 .itemId(item)
                 .name(name)
-                //.auctionList(auctionList)
+                .auctionList(AuctionHouseSpecs.getAuctionList())
                 .build();
         AH_AgentThread.sendOut(accept);
     }
@@ -86,15 +98,15 @@ public class AgentActions {
      * @param item Item
      */
     private static void outBid(int oldBidder, Item item){
-        //int agent = agentSearch(oldBidder);
+        AH_AgentThread agent = AuctionServer.agentSearch(oldBidder);
         A_AH_Messages outbid = A_AH_Messages.Builder.newBuilder()
                 .topic(A_AH_MTopic.OUTBID)
-                .itemId(item.getItemID())
-                .name(item.getName())
-                .accountId(item.getBidderId())
+                .itemId(itemID)
+                .name(name)
+                .accountId(bidderId)
                 .build();
-        //assert agent != -1;
-        AH_AgentThread.sendOut(outbid);
+        assert agent != null;
+        agent.sendOut(outbid);
     }
 
     /**
@@ -104,7 +116,6 @@ public class AgentActions {
      * @param message The register message the agent sent
      */
     static void register(A_AH_Messages message) {
-        int agentId = message.getAccountId();
         A_AH_Messages reply = A_AH_Messages.Builder.newBuilder()
                 .topic(A_AH_MTopic.REGISTER)
                 .accountId(AuctionServer.getAuctionId())
@@ -117,23 +128,23 @@ public class AgentActions {
      * This method creates the message with the updated catalogue
      * and passes it to sendOut to send to the agent
      */
-    static A_AH_Messages update(){
+    static void update() {
         A_AH_Messages update = A_AH_Messages.Builder.newBuilder()
                 .topic(A_AH_Messages.A_AH_MTopic.UPDATE)
                 .auctionList(AuctionHouseSpecs.getAuctionList())
                 .build();
-        return update;
+        AH_AgentThread.sendOut(update);
     }
 
     /**
      * creates message to agent about shutdown then shuts down agent port.
      * sending message left to AH_AgentThread.
      */
-    static A_AH_Messages deRegister() {
+    static void deRegister() {
         A_AH_Messages shutDown = A_AH_Messages.Builder.newBuilder()
                 .topic(A_AH_Messages.A_AH_MTopic.DEREGISTER)
                 .build();
-        return shutDown;
+        AH_AgentThread.sendOut(shutDown);
     }
 
     /**
@@ -144,7 +155,7 @@ public class AgentActions {
      */
     private static void reject(int itemId, String name) {
         A_AH_Messages reject = A_AH_Messages.Builder.newBuilder()
-                .topic(A_AH_MTopic.FAILURE)
+                .topic(A_AH_MTopic.REJECT)
                 .name(name)
                 .itemId(itemId)
                 .build();
