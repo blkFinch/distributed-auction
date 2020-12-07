@@ -35,16 +35,18 @@ public class DBCommandProtocol {
             case PUT:
                 Client putClient = (Client) message.getPayload();
                 CreateClient cc = new CreateClient(putClient);
-                try {
-                    int newID = (int) SyncInjector.getActive().executeInjection(cc);
+
+                int newID = (int) SyncInjector.getActive().executeInjection(cc);
+                if(newID != -999){
                     response = new DBMessage.Builder()
                             .response(Message.Response.SUCCESS)
                             .accountId(newID)
                             .build();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                }else{
                     response = failureResponse(-999);
                 }
+
+                break;
 
             case UPDATE:
                 Client updateClient = (Client) message.getPayload();
