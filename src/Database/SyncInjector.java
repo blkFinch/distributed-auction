@@ -2,12 +2,23 @@ package Database;
 
 import Database.Tasks.SQLInjector;
 
-public class SyncInjector {
+import java.util.concurrent.Callable;
+
+public class SyncInjector implements Callable {
     private static SyncInjector active;
+    private SQLInjector injection;
 
     public static SyncInjector getActive(){
         if(active == null){ active = new SyncInjector(); }
         return active;
+    }
+
+    public void setInjection(SQLInjector injection) {
+        this.injection = injection;
+    }
+
+    public Object call(){
+        return executeInjection(injection);
     }
 
     /**
