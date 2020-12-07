@@ -38,7 +38,9 @@ public class CreateClient implements SQLInjector<Integer> {
 
             //GET GENERATED KEY
             ResultSet key = pstmt.getGeneratedKeys();
+            System.out.println(key.getInt(1));
             id = key.getInt(1);
+
         }catch (SQLException throwables){
             throwables.printStackTrace();
         } catch (Exception e) {

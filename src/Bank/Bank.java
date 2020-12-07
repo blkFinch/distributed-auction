@@ -131,7 +131,7 @@ public class Bank {
                 .senderId(0)
                 .build();
         DBMessage res = sendToDB(req);
-
+        System.out.println(res.toString());
         if(res.getResponse() == Message.Response.SUCCESS){
             return res.getAccountId();
         }
@@ -151,6 +151,7 @@ public class Bank {
                 .build();
 
         DBMessage response = sendToDB(req);
+
         if(response.getResponse() == Message.Response.SUCCESS){
             return client;
         }
