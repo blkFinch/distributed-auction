@@ -44,13 +44,11 @@ public class AuctionServer {
 
         while(running) {
             try {
-                while(running) {
                     Socket clientSocket = auctionSocket.accept();
                     //processess inputs
                     AH_AgentThread at = new AH_AgentThread(clientSocket);
                     activeAgents.add(at);
                     at.start();
-                }
             } catch (IOException e) {
                 running = false;
             }

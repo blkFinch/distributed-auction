@@ -65,7 +65,7 @@ public class AH_AgentThread extends Thread {
                 agentShutdown();
                 message = null;
             }
-        } while(message != null  && running);// && running);
+        } while(message != null && running);// && running);
     }
 
     /**
