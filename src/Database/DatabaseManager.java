@@ -7,7 +7,7 @@ import java.sql.*;
  */
 public class DatabaseManager {
     //Where the database is saved locally
-    public static final String DB_URL = "jdbc:sqlite:src/Database/bankDB.db";
+    public static final String DB_URL = "jdbc:sqlite:src/Database/data.db";
     private static Connection conn = null;
 
     public static synchronized Connection getConn() throws Exception {
@@ -29,15 +29,14 @@ public class DatabaseManager {
         System.out.println("dropped table " + tableName);
     }
 
-    public static void executeSQL(String sql) {
-        try(Connection connection = getConn();
-            Statement statement = connection.createStatement()) {
+    public synchronized static void executeSQL(String sql) {
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(DB_URL);
+            Statement statement = connection.createStatement();
             statement.execute(sql);
-
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }
