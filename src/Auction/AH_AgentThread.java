@@ -1,20 +1,23 @@
 package Auction;
 
 import shared.A_AH_Messages;
+import shared.ConnectionReqs;
+import shared.Items.Item;
+import shared.Message;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.LinkedList;
+import java.util.List;
 
 public class AH_AgentThread extends Thread {
+    public static boolean running = true;
+    A_AH_Messages message;
     protected static Socket agentSocket;
     private static ObjectInputStream agentIn;
     private static ObjectOutputStream agentOut;
-    static BlockingQueue<Boolean> bankSignOff = new LinkedBlockingDeque<>();
-    public Integer AgentId;
     int agentId;
 
     /**
@@ -24,7 +27,7 @@ public class AH_AgentThread extends Thread {
      * @param socket the accepted socket from the server variable
      */
     public AH_AgentThread(Socket socket) throws IOException {
-        this.agentSocket = socket;
+        agentSocket = socket;
         agentOut = new ObjectOutputStream(socket.getOutputStream());
         agentOut.flush();
         agentIn = new ObjectInputStream(socket.getInputStream());
@@ -36,7 +39,6 @@ public class AH_AgentThread extends Thread {
      */
     @Override
     public void run() {
-        A_AH_Messages message;
         do {
             try{
                 message = (A_AH_Messages) agentIn.readObject();
@@ -50,7 +52,7 @@ public class AH_AgentThread extends Thread {
                         break;
                     case REGISTER:
                         agentId = message.getAccountId();
-                        AgentActions.register(message);
+                        AgentActions.register();
                         break;
                     case DEREGISTER:
                         agentShutdown();
@@ -63,7 +65,7 @@ public class AH_AgentThread extends Thread {
                 agentShutdown();
                 message = null;
             }
-        } while(message != null);// && running);
+        } while(message != null  && running);// && running);
     }
 
     /**
@@ -95,5 +97,45 @@ public class AH_AgentThread extends Thread {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
+    }
+
+    /**
+     * This method closes all sockets and streams. It then signals all threads
+     * to stop after finishing their current task
+     * (by making them throw exceptions)
+     */
+    public void shutdown() {
+        try{
+            running = false;
+            ConnectionReqs serverInfo = AuctionServer.reqs;
+            List<ConnectionReqs> ahInfo = new LinkedList<>();
+            ahInfo.add(serverInfo);
+            Message deregister = new Message.Builder()
+                    .command(Message.Command.DEREGISTER)
+                    .connectionReqs(ahInfo)
+                    .senderId(Auction.AuctionServer.getAuctionId());
+            BankActions.sendToBank(deregister);
+            //out.writeObject(deregister);
+            while(!AuctionServer.activeAgents.isEmpty()){
+                AuctionServer.activeAgents.get(0).message = null;
+                AuctionServer.activeAgents.get(0).agentShutdown();
+            }
+            agentOut.close();
+            agentIn.close();
+            AuctionServer.auctionSocket.close();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void winner(Item item) {
+        A_AH_Messages winner = A_AH_Messages.Builder.newBuilder()
+                .topic(A_AH_Messages.A_AH_MTopic.WINNER)
+                .accountId(agentId)
+                .itemId(item.getItemID())
+                .name(item.getName())
+                .bid(item.getCurrentBid())
+                .build();
+        sendOut(winner);
     }
 }

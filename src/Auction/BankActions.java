@@ -23,6 +23,14 @@ public class BankActions {
         Message message = new Message.Builder().command(Message.Command.REGISTERHOUSE)
                 .connectionReqs(reqsList).accountName(name).nullId();
         Message response = sendToBank(message);
+        assert response != null;
+        AuctionServer.auctionId = response.getAccountId();
+        CountDown.addItems(4);
+        CountDown count = new CountDown();
+        Thread timer = new Thread(count);
+        timer.setDaemon(true);
+        timer.setPriority(4);
+        timer.start();
         if(response.getResponse() == Message.Response.SUCCESS) {
             System.out.println("Connection Success");
         }
@@ -37,8 +45,7 @@ public class BankActions {
             ObjectInputStream in = new ObjectInputStream(bankSocket.getInputStream());
             out.writeObject(message);
             //System.out.println("out written");
-            Message response = (Message) in.readObject();
-            return response;
+            return (Message) in.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

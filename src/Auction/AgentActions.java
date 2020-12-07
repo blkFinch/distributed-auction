@@ -9,8 +9,7 @@ public class AgentActions {
     private static int    itemID;
     private static int    bidderId;
     private static String name;
-    private static int    bid;
-    private static Item   bidItem;
+
     /**
      * This method grabs the itemID, bidderId, name, and amount of the
      * item to bid on. First it checks if the item is still for sale, then
@@ -24,8 +23,8 @@ public class AgentActions {
         itemID   = message.getItem();
         bidderId = message.getAccountId();
         name     = message.getItemName();
-        bid      = message.getBid();
-        bidItem = itemSearch(itemID);
+        int bid = message.getBid();
+        Item bidItem = itemSearch(itemID);
         if(bidItem == null) {
             reject(itemID,name);
             return;
@@ -43,30 +42,33 @@ public class AgentActions {
                 .senderId(bidderId);
             //requests the hold.
             Message response = BankActions.sendToBank(requestBlock);
-            if(response.getResponse() == Message.Response.SUCCESS) {
+            if(response != null && response.getResponse() == Message.Response.SUCCESS) {
                 A_AH_Messages accept = A_AH_Messages.Builder.newBuilder()
                         .topic(A_AH_MTopic.SUCCESS)
                         .itemId(message.getItem())
                         .name(name)
-                        .auctionList(AuctionHouseSpecs.getAuctionList())
+                        .auctionList(CountDown.getAuctionList())
                         .build();
                 AH_AgentThread.sendOut(accept);
                 int oldBidder = bidItem.getBidderId();
                 if(oldBidder != -1){
                     release(oldBidder, value);
-                    outBid(oldBidder, bidItem);
+                    outBid(oldBidder);
                 }
                 bidItem.setBid(bidderId, bid);
                 accept(bidItem.getItemID(), bidItem.getName());
-            } else if(response.getResponse() == Message.Response.FAILURE) {
-                A_AH_Messages accept = A_AH_Messages.Builder.newBuilder()
-                        .topic(A_AH_MTopic.REJECT)
-                        .itemId(message.getItem())
-                        .name(name)
-                        .auctionList(AuctionHouseSpecs.getAuctionList())
-                        .build();
-                AH_AgentThread.sendOut(accept);
-                reject(itemID,name);
+            } else {
+                assert response != null;
+                if(response.getResponse() == Message.Response.FAILURE) {
+                    A_AH_Messages accept = A_AH_Messages.Builder.newBuilder()
+                            .topic(A_AH_MTopic.REJECT)
+                            .itemId(message.getItem())
+                            .name(name)
+                            .auctionList(CountDown.getAuctionList())
+                            .build();
+                    AH_AgentThread.sendOut(accept);
+                    reject(itemID,name);
+                }
             }
         } else {
             reject(itemID,name);
@@ -85,7 +87,7 @@ public class AgentActions {
                 .topic(A_AH_MTopic.SUCCESS)
                 .itemId(item)
                 .name(name)
-                .auctionList(AuctionHouseSpecs.getAuctionList())
+                .auctionList(CountDown.getAuctionList())
                 .build();
         AH_AgentThread.sendOut(accept);
     }
@@ -95,9 +97,8 @@ public class AgentActions {
      * tells the old bidder they were outbid.
      *
      * @param oldBidder int ID
-     * @param item Item
      */
-    private static void outBid(int oldBidder, Item item){
+    private static void outBid(int oldBidder){
         AH_AgentThread agent = AuctionServer.agentSearch(oldBidder);
         A_AH_Messages outbid = A_AH_Messages.Builder.newBuilder()
                 .topic(A_AH_MTopic.OUTBID)
@@ -106,20 +107,19 @@ public class AgentActions {
                 .accountId(bidderId)
                 .build();
         assert agent != null;
-        agent.sendOut(outbid);
+        AH_AgentThread.sendOut(outbid);
     }
 
     /**
      * This method is letting the connected agent know they successfully
      * registered and sends the catalogue of items for sale. The method
      * also stores the agent's UUID for future reference
-     * @param message The register message the agent sent
      */
-    static void register(A_AH_Messages message) {
+    static void register() {
         A_AH_Messages reply = A_AH_Messages.Builder.newBuilder()
                 .topic(A_AH_MTopic.REGISTER)
                 .accountId(AuctionServer.getAuctionId())
-                .auctionList(AuctionHouseSpecs.getAuctionList())
+                .auctionList(CountDown.getAuctionList())
                 .build();
         AH_AgentThread.sendOut(reply);
     }
@@ -131,7 +131,7 @@ public class AgentActions {
     static void update() {
         A_AH_Messages update = A_AH_Messages.Builder.newBuilder()
                 .topic(A_AH_Messages.A_AH_MTopic.UPDATE)
-                .auctionList(AuctionHouseSpecs.getAuctionList())
+                .auctionList(CountDown.getAuctionList())
                 .build();
         AH_AgentThread.sendOut(update);
     }
@@ -169,7 +169,7 @@ public class AgentActions {
      * @return returns the item searched, or null if item isn't found
      */
     private static Item itemSearch(int itemId) {
-        for(Item item: AuctionHouseSpecs.getAuctionList()) {
+        for(Item item: CountDown.getAuctionList()) {
             if(item.getItemID() == itemId) {
                 return item;
             }

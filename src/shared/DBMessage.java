@@ -20,7 +20,7 @@ public class DBMessage implements Serializable {
         private  int                 accountId = -1;
         private  String []           arguments = null;
         private  Message.Response    response  = null;
-        private Object               payload = null;
+        private  Object              payload   = null;
 
 
         /**

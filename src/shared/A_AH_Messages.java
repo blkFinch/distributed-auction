@@ -17,7 +17,7 @@ public class A_AH_Messages implements Serializable {
      * AgentAuctionMessage Builder
      */
     public static class Builder {
-        private A_AH_MTopic topic       = null;
+        private A_AH_MTopic     topic       = null;
         private ArrayList<Item> auctionList = null;
         private int             bid         = 0;
         private int             accountId   = -1;
