@@ -146,7 +146,7 @@ public class A_AH_Messages implements Serializable {
      *
      * @return auctionList ArrayList
      */
-    public ArrayList getAuctionList() {
+    public ArrayList<Item> getAuctionList() {
         return auctionList;
     }
 
