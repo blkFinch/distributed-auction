@@ -18,6 +18,7 @@ public class AgentProxy extends Thread{
     private int portNum;
     private boolean newAccount;
     private Socket socket;
+    private String auctionName;
     private List<Message> inMessages;
     private List<A_AH_Messages> aucInMessages;
     private List<ConnectionReqs> newConnections;
@@ -106,8 +107,13 @@ public class AgentProxy extends Thread{
 
     public void setInitBal(int bal){ initBal = bal; }
 
+    public void setAuctionName(String name){ auctionName = name; }
+
+    public String getAuctionName(){ return auctionName; }
+
     public synchronized void sendMessage(Message message){
         try {
+            System.out.println("Agent: "+message.toString());
             out.writeObject(message);
         } catch(IOException e){
             System.out.println("Message failed to send");
@@ -116,6 +122,7 @@ public class AgentProxy extends Thread{
 
     public synchronized void sendAuctionMessage(A_AH_Messages message){
         try {
+            System.out.println("Agent: "+message.toString());
             out.writeObject(message);
         } catch(IOException e){
             System.out.println("Message failed to send");
@@ -151,9 +158,11 @@ public class AgentProxy extends Thread{
             else{ System.out.println("Connection failed."); }
         } catch(Exception e){
             System.out.println("Connection failed");
-        } finally{
-            try{ socket.close(); }
-            catch(IOException e){
+            e.printStackTrace();
+        } finally {
+            try {
+                socket.close();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
