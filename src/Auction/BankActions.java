@@ -27,8 +27,8 @@ public class BankActions {
         AuctionServer.auctionId = response.getAccountId();
         CountDown count = new CountDown();
         Thread timer = new Thread(count);
-        timer.setDaemon(true);
-        timer.setPriority(4);
+        //timer.setDaemon(true);
+        //timer.setPriority(4);
         timer.start();
         if(response.getResponse() == Message.Response.SUCCESS) {
             System.out.println("Connection Success");

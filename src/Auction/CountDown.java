@@ -31,14 +31,15 @@ public class CountDown implements Runnable {
     @Override
     public void run() {
         CountDown.addItems(3);
-        /*while(AH_AgentThread.running) {
+        while(AH_AgentThread.running) {
             try {
                 ArrayList<Item> auctionList = getAuctionList();
                 int needed =  3 - auctionList.size();
                 if(needed > 0){
                     addItems(needed);
                 }
-                for (Item value : auctionList) {
+                //change to while
+                for(Item value : auctionList) {
                     long currentTime = System.currentTimeMillis();
                     value.remainingTime(currentTime);
                     long timeLeft = value.getRemainingTime();
@@ -50,7 +51,7 @@ public class CountDown implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }*/
+        }
     }
 
     /**
@@ -62,15 +63,17 @@ public class CountDown implements Runnable {
     private void itemResult(Item item) {
         int bidder = item.getBidderId();
         AH_AgentThread agent = AuctionServer.agentSearch(bidder);
-        if (agent != null) {
+        if (bidder != -1) {
+
             agent.winner(item);
+            //add success check
             Message release = new Message.Builder()
-                    .command(Message.Command.UNBLOCK)
+                    .command(Message.Command.TRANSFER)
                     .balance(item.getCurrentBid())
                     .accountId(bidder).senderId(AuctionServer.auctionId);
             BankActions.sendToBank(release);
+            auctionList.remove(item);
         }
-        auctionList.remove(item);
     }
 
     static void addItems(int needed) {
