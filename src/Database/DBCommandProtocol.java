@@ -9,6 +9,8 @@ import shared.DBMessage;
 import shared.Items.Item;
 import shared.Message;
 
+import java.sql.SQLOutput;
+
 public class DBCommandProtocol {
     private final DBMessage message;
 

@@ -16,6 +16,7 @@ public class ReadClient implements SQLInjector {
     }
 
     public Client inject() throws Exception {
+
         Connection DBconn = DatabaseManager.getConn();
         Statement statement = DBconn.createStatement();
         ResultSet rs = statement.executeQuery("SELECT * FROM clients WHERE id=" + id);
@@ -26,6 +27,7 @@ public class ReadClient implements SQLInjector {
                 .setBalance(rs.getInt("balance"))
                 .setAuctionHouse(rs.getBoolean("isAuctionHouse"))
                 .build();
+        rs.close();
 
         return client;
     }
