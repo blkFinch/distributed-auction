@@ -82,7 +82,7 @@ public class Item implements Serializable {
      * @param currentTime long
      */
     public void remainingTime(long currentTime) {
-        remainingTime = 30 - ((currentTime-bidTime)/1000);
+        remainingTime = 5 - ((currentTime-bidTime)/1000);
     }
 
     /**

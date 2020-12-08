@@ -26,8 +26,10 @@ public class ReadClient implements SQLInjector {
                 .setName(rs.getString("name"))
                 .setBalance(rs.getInt("balance"))
                 .setAuctionHouse(rs.getBoolean("isAuctionHouse"))
+                .setHost(rs.getString("host"))
+                .setPortNumber(rs.getInt("port"))
                 .build();
-        rs.close();
+        //rs.close();
 
         return client;
     }
