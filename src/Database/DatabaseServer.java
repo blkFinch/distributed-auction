@@ -13,7 +13,7 @@ import java.net.Socket;
 public class DatabaseServer {
     public static void main(String[] args) throws IOException {
 
-        //I'm setting this port 6002
+        //I'm setting this port 6002 as noted in README
         int portNumber = 6002;
         ServerSocket serverSocket = new ServerSocket(portNumber);
         System.out.println("port open: " + portNumber);

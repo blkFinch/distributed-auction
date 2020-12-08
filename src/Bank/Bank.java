@@ -25,6 +25,8 @@ public class Bank {
     public static Bank active;
     private final Map<Integer, Client> houses;
     ArrayList<Client> clients;
+    private String dbIPaddress;
+    private int dbPort;
 
     private Bank(){
         clients = new ArrayList<Client>(); //All Active users including AH and Agents
@@ -40,6 +42,27 @@ public class Bank {
         return active;
     }
 
+    //<editor-fold desc="GETTERS SETTERS">
+    /**
+     * The ip address of the DB
+     * @return string Ip adress
+     */
+    public String getDbIPaddress() {
+        return dbIPaddress;
+    }
+
+    public void setDbIPaddress(String dbIPaddress) {
+        this.dbIPaddress = dbIPaddress;
+    }
+
+    public int getDbPort() {
+        return dbPort;
+    }
+
+    public void setDbPort(int dbPort) {
+        this.dbPort = dbPort;
+    }
+    //</editor-fold>
 
     //SESSION METHODS
     //
@@ -188,8 +211,15 @@ public class Bank {
 
 
     private DBMessage sendToDB(DBMessage req){
+        //error catch
+        if(dbIPaddress == null){
+            System.out.println("no DB address");
+            return null;
+        }
+
+        //Attempt to access DB
         try {
-            Socket dbSocket = new Socket("localhost", 6002);
+            Socket dbSocket = new Socket(dbIPaddress, 6002);
 
             ObjectOutputStream out = new ObjectOutputStream(dbSocket.getOutputStream());
             out.flush();
