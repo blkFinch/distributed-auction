@@ -133,18 +133,48 @@ public class Agent{
      *************************************************************************/
     public Set<String> getAuctionNames(){ return auctionProxies.keySet(); }
 
-    public void setCurrentAuction(String key){ currentAuction = auctionProxies.get(key); }
+    /**************************************************************************
+     * setCurrentAuction - Sets global variable currentAuction to new Auction *
+     *                                                                        *
+     * @param key - key for Map auctionProxies corresponding to the new       *
+     *              current Auction House                                     *
+     * Returns nothing                                                        *
+     *************************************************************************/
+    public void setCurrentAuction(String key){
+        currentAuction = auctionProxies.get(key);
+    }
 
+    /**************************************************************************
+     * getCurrentItems - Gets ArrayList<Item> associated with currentAuction  *
+     *                                                                        *
+     * Takes no arguments                                                     *
+     * @return List of Items associated with global variable currentAuction   *
+     *************************************************************************/
     public ArrayList<Item> getCurrentItems() {
         return auctionItems.get(currentAuction.getAuctionName());
     }
 
+    /**************************************************************************
+     * getMessageList - Gets global variable messageList                      *
+     *                                                                        *
+     * Takes no arguments                                                     *
+     * @return messageList                                                    *
+     *************************************************************************/
     public List<String> getMessageList(){
         List<String> newMessages = new ArrayList<>(messageList);
         messageList.clear();
         return newMessages;
     }
 
+    /**************************************************************************
+     * printItemsWon                                                          *
+     *                                                                        *
+     * Prints the name and itemID of each item won by this Agent in an Auction*
+     *                                                                        *
+     * Takes no arguments, returns nothing                                    *
+     *                                                                        *
+     * Variable: keySet - set of keys stored in Map itemsWon                  *
+     *************************************************************************/
     public void printItemsWon(){
         Set<String> keySet = itemsWon.keySet();
         System.out.println("Items won from auction:");

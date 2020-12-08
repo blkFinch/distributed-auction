@@ -69,16 +69,18 @@ public class Bank {
     }
 
     public synchronized int registerAuctionHouse(Client house) {
+        System.out.println("Registering House: "+house.getID());
         houses.put(house.getID(), house);
         clients.add(house);
         return house.getID();
     }
 
     public Client findActiveClient(int id){
+        System.out.println("Searching for client: "+id);
         for (Client client: clients) {
-            System.out.println("checking " + client.getID());
             if (client.getID() == id){ return client;}
         }
+        System.out.println("No client found: "+id);
         return null;
     }
 

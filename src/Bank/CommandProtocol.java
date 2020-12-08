@@ -83,7 +83,8 @@ public class CommandProtocol {
 
                 int newAHId = Bank.getActive().createClient(target);
                 if( newAHId != 999){
-                    Bank.getActive().registerAuctionHouse(target);
+                    Client newAuctionHouse = Bank.getActive().getClient(newAHId);
+                    Bank.getActive().registerAuctionHouse(newAuctionHouse);
                     response = new Message.Builder()
                             .response(Message.Response.SUCCESS)
                             .accountId(newAHId)
@@ -139,6 +140,8 @@ public class CommandProtocol {
 
             case TRANSFER:
                 targetId = message.getAccountId();
+                Logger.logMessage(message);
+                System.out.println("Target ID: "+targetId);
                 target = Bank.getActive().findActiveClient(targetId);
                 int funds = Bank.getActive().withdrawFunds(target, message.getBalance());
                 int recieverId = message.getSenderId();

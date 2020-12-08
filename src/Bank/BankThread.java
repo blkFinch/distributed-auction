@@ -29,6 +29,7 @@ public class BankThread extends Thread {
 
             while(running){
                 message = readMessage();
+                Logger.logMessage(message);
 
                 if (message.getCommand() == Message.Command.DEREGISTER){
                     //Breaks loop after final return message

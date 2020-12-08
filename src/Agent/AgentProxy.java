@@ -160,6 +160,7 @@ public class AgentProxy extends Thread{
      *                Auction                                                 *
      *************************************************************************/
     private void auctionHandler() throws Exception{
+        System.out.println("Host: "+hostIP+" Port");
         socket = new Socket(hostIP, portNum);
         out = new ObjectOutputStream(socket.getOutputStream());
         out.flush();
