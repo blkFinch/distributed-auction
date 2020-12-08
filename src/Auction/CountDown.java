@@ -56,6 +56,7 @@ public class CountDown implements Runnable {
                     listItem.remainingTime(currentTime);
                     long timeLeft = listItem.getRemainingTime();
                     if (timeLeft <= 0) {
+                        System.out.println("Timer up");
                         itemResult(listItem);
                     }
                     i++;
@@ -74,6 +75,7 @@ public class CountDown implements Runnable {
      * @param item the item being checked
      */
     private void itemResult(Item item) {
+        System.out.println("Processing Bid");
         int bidder = item.getBidderId();
         AH_AgentThread agent = AuctionServer.agentSearch(bidder);
         if (bidder != -1) {

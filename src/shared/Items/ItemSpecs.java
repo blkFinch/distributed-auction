@@ -1,5 +1,10 @@
 package shared.Items;
-
+/**
+ * Ryan Cooper Adapated
+ * Galen furthur modified
+ * Message for communicating across sockets. Adapted from
+ * https://github.com/ApolloRez/DistributedAuction/tree/master/src
+ */
 public class ItemSpecs {
     public String name;
     public String description;

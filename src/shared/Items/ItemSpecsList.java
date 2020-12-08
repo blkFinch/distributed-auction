@@ -6,7 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Random;
-
+/**
+ * Ryan Cooper Adapated
+ * Galen furthur modified
+ * Message for communicating across sockets. Adapted from
+ * https://github.com/ApolloRez/DistributedAuction/tree/master/src
+ */
 public class ItemSpecsList {
     protected static ArrayList<ItemSpecs> itemsList;
 
