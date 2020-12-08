@@ -17,7 +17,8 @@ The accountID field will be sent with the error code
  - -999 => Invalid Lookup  
  - -888 => Insufficient Funds 
 
-## Bank Server
+## Bank Server 
+<b>PORT: 6000</b>  
 This is the main server for the program. It houses the Database and accepts concurrent connections
 
 ### Usage
@@ -91,7 +92,7 @@ requires: senderID
 
 
  ## DatabaseServer
- 
+ <b>PORT: 6002 </b>
  Only the bank and Auction Houses should talk to Database
  It accepts DBMessage
  

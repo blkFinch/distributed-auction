@@ -8,14 +8,22 @@ public class BankServer {
     public static Bank activeBank;
 
     public static void main(String[] args) throws IOException {
-        int portNumber;
-        if (args.length != 1) {
-            portNumber = 6000;
-        }else{
-            //I'm setting this port 6000 in my config -gh
-            portNumber = Integer.parseInt(args[0]);//6000
+        //Hardcode port
+        int portNumber = 6000;
+
+        //Requires
+        if (args.length < 1) {
+            System.err.println(
+                    "Usage: java BankServer <DB ipaddress> (optional) <log>");
+            System.exit(1);
         }
 
+        //Set DB address and port
+        Bank.getActive().setDbIPaddress(args[0]);
+        Bank.getActive().setDbPort(6002); //hardcoded as per README
+
+        //Optional arg to set Logger
+        if(args[1] == "log"){ Logger.log = true; }
 
         ServerSocket serverSocket = new ServerSocket(portNumber);
         System.out.println("port open: " + portNumber);

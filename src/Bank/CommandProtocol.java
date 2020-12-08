@@ -1,10 +1,13 @@
 package Bank;
 
+import shared.ConnectionReqs;
 import shared.DBMessage;
 import shared.Message;
 
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommandProtocol {
     private final Message message;
@@ -85,13 +88,23 @@ public class CommandProtocol {
                 if( newAHId != 999){
                     Client newAuctionHouse = Bank.getActive().getClient(newAHId);
                     Bank.getActive().registerAuctionHouse(newAuctionHouse);
+                    //Set conreqs to give AH info for DB
+                    ConnectionReqs  dbServer = new ConnectionReqs(
+                            Bank.getActive().getDbIPaddress(),
+                            Bank.getActive().getDbPort()
+                    );
+                    List<ConnectionReqs> reqs = new ArrayList<ConnectionReqs>();
+                    reqs.add(dbServer);
+
                     response = new Message.Builder()
                             .response(Message.Response.SUCCESS)
                             .accountId(newAHId)
+                            .connectionReqs(reqs)
                             .senderId(0);
                 }else{
                     response = failureResponse(-999);
                 }
+
                 break;
 
             case GETBALANCE:
