@@ -34,7 +34,7 @@ public class AgentActions {
         if( value < minimumBid) {
             value = minimumBid;
         }
-        if(bid > value){
+        if(bid >= value) {
             Message requestBlock = new Message.Builder()
                 .command(Message.Command.BLOCK)
                 .accountId(bidderId)

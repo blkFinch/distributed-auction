@@ -41,7 +41,6 @@ public class AuctionServer {
         System.out.println("listening...");
         //System.exit(1);
 
-
         while(running) {
             try {
                     Socket clientSocket = auctionSocket.accept();

@@ -110,7 +110,7 @@ public class AH_AgentThread extends Thread {
      * (by making them throw exceptions)
      */
     public void shutdown() {
-        try{
+        try {
             running = false;
             ConnectionReqs serverInfo = AuctionServer.reqs;
             List<ConnectionReqs> ahInfo = new LinkedList<>();
