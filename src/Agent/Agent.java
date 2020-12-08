@@ -183,13 +183,26 @@ public class Agent{
         }
     }
 
+    /**************************************************************************
+     * updateAuctionProxies                                                   *
+     *                                                                        *
+     * Takes List of new connections from the bankProxy and opens connections *
+     * to new Auction Houses                                                  *
+     *                                                                        *
+     * Takes no arguments, returns nothing                                    *
+     *                                                                        *
+     * Variables:                                                             *
+     * newConnections - List of new ConnectionReqs from bankProxy             *
+     * auctionProxy - temporary AgentProxy variable that holds each new proxy *
+     *                while it is being made                                  *
+     *************************************************************************/
     public void updateAuctionProxies(){
         List<ConnectionReqs> newConnections = bankProxy.getNewConnections();
         AgentProxy auctionProxy;
         for(ConnectionReqs conn : newConnections){
             if(!auctionProxies.containsKey(conn.getName())){
-                auctionProxy = new AgentProxy(username, "auction", conn.getIp(),
-                        "" + conn.getPort(), false);
+                auctionProxy = new AgentProxy(username, "auction",
+                        conn.getIp(), "" + conn.getPort(), false);
                 setProxyID(auctionProxy);
                 auctionProxy.setAuctionName(conn.getName());
                 auctionProxy.start();
@@ -198,6 +211,22 @@ public class Agent{
         }
     }
 
+    /**************************************************************************
+     * handleMessages                                                         *
+     *                                                                        *
+     * Reads messages from all proxies and handles messages that need to be   *
+     * addressed behind the scenes                                            *
+     *                                                                        *
+     * Takes no arguments, returns nothing                                    *
+     *                                                                        *
+     * Variables:                                                             *
+     * bankMessages - List of Messages from the bankProxy                     *
+     * auctionMessages - List of A_AH_Messages from the auctionProxies        *
+     * itemList - ArrayList of items passed in from an A_AH_Messages          *
+     * keySet - Set of keys from auctionProxies                               *
+     * proxy - temporary AgentProxy that holds each auctionProxy while it is  *
+     *         being accessed                                                 *
+     *************************************************************************/
     public void handleMessages(){
         List<Message> bankMessages = bankProxy.readBankMessages();
         List<A_AH_Messages> auctionMessages;
@@ -233,6 +262,26 @@ public class Agent{
         }
     }
 
+    /**************************************************************************
+     * closeConnections                                                       *
+     *                                                                        *
+     * Sends deregister messages to each open connection and waits for        *
+     * confirmation from the server before closing the socket                 *
+     *                                                                        *
+     * Takes no arguments, returns nothing                                    *
+     *                                                                        *
+     * Variables:                                                             *
+     * deregisterBank - Message to tell Bank to deregister this Agent         *
+     * deregisterAuction - A_AH_Messages to tell each Auction to deregister   *
+     *                     this Agent                                         *
+     * keySet - Set of keys for every AgentProxy in auctionProxies            *
+     * bankMessages - List of Messages from bankProxy                         *
+     * auctionMessages - List of A_AH_Messages from auctionProxies            *
+     * bankClosed - boolean that is true if the deregister confirmation has   *
+     *              been received from the bankProxy                          *
+     * numConnections - number of total AgentProxies                          *
+     * numClosed - number of AgentProxies that have successfully closed so far*
+     *************************************************************************/
     public void closeConnections(){
         Message deregisterBank = new Message.Builder()
                 .command(Message.Command.DEREGISTER)
