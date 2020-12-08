@@ -10,7 +10,7 @@ public class Item implements Serializable {
     private  int currentBid;
     private  int    bidderId;
     private  long   remainingTime;
-    private  long   bidTime;
+    protected  long   bidTime;
     private  int    itemId;
 
     public Item(String setName, String descriptionSet, int value, int Id) {
@@ -24,7 +24,6 @@ public class Item implements Serializable {
         itemId        = -1;
         bidTime       = System.currentTimeMillis();
     }
-
 
     /**
      * getName returns name String
@@ -68,7 +67,7 @@ public class Item implements Serializable {
     /**
      * restBidTime sets new bidTime to time of current bid
      */
-    public static void resetBidTime() {
+    public void resetBidTime() {
         bidTime = System.currentTimeMillis();
     }
 

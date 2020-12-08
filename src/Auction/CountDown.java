@@ -37,7 +37,6 @@ public class CountDown implements Runnable {
                 ArrayList<Item> auctionList = getAuctionList();
                 int size = auctionList.size();
                 int needed =  3 - auctionList.size();
-
                 if(needed > 0){
                     addItems(needed);
                 }
