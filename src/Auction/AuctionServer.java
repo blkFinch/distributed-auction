@@ -30,8 +30,8 @@ public class AuctionServer {
     private static boolean running = true;
     static List<AH_AgentThread> activeAgents = new LinkedList<>();
 
-    public static void main(String[] args, int argc) throws IOException {
-        if(argc != 3) {
+    public static void main(String[] args) throws IOException {
+        if(args.length != 3) {
             System.out.println("Arg number wrong.");
             System.exit(1);
         }
