@@ -10,7 +10,8 @@ import shared.Items.Item;
 import shared.Message;
 
 /**
- * AgentActions
+ * AgentActions contains the methods that directly involve interacting with the
+ * agent.
  */
 public class AgentActions {
     private static int    itemID;

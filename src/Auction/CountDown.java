@@ -18,6 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * CountDown class maintains and creates the auction item list.
+ * It also is responsible for the timeout conditions for winning and the logic
+ * needed to transfer an item, and otherwise determine and process a winning
+ * bid.
+ */
 public class CountDown implements Runnable {
     private static ObjectOutputStream dBOut;
     private static ObjectInputStream dBIn;
@@ -97,9 +103,10 @@ public class CountDown implements Runnable {
     }
 
     /**
+     * addItems gets Items from database to replenish the list after a list item
+     * times out and is removed or transferred upon a winning bid.
      *
-     *
-     * @param needed
+     * @param needed int number of list items that need be gotten
      */
     static void addItems(int needed) {
         List<ConnectionReqs> reqsList = new ArrayList<>();

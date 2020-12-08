@@ -14,7 +14,8 @@ import java.net.Socket;
 import java.util.List;
 
 /**
- * Bank Actions
+ * Bank Actions class contains the methods directly pertaining to bank
+ * communication/operation with regards to the auction house.
  */
 public class BankActions {
     private static BankActions active;
@@ -25,6 +26,16 @@ public class BankActions {
         return active;
     }
 
+    /**
+     * registerBank creates message for bank registration, processes response
+     * to get database ip address and port number before calling CountDown
+     * on a separate thread. Returns message response and prints connection
+     * success message.
+     *
+     * @param reqsList List<ConnectionReqs> String ip and int port
+     * @param name String
+     * @return Message bank message class
+     */
     public Message registerBank(List<ConnectionReqs> reqsList, String name) {
         Message message = new Message.Builder().command(Message.Command.REGISTERHOUSE)
                 .connectionReqs(reqsList).accountName(name).nullId();
@@ -44,6 +55,13 @@ public class BankActions {
         return response;
     }
 
+    /**
+     * sendToBank opens a socket and sends a message to the bank, then accepts
+     * the response.
+     *
+     * @param message Message
+     * @return Message response from bank
+     */
     public static Message sendToBank(Message message) {
         try {
             Socket bankSocket = new Socket(AuctionServer.bankIp, AuctionServer.bankPort);

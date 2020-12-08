@@ -16,6 +16,10 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * AH_AgentThread built to allow multithreading of the agents.
+ * each agent assigned to an instance of this class.
+ */
 public class AH_AgentThread extends Thread {
     public static boolean running = true;
     A_AH_Messages message;
