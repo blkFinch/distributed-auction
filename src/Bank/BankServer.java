@@ -23,7 +23,10 @@ public class BankServer {
         Bank.getActive().setDbPort(6002); //hardcoded as per README
 
         //Optional arg to set Logger
-        if(args[1] == "log"){ Logger.log = true; }
+        if(args.length == 2){
+            if(args[1] == "log"){ Logger.log = true; }
+        }
+
 
         ServerSocket serverSocket = new ServerSocket(portNumber);
         System.out.println("port open: " + portNumber);
