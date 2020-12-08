@@ -312,7 +312,6 @@ public class AgentGUI extends Application{
             @Override
             public void handle(long now){
                 if(userID == -1 && agent.getUserID() != -1){
-                    System.out.println("GUI: "+agent.getUserID());
                     userID = agent.getUserID();
                 }
                 if(username.equals("")){ username = agent.getUsername(); }
@@ -391,7 +390,6 @@ public class AgentGUI extends Application{
      * picture - Image for each visualization                                 *
      * itemFileName - String that holds the image in Resources to be used in  *
      *                Image picture                                           *
-     * temp - String[] that holds the tokens in the Item name                 *
      * index - index of each visualization in the FlowPane                    *
      *************************************************************************/
     private FlowPane updateAvailableItems(){
@@ -403,7 +401,6 @@ public class AgentGUI extends Application{
         GraphicsContext gc;
         Image picture;
         String itemFileName;
-        String[] temp;
         int index = 0;
         itemList = new FlowPane(20, 10);
         if(currentItems != null) {
@@ -411,14 +408,9 @@ public class AgentGUI extends Application{
                 itemName = new Label(item.getName());
                 itemName.setTextFill(Color.WHITE);
 
-                itemFileName = "";
-                temp = item.getName().split("\\s+");
-                for (String s : temp) {
-                    itemFileName += s;
-                }
-                itemFileName += ".jpg";
+                itemFileName = item.getName()+".png";
                 canvas = new Canvas(200, 200);
-                picture = new Image("file:Resources\\Items\\McLaren720S.jpg");
+                picture = new Image("file:Resources\\Items\\"+itemFileName);
                 gc = canvas.getGraphicsContext2D();
                 gc.setFill(Color.WHITE);
                 gc.fillRect(0, 0, 200, 200);
@@ -445,7 +437,7 @@ public class AgentGUI extends Application{
                         chosenItem = itemNameFinal;
                         chosenItemID = itemID;
                     } else if (chosenItem.equals(itemNameFinal)) {
-                        pic = new Image("file:Resources\\Items\\McLaren720S.jpg");
+                        pic = new Image("file:Resources\\Items\\"+itemFileFinal);
                         graph.setFill(Color.WHITE);
                         graph.fillRect(0, 0, 200, 200);
                         graph.drawImage(pic, 0, 0);

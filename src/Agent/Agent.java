@@ -236,7 +236,6 @@ public class Agent{
         for(Message mes : bankMessages){
             messageList.add("Bank: " + mes.toString());
             if(userID == -1 && mes.getAccountId() != -1){
-                System.out.println("Agent: "+mes.getAccountId());
                 userID = mes.getAccountId();
                 setProxyID(bankProxy);
             }
