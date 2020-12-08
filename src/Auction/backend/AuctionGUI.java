@@ -1,4 +1,8 @@
 package Auction.backend;
 
-public class auctionGUI {
+import javafx.scene.Scene;
+
+public class AuctionGUI {
+    public void setScene(Scene scene) {
+    }
 }
