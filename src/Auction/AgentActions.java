@@ -43,6 +43,7 @@ public class AgentActions {
             //requests the hold.
             Message response = BankActions.sendToBank(requestBlock);
             if(response != null && response.getResponse() == Message.Response.SUCCESS) {
+                System.out.println("Block request Success");
                 A_AH_Messages accept = A_AH_Messages.Builder.newBuilder()
                         .topic(A_AH_MTopic.SUCCESS)
                         .itemId(message.getItem())
@@ -51,16 +52,19 @@ public class AgentActions {
                         .build();
                 AH_AgentThread.sendOut(accept);
                 int oldBidder = bidItem.getBidderId();
-                if(oldBidder != -1){
+                if(oldBidder != -1) {
+                    System.out.println("1'st bid on Item OutBid Success");
                     release(oldBidder, value);
                     outBid(oldBidder);
                     bidItem.resetBidTime();
                 }
+                System.out.println("OutBid processed");
                 bidItem.setBid(bidderId, bid);
                 accept(bidItem.getItemID(), bidItem.getName());
             } else {
                 assert response != null;
                 if(response.getResponse() == Message.Response.FAILURE) {
+                    System.out.println("Block request Failure");
                     A_AH_Messages accept = A_AH_Messages.Builder.newBuilder()
                             .topic(A_AH_MTopic.REJECT)
                             .itemId(message.getItem())
@@ -84,6 +88,7 @@ public class AgentActions {
      * @param name String/name of the item bid on
      */
     private static void accept(int item, String name){
+        System.out.println("Return bid SUCCESS" + item);
         A_AH_Messages accept = A_AH_Messages.Builder.newBuilder()
                 .topic(A_AH_MTopic.SUCCESS)
                 .itemId(item)
@@ -155,6 +160,7 @@ public class AgentActions {
      * @param name the name of the item
      */
     private static void reject(int itemId, String name) {
+        System.out.println("Bid rejected");
         A_AH_Messages reject = A_AH_Messages.Builder.newBuilder()
                 .topic(A_AH_MTopic.REJECT)
                 .name(name)
