@@ -28,7 +28,43 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/******************************************************************************
+ * Ashley Krattiger                                                           *
+ *                                                                            *
+ * AgentGUI                                                                   *
+ *                                                                            *
+ * Runs the GUI for the Agent. Sends information from the user to the Agent   *
+ *****************************************************************************/
 public class AgentGUI extends Application{
+    /**************************************************************************
+     * Global Variables:                                                      *
+     *                                                                        *
+     * scene - Scene for the primaryStage                                     *
+     * agent - Agent for this session of the Agent program                    *
+     * username - String associated with the Agent's account                  *
+     * userID - int associated with the Agent's account                       *
+     * chooseAuction - BorderPane for the screen where you choose which       *
+     *                 Auction to enter                                       *
+     * placeBid - BorderPane for the screen where you are inside a specific   *
+     *            Auction and can place a bid                                 *
+     * messageLog - ScrollPane holding the messages received from the servers *
+     * messageList - VBox holding each message displayed on the messageLog    *
+     * checkBalance - Button that checks the Bank balance of the Agent        *
+     * placeBidButtons - VBox that holds the Buttons displayed on the left of *
+     *                   the placeBid screen                                  *
+     * createScene - Scene for the createAccount screen for the Open          *
+     *               Connection Popup                                         *
+     * loginScene - Scene for the logIn screen for the Open Connection Popup  *
+     * itemList - FlowPane that holds the Item visuals on the placeBid screen *
+     * a - AnimationTimer for the GUI                                         *
+     * host - Bank's IP address                                               *
+     * port - Bank's open port number                                         *
+     * connected - boolean that's true if the Agent is connected to the Bank  *
+     * bidScreen - boolean that's true if the placeBid screen is visible      *
+     * chosenItem - name of the Item the user has selected on the placeBid    *
+     *              screen                                                    *
+     * chosenItemID - itemID associated with the chosenItem                   *
+     *************************************************************************/
     private Scene scene;
     private Agent agent;
     private String username;
@@ -47,10 +83,19 @@ public class AgentGUI extends Application{
     private String port;
     private boolean connected;
     private boolean bidScreen;
-    private String currAuction;
     private String chosenItem;
     private int chosenItemID;
 
+    /**************************************************************************
+     * start                                                                  *
+     * Overridden method from Application                                     *
+     *                                                                        *
+     * Sets up GUI and all necessary nodes and processes. Also initializes 3  *
+     * Scenes for the Open Connection Pop up Window                           *
+     *                                                                        *
+     * @param primaryStage - Stage for the GUI                                *
+     * @throws Exception - overridden                                         *
+     *************************************************************************/
     @Override
     public void start(Stage primaryStage) throws Exception{
         primaryStage.setTitle("Agent");
@@ -58,7 +103,6 @@ public class AgentGUI extends Application{
         userID = -1;
         connected = false;
         bidScreen = false;
-        currAuction = "";
         chosenItem = null;
         chosenItemID = 0;
 
@@ -129,7 +173,6 @@ public class AgentGUI extends Application{
             scene.setRoot(chooseAuction);
             chooseAuction.setLeft(checkBalance);
             chooseAuction.setRight(messageLog);
-            currAuction = "";
             bidScreen = false;
         });
         backButton.setFont(new Font(15));
@@ -180,7 +223,7 @@ public class AgentGUI extends Application{
         openPortBox.getChildren().addAll(openPortLabel, openPortField);
         openPortBox.setAlignment(Pos.CENTER);
         Button createAccountButton = new Button("Create Account");
-        createAccountButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+        createAccountButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event ->{
             host = openIPField.getText();
             port = openPortField.getText();
             openStage.setScene(createScene);
@@ -215,7 +258,8 @@ public class AgentGUI extends Application{
         createBalBox.getChildren().addAll(createBalLabel, createBalField);
         createBalBox.setAlignment(Pos.CENTER);
         Button createButton = new Button("Create Account");
-        createVBox.getChildren().addAll(createNameBox, createBalBox, createButton);
+        createVBox.getChildren().addAll(createNameBox, createBalBox,
+                createButton);
         createVBox.setAlignment(Pos.CENTER);
         openStage.setTitle("Create Account");
         createButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -275,13 +319,31 @@ public class AgentGUI extends Application{
                 if(connected && (now%10000) == 0){
                     agent.handleMessages();
                     updateMessageLog();
-                    if(bidScreen){ placeBid.setCenter(updateAvailableItems()); }
+                    if(bidScreen){placeBid.setCenter(updateAvailableItems()); }
                     else{ chooseAuction.setCenter(updateAvailableAuctions()); }
                 }
             }
         };
     }
 
+    /**************************************************************************
+     * updateAvailableAuctions                                                *
+     *                                                                        *
+     * Updates the list of Buttons that connect you to open Auctions          *
+     *                                                                        *
+     * Takes no arguments                                                     *
+     * @return new FlowPane that holds the AuctionHouse Buttons               *
+     *                                                                        *
+     * Variables:                                                             *
+     * flow - FlowPane to hold the new list of AuctionHouse Buttons           *
+     * auction - temporary Button that holds each Button while it's being made*
+     * auctions - Set of auction names given by Agent                         *
+     * buttonFont - Font for the Buttons                                      *
+     * updateAuctions - Message that requests updates on which AuctionHouses  *
+     *                  are open                                              *
+     * auctionName - final version of the Auction's name for use in event     *
+     *               handler                                                  *
+     *************************************************************************/
     private FlowPane updateAvailableAuctions(){
         FlowPane flow = new FlowPane(20, 10);
         Button auction;
@@ -301,7 +363,6 @@ public class AgentGUI extends Application{
                 agent.setCurrentAuction(auctionName);
                 placeBid.setRight(messageLog);
                 placeBidButtons.getChildren().add(checkBalance);
-                currAuction = auctionName;
                 bidScreen = true;
                 scene.setRoot(placeBid);
             });
@@ -311,6 +372,28 @@ public class AgentGUI extends Application{
         return flow;
     }
 
+    /**************************************************************************
+     * updateAvailableItems                                                   *
+     *                                                                        *
+     * Updates the list of Item visualizations on the placeBid screen         *
+     *                                                                        *
+     * Takes no arguments                                                     *
+     * @return FlowPane holding new visualizations                            *
+     *                                                                        *
+     * Variables:                                                             *
+     * currentItems - ArrayList of current Items up for auction               *
+     * border - BorderPane for each visualization while it is being made      *
+     * itemName - Label for each visualization. Holds name of the item        *
+     * canvas - Canvas for each visualization                                 *
+     * currBid - Label for each visualization. Holds the current bid on the   *
+     *           item                                                         *
+     * gc - GraphicsContext of each canvas                                    *
+     * picture - Image for each visualization                                 *
+     * itemFileName - String that holds the image in Resources to be used in  *
+     *                Image picture                                           *
+     * temp - String[] that holds the tokens in the Item name                 *
+     * index - index of each visualization in the FlowPane                    *
+     *************************************************************************/
     private FlowPane updateAvailableItems(){
         ArrayList<Item> currentItems = agent.getCurrentItems();
         BorderPane border;
@@ -335,11 +418,11 @@ public class AgentGUI extends Application{
                 }
                 itemFileName += ".jpg";
                 canvas = new Canvas(200, 200);
-                //picture = new Image("file:Resources\\Items\\"+itemFileName);
+                picture = new Image("file:Resources\\Items\\McLaren720S.jpg");
                 gc = canvas.getGraphicsContext2D();
                 gc.setFill(Color.WHITE);
                 gc.fillRect(0, 0, 200, 200);
-                //gc.drawImage(picture, 0, 0);
+                gc.drawImage(picture, 0, 0);
                 if (chosenItem != null && chosenItem.equals(item.getName())) {
                     gc.setStroke(Color.YELLOW);
                     gc.setLineWidth(7);
@@ -350,7 +433,8 @@ public class AgentGUI extends Application{
                 final String itemFileFinal = itemFileName;
                 final int itemID = item.getItemID();
                 canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-                    BorderPane bord = (BorderPane) itemList.getChildren().get(ind);
+                    BorderPane bord = (BorderPane) itemList
+                            .getChildren().get(ind);
                     Canvas can = (Canvas) bord.getCenter();
                     GraphicsContext graph = can.getGraphicsContext2D();
                     Image pic;
@@ -361,10 +445,10 @@ public class AgentGUI extends Application{
                         chosenItem = itemNameFinal;
                         chosenItemID = itemID;
                     } else if (chosenItem.equals(itemNameFinal)) {
-                        //pic = new Image("file:Resources\\Items\\"+itemFileFinal);
+                        pic = new Image("file:Resources\\Items\\McLaren720S.jpg");
                         graph.setFill(Color.WHITE);
                         graph.fillRect(0, 0, 200, 200);
-                        //graph.drawImage(pic, 0, 0);
+                        graph.drawImage(pic, 0, 0);
                         chosenItem = null;
                         chosenItemID = 0;
                     }
@@ -388,6 +472,19 @@ public class AgentGUI extends Application{
         return itemList;
     }
 
+    /**************************************************************************
+     * updateMessageLog                                                       *
+     *                                                                        *
+     * Updates the messageLog to have the most recent Messages                *
+     *                                                                        *
+     * Takes no arguments, returns nothing                                    *
+     *                                                                        *
+     * Variables:                                                             *
+     * newMessages - List of new messages from the servers                    *
+     * split - String[] that holds a message split by commas                  *
+     * compiledMessage - holds the final message that will be added to        *
+     *                   messageLog                                           *
+     *************************************************************************/
     private void updateMessageLog(){
         List<String> newMessages = agent.getMessageList();
         String[] split;
@@ -403,6 +500,13 @@ public class AgentGUI extends Application{
         }
     }
 
+    /**************************************************************************
+     * stop                                                                   *
+     * Overridden method from Application                                     *
+     *                                                                        *
+     * Closes communications properly and prints won items when the GUI is    *
+     * closed                                                                 *
+     *************************************************************************/
     @Override
     public void stop(){
         connected = false;
