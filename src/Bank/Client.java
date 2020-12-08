@@ -124,4 +124,17 @@ public class Client implements Serializable {
             return true;
         }
     }
+
+    @Override
+    public String toString() {
+        return "Client{" +
+                "ID=" + ID +
+                ", portNumber=" + portNumber +
+                ", host='" + host + '\'' +
+                ", balance=" + balance +
+                ", heldFunds=" + heldFunds +
+                ", name='" + name + '\'' +
+                ", isAuctionHouse=" + isAuctionHouse +
+                '}';
+    }
 }

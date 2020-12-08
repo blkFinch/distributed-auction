@@ -26,6 +26,7 @@ public class UpdateClient implements SQLInjector {
     @Override
     public Integer inject() throws Exception {
         Connection DBconn = DatabaseManager.getConn();
+        System.out.println(client.toString());
         String sql = "UPDATE clients SET" +
                 " host = ?, port = ?, balance = ?, isAuctionHouse = ?, name = ? " +
                 " WHERE id = ?;";
@@ -34,11 +35,13 @@ public class UpdateClient implements SQLInjector {
             pstmt.setString(1, String.valueOf(client.getHost()));
             pstmt.setInt(2, client.getPort());
             pstmt.setInt(3, (int)client.getBalance());
-            //DEBUG: dummy values for now
             pstmt.setBoolean(4, client.isAuctionHouse());
-            pstmt.setInt(5, client.getID());
+            pstmt.setString(5,client.getName());
+            pstmt.setInt(6, client.getID());
 
-            pstmt.execute();
+            int numRows = pstmt.executeUpdate();
+
+            System.out.println( "Update modified " + numRows + " rows." );
         }catch (SQLException throwables){
             throwables.printStackTrace();
         } catch (Exception e) {

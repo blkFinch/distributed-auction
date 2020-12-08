@@ -7,7 +7,10 @@ public class Logger {
 
     public static void logMessage(Message message){
         if(log){
-            System.out.println(message.toString());
+            if(message.getCommand() != Message.Command.GETHOUSES){
+                System.out.println(message.toString());
+            }
+
         }
     }
 }
