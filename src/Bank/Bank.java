@@ -75,7 +75,6 @@ public class Bank {
     }
 
     public Client findActiveClient(int id){
-        System.out.println("logging out user id: "+ id);
         for (Client client: clients) {
             System.out.println("checking " + client.getID());
             if (client.getID() == id){ return client;}

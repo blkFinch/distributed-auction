@@ -27,6 +27,7 @@ public class ReadItem implements  SQLInjector{
         int id = this.id;
 
         Item item = new Item(name,desc,minBid,id);
+
         return item;
     }
 }
