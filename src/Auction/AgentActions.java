@@ -130,6 +130,7 @@ public class AgentActions {
         A_AH_Messages reply = A_AH_Messages.Builder.newBuilder()
                 .topic(A_AH_MTopic.REGISTER)
                 .accountId(AuctionServer.getAuctionId())
+                .auctionList(CountDown.getAuctionList())
                 .build();
         AH_AgentThread.sendOut(reply);
     }
