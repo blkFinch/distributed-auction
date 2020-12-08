@@ -28,6 +28,10 @@ public class BankActions {
         Message response = sendToBank(message);
         assert response != null;
         AuctionServer.auctionId = response.getAccountId();
+        List<ConnectionReqs> dBReqs = response.getConnectionReqs();
+        ConnectionReqs reqs = dBReqs.get(0);
+        AuctionServer.dBPort = reqs.getPort();
+        AuctionServer.dBIp = reqs.getIp();
         CountDown count = new CountDown();
         Thread timer = new Thread(count);
         timer.start();
@@ -39,7 +43,7 @@ public class BankActions {
 
     public static Message sendToBank(Message message) {
         try {
-            Socket bankSocket = new Socket("localHost", 6000);
+            Socket bankSocket = new Socket(AuctionServer.bankIp, AuctionServer.bankPort);
             ObjectOutputStream out = new ObjectOutputStream(bankSocket.getOutputStream());
             out.flush();
             ObjectInputStream in = new ObjectInputStream(bankSocket.getInputStream());
