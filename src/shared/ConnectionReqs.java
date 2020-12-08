@@ -7,12 +7,20 @@ import java.io.Serializable;
  * Galen furthur modified
  * Message for communicating across sockets. Adapted from
  * https://github.com/ApolloRez/DistributedAuction/tree/master/src
+ *
+ * ConnectionReqs
  */
 public class ConnectionReqs implements Serializable {
     private int    port;
     private String ip;
     private String name;
 
+    /**
+     *
+     *
+     * @param ip
+     * @param port
+     */
     public ConnectionReqs(String ip, int port) {
         this.ip   = ip;
         this.port = port;

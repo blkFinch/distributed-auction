@@ -1,7 +1,5 @@
 package shared;
 
-import Bank.Client;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -89,6 +87,12 @@ public class Message implements Serializable {
             return this;
         }
 
+        /**
+         * accountName sets name and returns Builder object
+         *
+         * @param name
+         * @return Builder
+         */
         public Builder accountName(String name) {
             this.accountName = name;
             return this;

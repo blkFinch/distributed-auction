@@ -96,6 +96,11 @@ public class CountDown implements Runnable {
         }
     }
 
+    /**
+     *
+     *
+     * @param needed
+     */
     static void addItems(int needed) {
         List<ConnectionReqs> reqsList = new ArrayList<>();
         reqsList.add(AuctionServer.reqs);

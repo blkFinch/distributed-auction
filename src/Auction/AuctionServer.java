@@ -32,8 +32,8 @@ public class AuctionServer {
             ip = socket.getLocalAddress().getHostAddress();
         }
 
-        port = 5600;
-        ip = "127.0.0.1";
+        port = Integer.parseInt(args[0]);
+        //ip = "127.0.0.1";
         //setIPAddress reference auctionspecs
         //send registration
         reqs = new ConnectionReqs(ip, port);

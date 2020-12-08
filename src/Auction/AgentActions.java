@@ -39,7 +39,8 @@ public class AgentActions {
         if( currentBid < minimumBid) {
             currentBid = minimumBid;
         }
-        if(newBid >= currentBid) {
+        if((newBid >= currentBid) && (bidderId != -1) ||
+                (newBid > currentBid) && (bidderId == -1)) {
             System.out.println("Bid amount sufficient" + message);
             Message requestBlock = new Message.Builder()
                 .command(Message.Command.BLOCK)
