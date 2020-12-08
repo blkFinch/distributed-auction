@@ -24,12 +24,11 @@ This is the main server for the program. It houses the Database and accepts conc
 ![image](Resources/AuctionDiagram.png)
 Command line input int Auction Port, int Bank Port, String bankIp, String auction name
 This is the main class fot the Auction server. 3 main threads. AuctionServer accepts input
-from agents. BankActions & AgentAction are spawned from AuctionServer and perform bid and other actions for them. CountDown handles win conditions and auction list creation and maintenance.
+from agents. BankActions & AgentAction are spawned from AuctionServer and perform bid and other 
+actions for them. CountDown handles win conditions and auction list creation and maintenance.
 
 ## Agent Server
 ![image](Resources/AgentDiagram.png)
-
-## Shared Methods
 
 ### Usage
 Once connected, the bank accepts Messages which can be constructed using the shared Message class
