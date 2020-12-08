@@ -16,6 +16,7 @@ public class DatabaseServer {
         //I'm setting this port 6002
         int portNumber = 6002;
         ServerSocket serverSocket = new ServerSocket(portNumber);
+        System.out.println("port open: " + portNumber);
         System.out.println("listening...");
 
         //While bank server is running

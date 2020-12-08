@@ -7,7 +7,7 @@ import java.sql.*;
  */
 public class DatabaseManager {
     //Where the database is saved locally
-    public static final String DB_URL = "jdbc:sqlite:src/Database/data.db";
+    public static final String DB_URL = "jdbc:sqlite::resource:data.db";
     private static Connection conn = null;
 
     public static synchronized Connection getConn() throws Exception {
