@@ -20,6 +20,7 @@ import java.util.Map;
  * Bank class handles logic for managing blocking and moving funds between
  * accounts. Bank is a singleton and holds the only methods that access the
  * database. This is to prevent concurrency errors.
+ * -g.hutchison
  */
 public class Bank {
     public static Bank active;
@@ -81,6 +82,11 @@ public class Bank {
         }
         clients.add(user);
     }
+
+    /**
+     * gets the open port and ip address of the
+     * @return
+     */
     public synchronized List<ConnectionReqs> getHouses(){
         List<ConnectionReqs> reqs = new ArrayList<ConnectionReqs>();
         for(Client house : houses.values()){
@@ -91,6 +97,11 @@ public class Bank {
         return reqs;
     }
 
+    /**
+     * Regisers an active auction house and adds it to the list of active users
+     * @param house
+     * @return the ID of the logged in house
+     */
     public synchronized int registerAuctionHouse(Client house) {
         System.out.println("Registering House: "+house.getID());
         houses.put(house.getID(), house);
@@ -98,6 +109,11 @@ public class Bank {
         return house.getID();
     }
 
+    /**
+     * Looks up iuser from active users list
+     * @param id
+     * @return
+     */
     public Client findActiveClient(int id){
         System.out.println("Searching for client: "+id);
         for (Client client: clients) {
@@ -107,6 +123,10 @@ public class Bank {
         return null;
     }
 
+    /**
+     * Removes user from acrive user list
+     * @param user
+     */
     public void deregisterUser(Client user){
         if(user.isAuctionHouse()){
             houses.remove(user.getID());
