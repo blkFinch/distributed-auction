@@ -53,7 +53,7 @@ public class AgentProxy extends Thread{
     private String auctionName;
     private final List<Message> inMessages;
     private final List<A_AH_Messages> aucInMessages;
-    private List<ConnectionReqs> newConnections;
+    private final List<ConnectionReqs> newConnections;
     private ObjectOutputStream out;
     private boolean running;
 
@@ -127,11 +127,18 @@ public class AgentProxy extends Thread{
 
         while(running){
             fromServer = (Message)in.readObject();
-            System.out.println("Bank: " + fromServer.toString());
+            if(fromServer.getCommand() == Message.Command.DEREGISTER){
+                running = false;
+            }
             if(fromServer.getConnectionReqs() != null){
                 newConnections.addAll(fromServer.getConnectionReqs());
+                if(fromServer.getResponse() != null){
+                    System.out.println("Bank: " + fromServer.toString());
+                    inMessages.add(fromServer);
+                }
             }
             else{
+                System.out.println("Bank: " + fromServer.toString());
                 inMessages.add(fromServer);
             }
         }
@@ -169,6 +176,9 @@ public class AgentProxy extends Thread{
         while(running){
             fromServer = (A_AH_Messages) in.readObject();
             System.out.println("Auction: " + fromServer.toString());
+            if(fromServer.getTopic() == A_AH_Messages.A_AH_MTopic.DEREGISTER){
+                running = false;
+            }
             aucInMessages.add(fromServer);
         }
     }
@@ -215,7 +225,9 @@ public class AgentProxy extends Thread{
      *************************************************************************/
     public synchronized void sendBankMessage(Message message){
         try {
-            System.out.println("Agent: "+message.toString());
+            if(message.getCommand() != Message.Command.GETHOUSES){
+                System.out.println("Agent: " + message.toString());
+            }
             out.writeObject(message);
         } catch(IOException e){
             System.out.println("Message failed to send");
