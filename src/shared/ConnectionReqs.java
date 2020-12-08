@@ -2,6 +2,12 @@ package shared;
 
 import java.io.Serializable;
 
+/**
+ * Ryan Cooper Adapated
+ * Galen furthur modified
+ * Message for communicating across sockets. Adapted from
+ * https://github.com/ApolloRez/DistributedAuction/tree/master/src
+ */
 public class ConnectionReqs implements Serializable {
     private int    port;
     private String ip;

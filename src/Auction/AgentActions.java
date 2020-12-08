@@ -1,3 +1,7 @@
+/**
+ * Ryan Cooper
+ * rycooper
+ */
 package Auction;
 
 import shared.A_AH_Messages;
@@ -17,33 +21,35 @@ public class AgentActions {
      * requests the bank to hold the bidded funds and waits for a response.
      * After receiving the response, it then decides whether to reject or
      * accept the bid.
+     *
      * @param message The message with AMType BID
      */
     static void bid(A_AH_Messages message) {
         itemID   = message.getItem();
         bidderId = message.getAccountId();
         name     = message.getItemName();
-        int bid = message.getBid();
+        int newBid = message.getBid();
         Item bidItem = itemSearch(itemID);
         if(bidItem == null) {
             reject(itemID,name);
             return;
         }
         int minimumBid = bidItem.getMinimumBid();
-        int value = bidItem.getCurrentBid();
-        if( value < minimumBid) {
-            value = minimumBid;
+        int currentBid = bidItem.getCurrentBid();
+        if( currentBid < minimumBid) {
+            currentBid = minimumBid;
         }
-        if(bid >= value) {
+        if(newBid >= currentBid) {
+            System.out.println("Bid amount sufficient" + message);
             Message requestBlock = new Message.Builder()
                 .command(Message.Command.BLOCK)
                 .accountId(bidderId)
-                .balance(bid)
+                .balance(newBid)
                 .senderId(bidderId);
             //requests the hold.
             Message response = BankActions.sendToBank(requestBlock);
             if(response != null && response.getResponse() == Message.Response.SUCCESS) {
-                System.out.println("Block request Success");
+                System.out.println("Block request Success" + response);
                 A_AH_Messages accept = A_AH_Messages.Builder.newBuilder()
                         .topic(A_AH_MTopic.SUCCESS)
                         .itemId(message.getItem())
@@ -54,17 +60,17 @@ public class AgentActions {
                 int oldBidder = bidItem.getBidderId();
                 if(oldBidder != -1) {
                     System.out.println("1'st bid on Item OutBid Success");
-                    release(oldBidder, value);
+                    release(oldBidder, currentBid);
                     outBid(oldBidder);
                     bidItem.resetBidTime();
                 }
                 System.out.println("OutBid processed");
-                bidItem.setBid(bidderId, bid);
+                bidItem.setBid(bidderId, newBid);
                 accept(bidItem.getItemID(), bidItem.getName());
             } else {
                 assert response != null;
                 if(response.getResponse() == Message.Response.FAILURE) {
-                    System.out.println("Block request Failure");
+                    System.out.println("Block request Failure" + response);
                     A_AH_Messages accept = A_AH_Messages.Builder.newBuilder()
                             .topic(A_AH_MTopic.REJECT)
                             .itemId(message.getItem())
@@ -84,6 +90,7 @@ public class AgentActions {
      * Once a bid by an Agent is accepted, this method lets the agent
      * know their bid was accepted. The message also contains the updated
      * catalogue
+     *
      * @param item int of the item bid on
      * @param name String/name of the item bid on
      */
@@ -117,9 +124,8 @@ public class AgentActions {
     }
 
     /**
-     * This method is letting the connected agent know they successfully
-     * registered and sends the catalogue of items for sale. The method
-     * also stores the agent's UUID for future reference
+     * register lets the connected agent know they successfully
+     * registered and sends the auctionList.
      */
     static void register() {
         A_AH_Messages reply = A_AH_Messages.Builder.newBuilder()

@@ -1,3 +1,7 @@
+/**
+ * Ryan Cooper
+ * rycooper
+ */
 package Auction;
 
 import shared.A_AH_Messages;
@@ -76,6 +80,7 @@ public class AH_AgentThread extends Thread {
     /**
      * This method is given an AuctionMessage and writes/sends it to
      * agentSocket.
+     *
      * @param message the message being sent
      */
     static void sendOut(A_AH_Messages message) {
@@ -90,6 +95,10 @@ public class AH_AgentThread extends Thread {
         }
     }
 
+    /**
+     * agentShutdown calls deregister to send message and closes
+     * associated sockets.
+     */
     static void agentShutdown() {
         AgentActions.deRegister();
         try {
@@ -105,9 +114,8 @@ public class AH_AgentThread extends Thread {
     }
 
     /**
-     * This method closes all sockets and streams. It then signals all threads
-     * to stop after finishing their current task
-     * (by making them throw exceptions)
+     * shutdown closes all sockets and streams. It then calls agentsShutdown
+     * to signal the stop of all threads and closes the sockets.
      */
     public void shutdown() {
         try {
@@ -133,6 +141,11 @@ public class AH_AgentThread extends Thread {
         }
     }
 
+    /**
+     * winner sends message to
+     *
+     * @param item Item
+     */
     public void winner(Item item) {
         A_AH_Messages winner = A_AH_Messages.Builder.newBuilder()
                 .topic(A_AH_Messages.A_AH_MTopic.WINNER)

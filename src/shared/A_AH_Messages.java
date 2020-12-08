@@ -5,6 +5,9 @@ import shared.Items.Item;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+/**
+ * Ryan Cooper Adapated
+ */
 public class A_AH_Messages implements Serializable {
     private final A_AH_MTopic     topic;       //what kind of message is it
     private final ArrayList<Item> auctionList; //list of items in the auction

@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
+ * Ryan Cooper Adapated
+ * Galen furthur modified
  * Message for communicating across sockets. Adapted from
  * https://github.com/ApolloRez/DistributedAuction/tree/master/src
  */

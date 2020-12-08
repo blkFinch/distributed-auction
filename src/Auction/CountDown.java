@@ -1,3 +1,7 @@
+/**
+ * Ryan Cooper
+ * rycooper
+ */
 package Auction;
 
 import shared.ConnectionReqs;
@@ -20,6 +24,11 @@ public class CountDown implements Runnable {
     public static ArrayList<Item> auctionList = new ArrayList<>();
     private static final ArrayList<Item> auctionHistory = new ArrayList<>();
 
+    /**
+     * getAuctionList returns the auctionList
+     *
+     * @return auctionList ArrayList<Item>
+     */
     public static ArrayList<Item> getAuctionList() {
         return auctionList;
     }
@@ -107,6 +116,7 @@ public class CountDown implements Runnable {
                 System.out.println("listening...");
                 DBMessage response = (DBMessage) dBIn.readObject();
                 item = (Item) response.getPayload();
+                System.out.println(item.toString());
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }

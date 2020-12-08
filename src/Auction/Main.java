@@ -1,3 +1,7 @@
+/**
+ * Ryan Cooper
+ * rycooper
+ */
 package Auction;
 
 import Auction.backend.AuctionGUI;
