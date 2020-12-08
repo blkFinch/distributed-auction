@@ -109,3 +109,17 @@ or on [their repo](https://github.com/xerial/sqlite-jdbc)
 The run the script provided in the Database package called dbinitializer
 
 voila! Your database should be good to go.
+
+### Setting up on School computers
+Computers
+moons
+trucks
+gigs.cs.unm.edu
+shuttle.cs.unm.edu
+b146-[1-100]
+
+use command:
+~~~
+dig +short myip.opendns.com @resolver1.opendns.com
+~~~
+to get ip address
