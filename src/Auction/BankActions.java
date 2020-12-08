@@ -13,6 +13,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
 
+/**
+ * Bank Actions
+ */
 public class BankActions {
     private static BankActions active;
     public static BankActions getActive() {

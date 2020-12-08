@@ -9,6 +9,9 @@ import shared.A_AH_Messages.A_AH_MTopic;
 import shared.Items.Item;
 import shared.Message;
 
+/**
+ * AgentActions
+ */
 public class AgentActions {
     private static int    itemID;
     private static int    bidderId;
