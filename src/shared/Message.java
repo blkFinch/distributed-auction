@@ -172,10 +172,16 @@ public class Message implements Serializable {
         return senderId;
     }
 
+
     public String[] getArguments() {
         return arguments;
     }
 
+    /**
+     * getAccountName returns accountName
+     *
+     * @return accountName String
+     */
     public String getAccountName(){ return accountName; }
 
     /**
@@ -197,7 +203,7 @@ public class Message implements Serializable {
     }
 
     /**
-     * Return a string of non null values.
+     * toString override returns a string representation of Message.
      *
      * @return String
      */
@@ -227,7 +233,7 @@ public class Message implements Serializable {
 
     /**
      * Command is an Enum for message commands.
-     *      BLOCK           => Hold an amount on an accountId.
+     *      BLOCK           => Block an amount on an accountId.
      *      DEPOSIT         => Deposit an amount into the senderId account.
      *      DEREGISTER      => Deregister an account.
      *      GETBALANCE      => Get available balance from the accountId.

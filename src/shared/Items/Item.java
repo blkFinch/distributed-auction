@@ -6,18 +6,31 @@ import java.io.Serializable;
  * Galen furthur modified
  * Message for communicating across sockets. Adapted from
  * https://github.com/ApolloRez/DistributedAuction/tree/master/src
+ *
+ * Item class is the object type for the auction Items and contains the
+ * requisite to carry out that task including a Builder and get methods.
+ * Also has timer related methods for finalizing bids;
+ * Namely remainingTime, setBid and resetBidTime.
  */
 public class Item implements Serializable {
-    private  int    auctionId;
-    private  String name;
-    private  String description;
-    private  int minimumBid;
-    private  int currentBid;
-    private  int    bidderId;
-    private  long   remainingTime;
-    protected  long   bidTime;
-    private  int    itemId;
+    private   int    auctionId;
+    private   String name;
+    private   String description;
+    private   int    minimumBid;
+    private   int    currentBid;
+    private   int    bidderId;
+    private   long   remainingTime;
+    protected long   bidTime;
+    private   int    itemId;
 
+    /**
+     * Item builds an Item when called.
+     *
+     * @param setName String
+     * @param descriptionSet String
+     * @param value int
+     * @param Id int
+     */
     public Item(String setName, String descriptionSet, int value, int Id) {
         description   = descriptionSet;
         name          = setName;
@@ -124,10 +137,20 @@ public class Item implements Serializable {
         return bidderId;
     }
 
+    /**
+     * getDescription returns description
+     *
+     * @return description String
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * toString override returns string representation of Item
+     *
+     * @return String representation of Item
+     */
     @Override
     public String toString() {
         return "Item{" +

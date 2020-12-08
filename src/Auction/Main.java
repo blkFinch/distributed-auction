@@ -21,7 +21,8 @@ public class Main extends Application {
         primaryStage.setTitle("Auction House");
 
         FXMLLoader loader =
-                new FXMLLoader(getClass().getResource("Auction/resources/auctionGUI.fxml"));
+                new FXMLLoader(getClass().getResource(
+                        "Auction/resources/auctionGUI.fxml"));
 
         AnchorPane root = loader.load();
 

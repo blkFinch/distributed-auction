@@ -54,7 +54,6 @@ public class AgentActions {
                         .topic(A_AH_MTopic.SUCCESS)
                         .itemId(message.getItem())
                         .name(name)
-                        .auctionList(CountDown.getAuctionList())
                         .build();
                 AH_AgentThread.sendOut(accept);
                 int oldBidder = bidItem.getBidderId();
@@ -65,6 +64,7 @@ public class AgentActions {
                     bidItem.resetBidTime();
                 }
                 System.out.println("OutBid processed");
+                bidItem.resetBidTime();
                 bidItem.setBid(bidderId, newBid);
                 accept(bidItem.getItemID(), bidItem.getName());
             } else {

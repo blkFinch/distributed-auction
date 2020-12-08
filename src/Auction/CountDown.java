@@ -56,10 +56,10 @@ public class CountDown implements Runnable {
                     listItem.remainingTime(currentTime);
                     long timeLeft = listItem.getRemainingTime();
                     if (timeLeft <= 0) {
-                        System.out.println("Timer up");
                         itemResult(listItem);
                     }
                     i++;
+                    size = auctionList.size();
                 }
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -72,17 +72,18 @@ public class CountDown implements Runnable {
      * After the time expires on an Item for sale. This method checks if
      * there was any bidders and sends the WINNER message to that bidder.
      * Also releases the hold on the bidders amount.
+     *
      * @param item the item being checked
      */
     private void itemResult(Item item) {
-        System.out.println("Processing Bid");
         int bidder = item.getBidderId();
         AH_AgentThread agent = AuctionServer.agentSearch(bidder);
         if (bidder != -1) {
             Message release = new Message.Builder()
                     .command(Message.Command.TRANSFER)
                     .balance(item.getCurrentBid())
-                    .accountId(bidder).senderId(AuctionServer.auctionId);
+                    .accountId(bidder)
+                    .senderId(AuctionServer.auctionId);
             Message response = BankActions.sendToBank(release);
             assert response != null;
             if(response.getResponse() == Message.Response.SUCCESS) {
