@@ -24,7 +24,10 @@ public class BankServer {
 
         //Optional arg to set Logger
         if(args.length == 2){
-            if(args[1] == "log"){ Logger.log = true; }
+            if(args[1].equals("log")){
+                System.out.println("running logger");
+                Logger.log = true;
+            }
         }
 
 
