@@ -89,6 +89,7 @@ public class AgentGUI extends Application{
         checkBalance.setFont(new Font(15));
         checkBalance.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             Message checkBal = new Message.Builder()
+                    .command(Message.Command.GETBALANCE)
                     .accountId(userID)
                     .nullId();
             agent.sendBankMessage(checkBal);
@@ -150,6 +151,7 @@ public class AgentGUI extends Application{
             if(chosenItem != null){
                 bidAmount = Integer.parseInt(enterBid.getText());
                 bidMessage = new A_AH_Messages.Builder()
+                        .topic(A_AH_Messages.A_AH_MTopic.BID)
                         .itemId(chosenItemID)
                         .accountId(userID)
                         .name(chosenItem)
@@ -262,10 +264,11 @@ public class AgentGUI extends Application{
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        a = new AnimationTimer() {
+        a = new AnimationTimer(){
             @Override
-            public void handle(long now) {
+            public void handle(long now){
                 if(userID == -1 && agent.getUserID() != -1){
+                    System.out.println("GUI: "+agent.getUserID());
                     userID = agent.getUserID();
                 }
                 if(username.equals("")){ username = agent.getUsername(); }
@@ -284,6 +287,10 @@ public class AgentGUI extends Application{
         Button auction;
         Set<String> auctions;
         Font buttonFont = new Font(20);
+        Message updateAuctions = new Message.Builder()
+                .command(Message.Command.GETHOUSES)
+                .nullId();
+        agent.sendBankMessage(updateAuctions);
         agent.updateAuctionProxies();
         auctions = agent.getAuctionNames();
         for(String a : auctions){
@@ -394,5 +401,13 @@ public class AgentGUI extends Application{
             }
             messageList.getChildren().add(new Text(compiledMessage));
         }
+    }
+
+    @Override
+    public void stop(){
+        connected = false;
+        agent.closeConnections();
+        agent.printItemsWon();
+        System.exit(0);
     }
 }
