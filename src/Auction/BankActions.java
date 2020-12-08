@@ -21,7 +21,6 @@ public class BankActions {
         }
         return active;
     }
-    //Methods actions block, register, unblock
 
     public Message registerBank(List<ConnectionReqs> reqsList, String name) {
         Message message = new Message.Builder().command(Message.Command.REGISTERHOUSE)
@@ -31,8 +30,6 @@ public class BankActions {
         AuctionServer.auctionId = response.getAccountId();
         CountDown count = new CountDown();
         Thread timer = new Thread(count);
-        //timer.setDaemon(true);
-        //timer.setPriority(4);
         timer.start();
         if(response.getResponse() == Message.Response.SUCCESS) {
             System.out.println("Connection Success");
@@ -47,7 +44,6 @@ public class BankActions {
             out.flush();
             ObjectInputStream in = new ObjectInputStream(bankSocket.getInputStream());
             out.writeObject(message);
-            //System.out.println("out written");
             return (Message) in.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
